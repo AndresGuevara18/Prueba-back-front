@@ -1,0 +1,16 @@
+# Ignorar node_modules
+node_modules/
+
+# Ignorar variables de entorno (si tienes un archivo .env)
+.env
+
+# Archivos de logs
+logs/
+*.log
+
+# Ignorar dependencias de VS Code
+.vscode/
+
+# Archivos del sistema (en caso de usarlos)
+.DS_Store
+Thumbs.db

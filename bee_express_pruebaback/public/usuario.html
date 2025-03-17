@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="font-sans text-center m-5 bg-orange-500">
+
+    <h1 class="text-3xl font-bold mb-4">Lista de Usuarios</h1>
+
+    <!-- 🔹 Contenedor para alinear elementos -->
+    <div class="toolbar">
+        <a href="/nuevo_usuario.html" class="agregar-usuario">Agregar usuario</a>
+        <input type="text" id="buscarUsuario" class="buscar-usuario" placeholder="Buscar usuario...">
+        <a href="/cargo.html" class="cargo-lista">Lista Cargos</a>
+    </div>
+
+    <br/><br/>
+
+    <!-- 🔹 Tabla donde se mostrarán los usuarios -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo Documento</th>
+                    <th>Número Documento</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Cargo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userTable">
+                <tr>
+                    <td colspan="7">Cargando usuarios...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 🔹 Carga el script después del contenido -->
+    <script  src="js/usuario/usuario.js"></script>
+</body>
+</html>

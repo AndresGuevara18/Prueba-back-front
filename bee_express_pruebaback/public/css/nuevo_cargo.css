@@ -1,0 +1,72 @@
+/* Fondo general */
+body {
+    background-color: #d9d9d9; /* Gris claro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* Contenedor del formulario */
+.form-container {
+    background-color: #10374e; /* Azul oscuro */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    width: 400px;
+    text-align: center;
+}
+
+/* Título */
+.form-container h2 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para los campos */
+.input-group {
+    display: flex;
+    align-items: center;
+    background-color: #0c2a3c; /* Azul más oscuro */
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.input-group i {
+    margin-right: 10px;
+}
+
+.input-group input {
+    background: none;
+    border: none;
+    outline: none;
+    color: white;
+    width: 100%;
+    font-size: 16px;
+}
+
+/* Placeholder color blanco */
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Botón Registrar */
+button {
+    background-color: #28d18e; /* Verde */
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #1ea66f; /* Verde más oscuro */
+}

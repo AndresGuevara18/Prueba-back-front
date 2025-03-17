@@ -1,0 +1,20 @@
+# Ignorar node_modules en ambas carpetas
+bee_express_pruebaback/node_modules/
+front-vite-prueba/node_modules/
+
+# Ignorar archivos de entorno
+bee_express_pruebaback/.env
+front-vite-prueba/.env
+
+# Ignorar archivos de configuración local
+bee_express_pruebaback/.vscode/
+front-vite-prueba/.vscode/
+
+# Ignorar archivos generados
+bee_express_pruebaback/dist/
+front-vite-prueba/dist/
+front-vite-prueba/build/
+
+# Ignorar archivos de log
+bee_express_pruebaback/logs/
+front-vite-prueba/logs/

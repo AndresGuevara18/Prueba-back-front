@@ -1,0 +1,152 @@
+/* Fondo general */
+body {
+    background-color: #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    font-family: Arial, sans-serif;
+    overflow: auto; /* para cuandos  ehabilita la camara*/
+}
+
+
+/* Contenedor del formulario */
+.form-container {
+    background-color: #10374e; /* Azul oscuro */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    width: 700px;
+    text-align: center;
+}
+
+/* Título */
+.form-container h2 {
+    color: white;
+    font-weight:  600;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Diseño en dos columnas */
+.form-grid {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ancho de los contenedores */
+.form-left, .form-right {
+    width: 48%;
+}
+
+/* Estilos para los campos */
+.input-group {
+    display: flex;
+    align-items: center;
+    background-color: #0c2a3c;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: white;
+}
+.input-group option{
+    background-color: #0c2a3c;
+    color: #fff;
+}
+
+.input-group i {
+    margin-right: 10px;
+}
+
+.input-group input, .input-group select {
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+    width: 100%;
+    font-size: 16px;
+}
+
+/* Placeholder transparencia */
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Cámara centrada */
+.camera-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.camera-box {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: #0c2a3c;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+#video {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+}
+
+/* Botón de Abrir Cámara */
+#openCameraBtn {
+    background-color: #0056b3;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+}
+
+#openCameraBtn:hover {
+    background-color: #003f80;
+}
+
+#noCaptureBtn{
+    margin-top: 2rem;
+    background: #10374E;
+}
+
+/* vista previa  imagen*/
+.preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+
+#previewImage {
+    display: none; /* Se mostrará solo cuando se tome la foto */
+    max-width: 100%;
+    width: 200px; 
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón Registrar */
+.registrarBtn{
+    margin-top: 2rem;
+}
+
+button {  
+    background-color: #28d18e;
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #1ea66f;
+}
