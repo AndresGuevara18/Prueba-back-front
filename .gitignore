@@ -18,3 +18,5 @@ front-colpryst/build/
 # Ignorar archivos de log
 bee_express_pruebaback/logs/
 front-colpryst/logs/
+
+.vscode/
