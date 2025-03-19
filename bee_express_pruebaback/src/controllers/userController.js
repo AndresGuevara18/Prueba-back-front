@@ -22,21 +22,38 @@ const usuarioController = {
             const fotoBuffer = req.file ? req.file.buffer : null;
     
             // 3️⃣ Llamar al servicio para crear el usuario
-            const nuevoUsuario = await usuarioService.createUser(usuarioData, fotoBuffer);
+            const nuevoUsuario = await usuarioService.createUser(usuarioData);
     
             // 4️⃣ Si todo sale bien, enviar una respuesta exitosa al frontend
             res.status(201).json({
-                message: "✅ Usuario creado exitosamente.",
-                usuario: nuevoUsuario
+                success: true,
+                message: "Usuario creado exitosamente.",
+                data: nuevoUsuario
             });
         } catch (error) {
             // 5️⃣ Si ocurre un error, enviar una respuesta con el mensaje de error
             console.error("❌ Error en createUser (Controller):", error.message);
     
-            // Determinar el código de estado adecuado según el tipo de error
-            const statusCode = error.message.includes("⚠️") ? 400 : 500;
+            let statusCode = 500;
+            let message = "Error interno del servidor.";
     
-            res.status(statusCode).json({ error: error.message });
+            // Traducir errores técnicos a mensajes amigables
+            switch (error.message) {
+                case "CARGO_NOT_FOUND":
+                    statusCode = 400;
+                    message = "El cargo especificado no existe.";
+                    break;
+                case "USER_EXISTS":
+                    statusCode = 400;
+                    message = "El usuario con este documento o correo ya existe.";
+                    break;
+            }
+    
+            res.status(statusCode).json({
+                success: false,
+                message: message,
+                error: error.message // Opcional: enviar el error técnico para depuración
+            });
         }
     },
 

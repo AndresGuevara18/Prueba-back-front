@@ -28,50 +28,48 @@ const usuarioService = {
     // Nuevo usuario 
     createUser: async (usuarioData) => {
         try {
-            // Instancia del usuario con los datos recibidos
-            const usuario = new Usuario(
-                null, usuarioData.tipo_documento, usuarioData.numero_documento, usuarioData.nombre_empleado, 
-                usuarioData.email_empleado, usuarioData.contrasena, usuarioData.id_cargo);
-    
             // Validar si el cargo existe
-            const cargo = await cargoService.getCargoById(usuario.getIdCargo()); // llamada servicio cargo
+            const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
             if (!cargo) {
-                throw new Error("CARGO_NOT_FOUND: El cargo especificado no existe.");
+                throw new Error("CARGO_NOT_FOUND"); // Error técnico
             }
     
             // Verificar si el usuario ya existe 
             const checkQuery = 'SELECT id_usuario FROM usuario WHERE numero_documento = ? OR email_empleado = ?';
-            const [existingUser] = await db.promise().query(checkQuery, [usuario.getNumeroDocumento(), usuario.getEmailEmpleado()]);
+            const [existingUser] = await db.promise().query(checkQuery, [usuarioData.numero_documento, usuarioData.email_empleado]);
     
             if (existingUser.length > 0) {
-                throw new Error("USER_EXISTS: El usuario con este documento o correo ya existe.");
+                throw new Error("USER_EXISTS"); // Error técnico
             }
     
             // Hashear la contraseña
-            const hashedPassword = await bcrypt.hash(usuario.getContrasena(), 10);
+            const hashedPassword = await bcrypt.hash(usuarioData.contrasena, 10);
     
             // Insertar usuario
             const insertQuery = `INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, 
             email_empleado, contrasena, id_cargo) VALUES (?, ?, ?, ?, ?, ?)`;
     
             const [result] = await db.promise().query(insertQuery, [
-                usuario.getTipoDocumento(),
-                usuario.getNumeroDocumento(),
-                usuario.getNombreEmpleado(),
-                usuario.getEmailEmpleado(),
+                usuarioData.tipo_documento,
+                usuarioData.numero_documento,
+                usuarioData.nombre_empleado,
+                usuarioData.email_empleado,
                 hashedPassword,
-                usuario.getIdCargo()
+                usuarioData.id_cargo
             ]);
     
-            usuario.setIdUsuario(result.insertId); // ID autogenerado por MySQL
+            const nuevoUsuario = {
+                id_usuario: result.insertId,
+                ...usuarioData
+            };
     
             // Crear registro de reconocimiento facial
-            await reconocimientoService.createReconocimiento(usuario.getIdUsuario(), null); // null imagen (segundo parámetro)
+            await reconocimientoService.createReconocimiento(nuevoUsuario.id_usuario, null); // null imagen (segundo parámetro)
     
-            return usuario;
+            return nuevoUsuario;
         } catch (err) {
             console.error("❌ Error en createUser (Service):", err);
-            throw new Error(err.message); // Lanzar el error con el mensaje original
+            throw err; // Lanzar el error técnico sin modificar
         }
     },
 
