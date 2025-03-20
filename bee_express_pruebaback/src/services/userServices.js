@@ -2,7 +2,6 @@ const db = require('../config/database'); // base de datos
 const Usuario = require('../models/userModel'); // modelo de usuario
 const reconocimientoService = require('./reconocimientoServices'); // servicio de reconocimiento
 const bcrypt = require('bcrypt'); // bcrypt para encriptar contraseñas
-const cargoService = require('./cargoServices'); // servicio de cargos
 
 const usuarioService = {
     // Obtener todos los usuarios 
@@ -28,13 +27,7 @@ const usuarioService = {
     // Nuevo usuario 
     createUser: async (usuarioData) => {
         try {
-            // Validar si el cargo existe
-            const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
-            if (!cargo) {
-                throw new Error("CARGO_NOT_FOUND"); // Error técnico
-            }
-    
-            // Verificar si el usuario ya existe 
+            // Verificar si el usuario ya existe
             const checkQuery = 'SELECT id_usuario FROM usuario WHERE numero_documento = ? OR email_empleado = ?';
             const [existingUser] = await db.promise().query(checkQuery, [usuarioData.numero_documento, usuarioData.email_empleado]);
     
@@ -58,15 +51,14 @@ const usuarioService = {
                 usuarioData.id_cargo
             ]);
     
-            const nuevoUsuario = {
-                id_usuario: result.insertId,
-                ...usuarioData
-            };
+            // Obtener el ID recién generado
+            const idUsuarioGenerado = result.insertId;
     
             // Crear registro de reconocimiento facial
-            await reconocimientoService.createReconocimiento(nuevoUsuario.id_usuario, null); // null imagen (segundo parámetro)
+            await reconocimientoService.createReconocimiento(idUsuarioGenerado, null); // null imagen (segundo parámetro)
     
-            return nuevoUsuario;
+            // Devolver solo el ID generado
+            return idUsuarioGenerado;
         } catch (err) {
             console.error("❌ Error en createUser (Service):", err);
             throw err; // Lanzar el error técnico sin modificar

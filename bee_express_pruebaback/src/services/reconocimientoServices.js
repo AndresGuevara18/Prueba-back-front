@@ -3,7 +3,7 @@ const ReconocimientoFacial = require('../models/reconocimentoModel'); // Importa
 
 const reconocimientoService = {
     createReconocimiento: async (id_usuario, fotoBuffer) => {
-        // ⚠️ Validar que el ID del usuario sea obligatorio
+        //validar que el ID del usuario sea obligatorio
         if (!id_usuario) { 
             throw new Error("⚠️ ID de usuario no proporcionado.");
         }
@@ -17,7 +17,7 @@ const reconocimientoService = {
             const insertQuery = 'INSERT INTO reconocimiento_facial (fotografia_emple, id_usuario) VALUES (?, ?)';
             const [result] = await db.promise().query(insertQuery, [fotoBuffer, id_usuario]);
 
-            // 🔹 Devolvemos el objeto con los datos insertados
+            //Devolvemos el objeto con los datos insertados
             return new ReconocimientoFacial(result.insertId, fotoBuffer, id_usuario);
         } catch (err) {
             console.error("❌ Error al insertar en reconocimiento_facial:", err.message);

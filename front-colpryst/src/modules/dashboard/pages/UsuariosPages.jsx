@@ -50,7 +50,7 @@ const UsuariosPage = () => {
   }
 
   return (
-    <div className="font-sans text-center m-5 ml-64">
+    <div className="font-sans text-center m-5 ml-46">
       <h1 className="text-3xl font-bold mb-4">Lista de Usuarios</h1>
 
       {/* 🔹 Contenedor para los botones */}

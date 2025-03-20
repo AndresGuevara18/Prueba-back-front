@@ -1,4 +1,5 @@
 const usuarioService = require('../services/userServices'); // Importar el servicio de usuario
+const cargoService = require('../services/cargoServices'); // Importar el servicio de cargos
 
 const usuarioController = {
     //todos los usuarios
@@ -12,31 +13,34 @@ const usuarioController = {
         }
     },
 
-    // nuevo usuario
+    // Nuevo usuario
     createUser: async (req, res) => {
         try {
-            // 1️⃣ Obtener los datos del usuario desde el cuerpo de la solicitud (req.body)
+            // Obtener los datos del usuario desde el cuerpo de la solicitud (req.body)
             const usuarioData = req.body;
-    
-            // 2️⃣ Obtener la foto del usuario si se subió (req.file)
-            const fotoBuffer = req.file ? req.file.buffer : null;
-    
-            // 3️⃣ Llamar al servicio para crear el usuario
+
+            // Validar si el cargo existe
+            const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
+            if (!cargo) {
+                throw new Error("CARGO_NOT_FOUND");
+            }
+
+            // Llamar servicio "crear el usuario"
             const nuevoUsuario = await usuarioService.createUser(usuarioData);
-    
-            // 4️⃣ Si todo sale bien, enviar una respuesta exitosa al frontend
+
+            // enviar una respuesta exitosa al frontend
             res.status(201).json({
                 success: true,
                 message: "Usuario creado exitosamente.",
                 data: nuevoUsuario
             });
         } catch (error) {
-            // 5️⃣ Si ocurre un error, enviar una respuesta con el mensaje de error
+            // enviar una respuesta con el mensaje de error
             console.error("❌ Error en createUser (Controller):", error.message);
-    
+
             let statusCode = 500;
             let message = "Error interno del servidor.";
-    
+
             // Traducir errores técnicos a mensajes amigables
             switch (error.message) {
                 case "CARGO_NOT_FOUND":
@@ -48,11 +52,11 @@ const usuarioController = {
                     message = "El usuario con este documento o correo ya existe.";
                     break;
             }
-    
+
             res.status(statusCode).json({
                 success: false,
                 message: message,
-                error: error.message // Opcional: enviar el error técnico para depuración
+                error: error.message
             });
         }
     },
