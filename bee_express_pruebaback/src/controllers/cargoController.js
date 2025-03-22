@@ -79,20 +79,26 @@ const cargoController = {
     // Método para eliminar un cargo
     deleteCargo: async (req, res) => {
         try {
-            const { id_cargo } = req.params; // Extraer el ID del cargo desde la URL
-            const resultado = await cargoService.deleteCargo(id_cargo); // Llamamos al servicio
-
-            if (resultado?.error) {
-                return res.status(400).json({ error: resultado.error }); // Enviar mensaje de error al usuario
+            const { id_cargo } = req.params; // Obtener el ID del cargo
+            console.log("Controlador:  ",id_cargo)
+            const resultado = await cargoService.deleteCargo(id_cargo); // Llamar al servicio
+    
+            if (!resultado.exists) {
+                return res.status(404).json({ error: "❌ Cargo no encontrado." }); // Error si no existe
             }
-
-            if (!resultado) {
-                return res.status(404).json({ error: "❌ Cargo no encontrado" }); // Si no existe, error 404
+    
+            if (resultado.hasUsers) {
+                return res.status(400).json({ error: "⚠️ No se puede eliminar porque hay usuarios asignados al cargo." }); // Error si tiene usuarios
             }
-
-            res.json(resultado); // Enviar mensaje de éxito
+    
+            if (resultado.deleted) {
+                return res.status(200).json({ message: "✅ Cargo eliminado correctamente." }); // Eliminado con éxito
+            }
+    
+            res.status(400).json({ error: "⚠️ No se pudo eliminar el cargo." }); // Error general si no se elimina
         } catch (error) {
-            res.status(500).json({ error: "❌ Error interno al eliminar el cargo" }); // Manejo de errores internos
+            console.error("❌ Error en deleteCargo (Controller):", error);
+            res.status(500).json({ error: "❌ Error interno al eliminar el cargo." }); // Error interno
         }
     }
 };

@@ -68,19 +68,37 @@ const cargoService = {
     },
 
     deleteCargo: async (id_cargo) => {
-        const query = `DELETE FROM cargo WHERE id_cargo = ? 
-                AND NOT EXISTS (SELECT 1 FROM usuario WHERE id_cargo = ?)`;
-
-        try {
-            const [result] = await db.promise().query(query, [id_cargo, id_cargo]);
+        const queryCheckCargo = 'SELECT id_cargo FROM cargo WHERE id_cargo = ?';
+        const queryCheckUsers = 'SELECT COUNT(*) AS total FROM usuario WHERE id_cargo = ?';
+        const queryDelete = 'DELETE FROM cargo WHERE id_cargo = ?';
     
-            if (result.affectedRows === 0) {
-                return { error: "⚠️ No se puede eliminar porque hay usuarios asignados al cargo." };
+        try {
+            // Verificar si el cargo existe antes de eliminar
+            const [cargoResult] = await db.promise().query(queryCheckCargo, [parseInt(id_cargo)]);
+            if (cargoResult.length === 0) {
+                console.log(`❌ Cargo con ID ${id_cargo} no encontrado en la base de datos.`);
+                return { exists: false };
             }
     
-            return { message: "✅ Cargo eliminado correctamente" };
+            // Verificar si hay usuarios asignados al cargo
+            const [userResult] = await db.promise().query(queryCheckUsers, [parseInt(id_cargo)]);
+            if (userResult[0].total > 0) {
+                console.log(`⚠️ No se puede eliminar el cargo ${id_cargo}, tiene ${userResult[0].total} usuarios asignados.`);
+                return { exists: true, hasUsers: true };
+            }
+    
+            // Intentar eliminar el cargo
+            const [deleteResult] = await db.promise().query(queryDelete, [parseInt(id_cargo)]);
+    
+            if (deleteResult.affectedRows > 0) {
+                console.log(`✅ Cargo con ID ${id_cargo} eliminado correctamente.`);
+                return { exists: true, deleted: true };
+            } else {
+                console.log(`⚠️ Cargo con ID ${id_cargo} no se eliminó.`);
+                return { exists: true, deleted: false };
+            }
         } catch (err) {
-            console.error("❌ Error en deleteCargo:", err);
+            console.error("❌ Error en deleteCargo (Service):", err);
             throw err;
         }
     }
