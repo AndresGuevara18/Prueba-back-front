@@ -1,0 +1,548 @@
+-- FICHA: 2826503
+-- Aprendiz: Mauricio Andres Castro Guevara
+
+-- DATABASE
+create database Colpryst_Col2;
+use Colpryst_Col2;
+
+-- TABLA CARGO
+CREATE TABLE Cargo (
+  IdCargo INTEGER AUTO_INCREMENT NOT NULL,
+  NombreCargo varchar (80),
+  Descripcion varchar (80),
+  CONSTRAINT PK_Cargo PRIMARY KEY(IdCargo)
+);
+
+-- TABLA USUARIO
+CREATE TABLE Usuario (
+  IdUsuario INTEGER,
+  Tipo_doc varchar (80),
+  numero_doc varchar (80),
+  Nombre_empleado varchar (80),
+  Email_empleado varchar (80),
+  constraint PK_Usuario primary key (IdUsuario),
+  IdCargoUsu INTEGER
+);
+
+alter table Usuario add constraint fk_IdCargoUsu foreign key (IdCargoUsu) references Cargo (IdCargo);
+
+-- TABLA RECONOCIMIENTO
+CREATE TABLE ReconocimientoFacil (
+  IdFoto INTEGER AUTO_INCREMENT NOT NULL,
+  FotografiaEmple varchar (80),
+  CONSTRAINT Pk_ReconocimientoFa PRIMARY KEY (IdFoto),
+  IdUsuarioFK INTEGER
+);
+
+alter table ReconocimientoFacil add constraint fk_IdFoto foreign key (IdUsuarioFK) references Usuario (IdUsuario);
+
+-- TABLA REGISTRO ENTRADA
+CREATE TABLE RegistroEntrada (
+  IdEntrada INTEGER AUTO_INCREMENT NOT NULL,
+  FechaHora datetime,
+  CONSTRAINT PK_RegistroEntrada PRIMARY KEY(IdEntrada),
+  IdEntradaFK INTEGER
+);
+
+alter table RegistroEntrada add constraint fk_IdEntrada foreign key (IdEntradaFK) references Usuario (IdUsuario);
+
+-- DROP TABLE RegistroEntrada;
+
+-- TABLA NOTIFICACIONES AUSENCIAS
+CREATE TABLE NotificacionEntradaTarde (
+    IdNotificacion INTEGER AUTO_INCREMENT NOT NULL,
+    CONSTRAINT PK_Ausencia PRIMARY KEY(IdNotificacion),
+    IdEntradaFK INTEGER,
+    IdUsuario INTEGER,
+    Estado BOOLEAN,
+    FechaHora datetime
+);
+
+ALTER TABLE NotificacionEntradaTarde ADD CONSTRAINt fk_IdRegistroEntrada FOREIGN KEY (IdEntradaFK) 
+REFERENCES RegistroEntrada (IdEntrada);
+
+-- TABLA REGISTRO SALIDA
+CREATE TABLE RegistroSalida (
+  IdSalida INTEGER AUTO_INCREMENT NOT NULL,
+  FechaHora datetime,
+  CONSTRAINT PK_RegistroSalida PRIMARY KEY(IdSalida),
+  IdSalidaFK INTEGER
+);
+
+alter table RegistroSalida add constraint fk_IdSalida foreign key (IdSalidaFK) references Usuario (IdUsuario);
+
+-- INSERT
+-- Inserción de registros en la tabla Cargo
+INSERT INTO Cargo (NombreCargo, Descripcion) VALUES 
+('Gerente', 'Gerente de operaciones'),
+('Desarrollador', 'Desarrollador de software'),
+('Contador', 'Encargado de finanzas'),
+('Soporte Técnico', 'Soporte de IT'),
+('Marketing', 'Especialista en marketing'),
+('Recursos Humanos', 'Gestión de personal'),
+('Vendedor', 'Venta de productos'),
+('Analista', 'Analista de datos'),
+('Director', 'Director de la empresa'),
+('Administrativo', 'Administración general');
+
+-- Inserción de registros en la tabla Usuario
+INSERT INTO Usuario (IdUsuario, Tipo_doc, numero_doc, Nombre_empleado, Email_empleado, IdCargoUsu) VALUES 
+(1, 'DNI', '12345678A', 'Carlos Pérez', 'carlos.perez@colpryst.com', 1),
+(2, 'DNI', '23456789B', 'Ana Gómez', 'ana.gomez@colpryst.com', 2),
+(3, 'DNI', '34567890C', 'Luis Martínez', 'luis.martinez@colpryst.com', 3),
+(4, 'DNI', '45678901D', 'Marta Rodríguez', 'marta.rodriguez@colpryst.com', 4),
+(5, 'DNI', '56789012E', 'Jorge Fernández', 'jorge.fernandez@colpryst.com', 5),
+(6, 'DNI', '67890123F', 'Lucía Díaz', 'lucia.diaz@colpryst.com', 6),
+(7, 'DNI', '78901234G', 'Juan López', 'juan.lopez@colpryst.com', 7),
+(8, 'DNI', '89012345H', 'Elena Sánchez', 'elena.sanchez@colpryst.com', 8),
+(9, 'DNI', '90123456I', 'Pedro Gutiérrez', 'pedro.gutierrez@colpryst.com', 9),
+(10, 'DNI', '01234567J', 'Sara Ruiz', 'sara.ruiz@colpryst.com', 10),
+-- 5 veces el cargo 'Soporte Técnico' (IdCargoUsu = 4)
+(11, 'DNI', '11111111A', 'Laura Moreno', 'laura.moreno@colpryst.com', 4),
+(12, 'DNI', '22222222B', 'Andrés Torres', 'andres.torres@colpryst.com', 4),
+(13, 'DNI', '33333333C', 'Gabriel Núñez', 'gabriel.nunez@colpryst.com', 4),
+(14, 'DNI', '44444444D', 'Natalia Herrera', 'natalia.herrera@colpryst.com', 4),
+(15, 'DNI', '55555555E', 'Emilio Castro', 'emilio.castro@colpryst.com', 4),
+
+-- 5 veces el cargo 'Vendedor' (IdCargoUsu = 7)
+(16, 'DNI', '66666666F', 'Carla Vega', 'carla.vega@colpryst.com', 7),
+(17, 'DNI', '77777777G', 'Ricardo Flores', 'ricardo.flores@colpryst.com', 7),
+(18, 'DNI', '88888888H', 'Alejandro Ortiz', 'alejandro.ortiz@colpryst.com', 7),
+(19, 'DNI', '99999999I', 'Raquel Sánchez', 'raquel.sanchez@colpryst.com', 7),
+(20, 'DNI', '10101010J', 'Pablo Díaz', 'pablo.diaz@colpryst.com', 7),
+
+-- 2 veces el cargo 'Marketing' (IdCargoUsu = 5)
+(21, 'DNI', '11122233K', 'Marta Blanco', 'marta.blanco@colpryst.com', 5),
+(22, 'DNI', '22233344L', 'Esteban Suárez', 'esteban.suarez@colpryst.com', 5),
+
+-- 1 vez el cargo 'Desarrollador' (IdCargoUsu = 2)
+(23, 'DNI', '33344455M', 'Rosa Delgado', 'rosa.delgado@colpryst.com', 2),
+
+-- 1 vez el cargo 'Contador' (IdCargoUsu = 3)
+(24, 'DNI', '44455566N', 'Tomás Gil', 'tomas.gil@colpryst.com', 3),
+
+-- 1 vez el cargo 'Recursos Humanos' (IdCargoUsu = 6)
+(25, 'DNI', '55566677O', 'Valeria Rojas', 'valeria.rojas@colpryst.com', 6);
+
+-- Inserción de registros en la tabla ReconocimientoFacial
+INSERT INTO ReconocimientoFacil (FotografiaEmple, IdUsuarioFK) VALUES
+('foto_carlos.jpg', 1),
+('foto_ana.jpg', 2),
+('foto_luis.jpg', 3),
+('foto_marta.jpg', 4),
+('foto_jorge.jpg', 5),
+('foto_lucia.jpg', 6),
+('foto_juan.jpg', 7),
+('foto_elena.jpg', 8),
+('foto_pedro.jpg', 9),
+('foto_sara.jpg', 10);
+
+
+/*--------------------------------------------------------------------------------------------------------------
+--------------------------------------------FUNCTION---------------------------------------------------------*/
+/*FUNCTION -  SABER CUATOS USUARIOS PERTENECEN A DETERMINADO CARGO MEDIANTE FK TABLA USUARIO*/
+DELIMITER $$
+
+CREATE FUNCTION NumeroEmpladosCargo(idcargoU INTEGER) RETURNS VARCHAR(150) DETERMINISTIC
+BEGIN
+    DECLARE contenido VARCHAR(150);
+    -- Realizamos un JOIN para obtener el nombre del cargo y la cantidad de empleados
+    SELECT CONCAT('Cargo: ', Cargo.NombreCargo, ' cuenta con ', COUNT(Usuario.IdUsuario), ' Usuarios') INTO contenido
+    FROM Usuario
+    INNER JOIN Cargo ON Usuario.IdCargoUsu = Cargo.IdCargo -- JOIN entre las tablas Usuario y Cargo
+    WHERE Usuario.IdCargoUsu = idcargoU
+	GROUP BY Cargo.NombreCargo; -- Agrupa resultados por NombreCargo para que la función agregada COUNT se aplique correctamente.
+    
+    IF contenido IS NULL THEN
+		SIGNAL SQLSTATE '45000' -- EXCEPCION
+		SET MESSAGE_TEXT = 'El cargo no existe';
+    END IF;
+    
+    RETURN contenido;
+END $$
+
+DELIMITER ;
+
+/*SELECT CONCAT('Cargo: ', Cargo.NombreCargo, ' cuenta con ', COUNT(Usuario.IdUsuario), ' Usuarios') 
+FROM Usuario
+INNER JOIN Cargo ON Usuario.IdCargoUsu = Cargo.IdCargo -- JOIN entre las tablas Usuario y Cargo
+WHERE Usuario.IdCargoUsu = 4;*/
+
+SELECT NumeroEmpladosCargo(4); -- existe 
+SELECT NumeroEmpladosCargo(20); -- NO existe
+DROP FUNCTION IF EXISTS NumeroEmpladosCargo;
+
+/*--------------------------------------------------------------------------------------------------------------
+-------------------------TRIGGER (PARA QUE EMPIECE A FUNCIONAR ANTES DE INSERTAR DATOS)-------------------------*/
+
+-- 	TRIGGER --- PARA LLEGADA TARDE DESPUES DE LAS 7:30
+DELIMITER $$
+CREATE TRIGGER notificar_llegada_tarde
+AFTER INSERT ON RegistroEntrada
+FOR EACH ROW -- Se ejecuta para cada registro que se inserta.
+BEGIN
+    -- Verifica si la hora de entrada es después de las 07:30 AM
+    IF TIME(NEW.FechaHora) > '07:30:00' THEN
+        -- Inserta un registro en la tabla NotificacionEntradaTarde con los detalles de la llegada tarde
+        INSERT INTO NotificacionEntradaTarde (IdEntradaFK, IdUsuario, Estado, FechaHora) 
+        VALUES (NEW.IdEntrada, NEW.IdEntradaFK, FALSE, NEW.FechaHora);  -- NEW para nuevos resgistro en la otra tabla
+    END IF;
+END $$
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS notificar_llegada_tarde;
+
+/*--------------------------------------------------------------------------------------------------------------
+------------------------------------------INSERT REGISTRO ENTRADA---------------------------------------------------*/
+
+-- Inserción de registros en la tabla RegistroEntrada
+-- LUNES
+INSERT INTO RegistroEntrada (FechaHora, IdEntradaFK)
+VALUES
+     -- Lunes
+    ('2024-09-02 07:29:00', 1), --  Carlos Pérez a tiempo
+    ('2024-09-02 08:05:00', 2), -- Ana Gómez tarde
+    ('2024-09-02 07:45:00', 3), -- Luis Martínez tarde
+    -- Usuario 4 ausente (Marta Rodríguez)FFCA
+    ('2024-09-02 07:30:00', 5), -- Jorge Fernández a tiempo
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-02 07:15:00', 7), -- Juan López a tiempo
+    ('2024-09-02 07:31:00', 8), -- Elena Sánchez tarde
+    ('2024-09-02 07:50:00', 9), -- Pedro Gutiérrez tarde
+    ('2024-09-02 07:25:00', 10); -- Sara Ruiz a tiempo
+
+-- MARTES
+INSERT INTO RegistroEntrada (FechaHora, IdEntradaFK)
+VALUES
+    -- Martes
+    ('2024-09-03 07:28:00', 1), -- Carlos Pérez a tiempo
+    ('2024-09-03 07:50:00', 2), -- Ana Gómez tarde
+    ('2024-09-03 07:35:00', 3), -- Luis Martínez a tiempo
+    ('2024-09-03 07:15:00', 4), -- Marta Rodríguez a tiempo
+    ('2024-09-03 07:55:00', 5), -- Jorge Fernández tarde
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-03 07:20:00', 7), -- Juan López a tiempo
+    ('2024-09-03 07:45:00', 8), -- Elena Sánchez tarde
+    ('2024-09-03 07:29:00', 9), -- Pedro Gutiérrez a tiempo
+    ('2024-09-03 07:31:00', 10); -- Sara Ruiz tarde
+
+-- MIERCOLES
+INSERT INTO RegistroEntrada (FechaHora, IdEntradaFK)
+VALUES
+   -- Miércoles
+    ('2024-09-04 07:10:00', 1), -- Carlos Pérez a tiempo
+    ('2024-09-04 08:00:00', 2), -- TARDE Ana Gómez tarde
+    ('2024-09-04 07:20:00', 3), -- Luis Martínez a tiempo
+    -- Usuario 4 ausente (Marta Rodríguez)
+    ('2024-09-04 07:40:00', 5), -- Jorge Fernández a tiempo
+    ('2024-09-04 07:50:00', 6), -- Lucía Díaz tarde
+    ('2024-09-04 07:25:00', 7), -- Juan López a tiempo
+    ('2024-09-04 07:15:00', 8), -- Elena Sánchez a tiempo
+    ('2024-09-04 07:35:00', 9), -- Pedro Gutiérrez a tiempo
+    ('2024-09-04 07:45:00', 10); -- Sara Ruiz tarde
+
+-- JUEVES
+INSERT INTO RegistroEntrada (FechaHora, IdEntradaFK)
+VALUES
+    -- Jueves
+    ('2024-09-05 07:29:00', 1), -- Carlos Pérez a tiempo
+    ('2024-09-05 08:10:00', 2), --  TARDE Ana Gómez tarde
+    ('2024-09-05 07:50:00', 3), -- Luis Martínez tarde
+    ('2024-09-05 07:35:00', 4), -- Marta Rodríguez a tiempo
+    -- Usuario 5 ausente (Jorge Fernández)
+    ('2024-09-05 07:25:00', 6), -- Lucía Díaz a tiempo
+    ('2024-09-05 07:20:00', 7), -- Juan López a tiempo
+    ('2024-09-05 07:29:00', 8), -- Elena Sánchez a tiempo
+    ('2024-09-05 07:32:00', 9), -- Pedro Gutiérrez tarde
+    ('2024-09-05 07:28:00', 10); -- Sara Ruiz a tiempo
+
+-- VIERNES
+INSERT INTO RegistroEntrada (FechaHora, IdEntradaFK)
+VALUES
+    -- Viernes
+    ('2024-09-06 07:29:00', 1), -- Carlos Pérez a tiempo
+    ('2024-09-06 07:50:00', 2), -- Ana Gómez tarde
+    ('2024-09-06 07:35:00', 3), -- Luis Martínez a tiempo
+    ('2024-09-06 07:30:00', 4), -- Marta Rodríguez a tiempo
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-06 07:55:00', 7), -- Juan López tarde
+    ('2024-09-06 07:45:00', 8), -- Elena Sánchez tarde
+    ('2024-09-06 07:20:00', 9), -- Pedro Gutiérrez a tiempo
+    ('2024-09-06 07:31:00', 10); -- Sara Ruiz tarde
+    
+    
+/*--------------------------------------------------------------------------------------------------------------
+------------------------------------------INSERT REGISTRO SALIDA TODOS LOS REGISTROS---------------------------------------------------*/
+/*-- LUNES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-02 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-02 16:10:00', 2), -- Ana Gómez
+    ('2024-09-02 16:00:00', 3), -- Luis Martínez
+    -- Usuario 4 ausente (Marta Rodríguez)
+    ('2024-09-02 15:30:00', 5), -- Jorge Fernández
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-02 15:40:00', 7), -- Juan López
+    ('2024-09-02 15:35:00', 8), -- Elena Sánchez
+    ('2024-09-02 16:00:00', 9), -- Pedro Gutiérrez
+    ('2024-09-02 15:25:00', 10); -- Sara Ruiz
+
+-- MARTES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-03 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-03 16:00:00', 2), -- Ana Gómez
+    ('2024-09-03 15:35:00', 3), -- Luis Martínez
+    ('2024-09-03 15:30:00', 4), -- Marta Rodríguez
+    ('2024-09-03 16:05:00', 5), -- Jorge Fernández
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-03 15:35:00', 7), -- Juan López
+    ('2024-09-03 16:00:00', 8), -- Elena Sánchez
+    ('2024-09-03 15:40:00', 9), -- Pedro Gutiérrez
+    ('2024-09-03 15:50:00', 10); -- Sara Ruiz
+
+-- MIERCOLES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-04 15:40:00', 1), -- Carlos Pérez
+    ('2024-09-04 16:05:00', 2), -- Ana Gómez
+    ('2024-09-04 15:45:00', 3), -- Luis Martínez
+    -- Usuario 4 ausente (Marta Rodríguez)
+    ('2024-09-04 15:35:00', 5), -- Jorge Fernández
+    ('2024-09-04 16:00:00', 6), -- Lucía Díaz
+    ('2024-09-04 15:25:00', 7), -- Juan López
+    ('2024-09-04 15:50:00', 8), -- Elena Sánchez
+    ('2024-09-04 15:40:00', 9), -- Pedro Gutiérrez
+    ('2024-09-04 15:50:00', 10); -- Sara Ruiz
+
+-- JUEVES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-05 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-05 16:10:00', 2), -- Ana Gómez
+    ('2024-09-05 15:50:00', 3), -- Luis Martínez
+    ('2024-09-05 15:30:00', 4), -- Marta Rodríguez
+    -- Usuario 5 ausente (Jorge Fernández)
+    ('2024-09-05 15:25:00', 6), -- Lucía Díaz
+    ('2024-09-05 15:40:00', 7), -- Juan López
+    ('2024-09-05 15:40:00', 8), -- Elena Sánchez
+    ('2024-09-05 15:45:00', 9), -- Pedro Gutiérrez
+    ('2024-09-05 15:50:00', 10); -- Sara Ruiz
+
+-- VIERNES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-06 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-06 16:00:00', 2), -- Ana Gómez
+    ('2024-09-06 15:35:00', 3), -- Luis Martínez
+    ('2024-09-06 15:30:00', 4), -- Marta Rodríguez
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-06 15:55:00', 7), -- Juan López
+    ('2024-09-06 16:05:00', 8), -- Elena Sánchez
+    ('2024-09-06 15:30:00', 9), -- Pedro Gutiérrez
+    ('2024-09-06 15:50:00', 10); -- Sara Ruiz*/
+
+/*--------------------------------------------------------------------------------------------------------------
+------------------------------------------INSERT REGISTRO SALIDA SIN ALGUNOS REGISTROS---------------------------------------------------*/
+-- LUNES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-02 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-02 16:10:00', 2), -- Ana Gómez
+    ('2024-09-02 16:00:00', 3), -- Luis Martínez
+    -- Usuario 4 ausente (Marta Rodríguez)
+    ('2024-09-02 15:30:00', 5), -- Jorge Fernández
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-02 15:40:00', 7), -- Juan López
+    ('2024-09-02 15:35:00', 8), -- Elena Sánchez
+    ('2024-09-02 16:00:00', 9), -- Pedro Gutiérrez
+    ('2024-09-02 15:25:00', 10); -- Sara Ruiz
+
+-- MARTES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-03 15:30:00', 1), -- Carlos Pérez
+    -- Empleado 2 (Ana Gómez) no registra salida
+    ('2024-09-03 15:35:00', 3), -- Luis Martínez
+    ('2024-09-03 15:30:00', 4), -- Marta Rodríguez
+    ('2024-09-03 16:05:00', 5), -- Jorge Fernández
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-03 15:35:00', 7), -- Juan López
+    ('2024-09-03 16:00:00', 8), -- Elena Sánchez
+    ('2024-09-03 15:40:00', 9), -- Pedro Gutiérrez
+    ('2024-09-03 15:50:00', 10); -- Sara Ruiz
+
+-- MIERCOLES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-04 15:40:00', 1), -- Carlos Pérez
+    ('2024-09-04 16:05:00', 2), -- Ana Gómez
+    ('2024-09-04 15:45:00', 3), -- Luis Martínez
+    -- Empleado 4 (Marta Rodríguez) no registra salida
+    ('2024-09-04 15:35:00', 5), -- Jorge Fernández
+    ('2024-09-04 16:00:00', 6), -- Lucía Díaz
+    ('2024-09-04 15:25:00', 7), -- Juan López
+    ('2024-09-04 15:50:00', 8), -- Elena Sánchez
+    ('2024-09-04 15:40:00', 9), -- Pedro Gutiérrez
+    ('2024-09-04 15:50:00', 10); -- Sara Ruiz
+
+-- JUEVES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-05 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-05 16:10:00', 2), -- Ana Gómez
+    ('2024-09-05 15:50:00', 3), -- Luis Martínez
+    ('2024-09-05 15:30:00', 4), -- Marta Rodríguez
+    -- Usuario 5 ausente (Jorge Fernández)
+    ('2024-09-05 15:25:00', 6), -- Lucía Díaz
+    ('2024-09-05 15:40:00', 7), -- Juan López
+    ('2024-09-05 15:40:00', 8), -- Elena Sánchez
+    ('2024-09-05 15:45:00', 9), -- Pedro Gutiérrez
+    ('2024-09-05 15:50:00', 10); -- Sara Ruiz
+
+-- VIERNES
+INSERT INTO RegistroSalida (FechaHora, IdSalidaFK)
+VALUES
+    ('2024-09-06 15:30:00', 1), -- Carlos Pérez
+    ('2024-09-06 16:00:00', 2), -- Ana Gómez
+    ('2024-09-06 15:35:00', 3), -- Luis Martínez
+    -- Empleado 4 (Marta Rodríguez) no registra salida
+    -- Usuario 6 ausente (Lucía Díaz)
+    ('2024-09-06 15:55:00', 7), -- Juan López
+    ('2024-09-06 16:05:00', 8), -- Elena Sánchez
+    ('2024-09-06 15:30:00', 9), -- Pedro Gutiérrez
+    ('2024-09-06 15:50:00', 10); -- Sara Ruiz
+
+/*--------------------------------------------------------------------------------------------------------------
+-----------------------------------------------PROCEDURE-------------------------------------------------------*/
+-- -- ANTES ACTUALIZAR EL ESTADO MEDIANTE EL ID
+UPDATE NotificacionEntradaTarde SET  Estado = TRUE WHERE IdNotificacion =  5; 
+UPDATE NotificacionEntradaTarde SET  Estado = TRUE WHERE IdNotificacion =  15; 
+
+/*PROCEDURE (PARA UN SOLO REGISTRO) 
+ELIMINAR REGISTRO DONDE ESTADO CON VALOR TRUE EN LA TABLA NOTIFICACION ENTRADA TARDE*/
+
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_un_registro_true()
+BEGIN
+	-- variable que guardara el valor del id obtenido de consulta
+	DECLARE id INT;
+    -- SENTENCIA PARA CUANDO ENCUENTRE UN REGISTRO CON ESTADO VALOR TRUE 
+	SELECT IdNotificacion into id 
+    FROM NotificacionEntradaTarde 
+    WHERE Estado = TRUE
+    LIMIT 1; -- para evitar error 1172
+	-- CONDICIONAL
+	IF id IS NOT NULL THEN  -- Verifica si el Valor es diferente de NULL
+		DELETE FROM NotificacionEntradaTarde
+        WHERE IdNotificacion = id; -- elimina si el id coincide con el id guarado
+	ELSE
+		SIGNAL SQLSTATE '45000' -- EXCEPCION
+		SET MESSAGE_TEXT = 'USUARIO NO RESGITRADO EN TABLA LLEGADA TARDE'; -- si el valor es null, se emuestra mensaje
+    END IF;
+END $$
+
+DELIMITER ;
+
+SELECT IdNotificacion FROM NotificacionEntradaTarde WHERE Estado = TRUE; -- CONSULTA para saber el id de usuario, con estado true 
+
+CALL eliminar_un_registro_true; -- LLAMADO  al procedomiento
+
+-- DROP PROCEDURE IF EXISTS eliminar_un_registro_true;
+
+/*****************************************************************************************************************/
+
+/*PROCEDURE (PARA VARIOS REGISTROS)
+ ELIMINAR REGISTRO DONDE ESTADO CON VALOR TRUE EN LA TABLA NOTIFICACION ENTRADA TARDE*/
+
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_registros_true()
+BEGIN
+	-- variable que guardara el valor del id obtenido de consulta
+	DECLARE id INT;
+    
+    -- El subquery EXISTS devuelve verdadero si encuentra al menos un registro
+    WHILE EXISTS(SELECT 1 FROM NotificacionEntradaTarde WHERE Estado = TRUE) 
+    DO
+		 -- SENTENCIA PARA CUANDO ENCUENTRE UN REGISTRO CON ESTADO VALOR TRUE 
+		SELECT IdNotificacion into id 
+		FROM NotificacionEntradaTarde 
+		WHERE Estado = TRUE
+		LIMIT 1; -- para evitar error 1172
+        
+        -- CONDICIONAL
+		IF id IS NOT NULL THEN  -- Verifica si el Valor es diferente de NULL
+			DELETE FROM NotificacionEntradaTarde
+			WHERE IdNotificacion = id; -- elimina si el id coincide con el id guarado
+		ELSE
+			SIGNAL SQLSTATE '45000' -- EXCEPCION
+			SET MESSAGE_TEXT = 'USUARIO NO RESGITRADO EN TABLA LLEGADA TARDE'; -- si el valor es null, se emuestra mensaje
+		END IF;
+    END WHILE;
+END $$
+
+DELIMITER ;
+
+SELECT IdNotificacion FROM NotificacionEntradaTarde WHERE Estado = TRUE; -- CONSULTA para saber el id de usuario, con estado true 
+
+CALL eliminar_registros_true; -- LLAMADO  al procedomiento
+
+-- DROP PROCEDURE IF EXISTS eliminar_registros_true;
+
+/************************************************************************************************************
+********************************************************************************************************
+***************************************RETO*************************************************************
+**********************************************************************************************************/
+/*HORA MINIMA MAXIMA  PROMEDIO ENTRE HORAS*/
+SELECT 
+    MIN(TIME(FechaHora)) AS HoraMinima,  
+    MAX(TIME(FechaHora)) AS HoraMaxima, 
+    AVG(TIME_TO_SEC(TIME(FechaHora)) - TIME_TO_SEC('07:00:00')) / 60 AS PromedioMinutosDesde7AM -- /60 equivale a un minuto
+FROM RegistroEntrada
+WHERE DATE(FechaHora) = '2024-09-03';
+
+/*OBTENER DATO ANTERIOR*/
+/*LAG  proporciona acceso a una fila en un desplazamiento físico especificado que hay antes de la fila actual.*/
+SELECT us.Nombre_empleado AS Nombre, us.numero_doc AS Documento, TIME(re.FechaHora) AS HoraEntrada,
+	 avg(TIME_TO_SEC(TIME(re.FechaHora)) - time_to_sec('07:00:00')) / 60 AS Minutos,
+     LAG(TIME_TO_SEC(TIME(re.FechaHora))  - TIME_TO_SEC('07:00:00')) 
+		OVER (ORDER BY TIME(re.FechaHora)) / 60 as MinutosAnterior
+FROM Usuario us
+INNER JOIN RegistroEntrada re ON us.IdUsuario = re.IdEntradaFK
+WHERE DATE(re.FechaHora) = '2024-09-03' 
+GROUP BY us.IdUsuario, re.FechaHora;
+
+/*TIMESTAMPDIFF devuelve la diferencia entre dos marcas de tiempo medida en unidades unit*/
+SELECT TIMESTAMPDIFF(MONTH,'2003-02-01','2003-05-01');
+
+-- minutos anterior y promedio
+SELECT  us.Nombre_empleado AS Nombre, 
+		us.numero_doc AS Documento, 
+        DATE(re.FechaHora) AS Fecha,
+		TIME(re.FechaHora) AS HoraEntrada,
+        avg(TIME_TO_SEC(TIME(re.FechaHora)) - time_to_sec('07:00:00')) / 60 AS Minutos,
+        LAG(TIME_TO_SEC(TIME(re.FechaHora))  - TIME_TO_SEC('07:00:00')) 
+			OVER (ORDER BY TIME(re.FechaHora)) / 60 as MinutosAnterior,
+        TIMESTAMPDIFF(MINUTE, LAG(re.FechaHora) OVER (ORDER BY re.FechaHora),  re.FechaHora) AS Pomedio
+FROM RegistroEntrada re
+INNER JOIN Usuario us ON re.IdEntradaFK = us.IdUsuario
+WHERE DATE(re.FechaHora) = '2024-09-03'
+group BY re.FechaHora, us.IdUsuario;
+
+
+/*CTE
+WITH cte AS ( 
+  SELECT
+    ...
+)
+ 
+SELECT
+  ...
+FROM cte;
+*/
+
+
+
+DROP DATABASE Colpryst_Col2;
