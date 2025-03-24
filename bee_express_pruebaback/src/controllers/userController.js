@@ -2,11 +2,14 @@ const usuarioService = require('../services/userServices'); // Importar el servi
 const cargoService = require('../services/cargoServices'); // Importar el servicio de cargos
 
 const usuarioController = {
-    //todos los usuarios
+    // Obtener todos los usuarios
     getAllUsers: async (req, res) => {
         try {
-            const usuarios = await usuarioService.getAllUsers(); // Llamar al servicio
-            res.json(usuarios); // Enviar la lista de usuarios en formato JSON
+            // Llamar al servicio para obtener todos los usuarios
+            const usuarios = await usuarioService.getAllUsers();
+
+            // Enviar la lista de usuarios en formato JSON
+            res.json(usuarios);
         } catch (error) {
             console.error("❌ Error en getAllUsers (Controller):", error);
             res.status(500).json({ error: "Error al obtener los usuarios" });
@@ -16,43 +19,52 @@ const usuarioController = {
     // Nuevo usuario
     createUser: async (req, res) => {
         try {
+            console.log("Datos recibidos en el controlador:", req.body); // Depuración
+    
             // Obtener los datos del usuario desde el cuerpo de la solicitud (req.body)
             const usuarioData = req.body;
-
+    
             // Validar si el cargo existe
             const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
             if (!cargo) {
                 throw new Error("CARGO_NOT_FOUND");
             }
-
+    
             // Llamar servicio "crear el usuario"
             const nuevoUsuario = await usuarioService.createUser(usuarioData);
-
-            // enviar una respuesta exitosa al frontend
+    
+            // Enviar una respuesta exitosa al frontend
             res.status(201).json({
                 success: true,
                 message: "Usuario creado exitosamente.",
                 data: nuevoUsuario
             });
         } catch (error) {
-            // enviar una respuesta con el mensaje de error
             console.error("❌ Error en createUser (Controller):", error.message);
-
+    
             let statusCode = 500;
             let message = "Error interno del servidor.";
-
+    
             // Traducir errores técnicos a mensajes amigables
             switch (error.message) {
                 case "CARGO_NOT_FOUND":
                     statusCode = 400;
                     message = "El cargo especificado no existe.";
                     break;
-                case "USER_EXISTS":
+                case "DOCUMENTO_EXISTS":
                     statusCode = 400;
-                    message = "El usuario con este documento o correo ya existe.";
+                    message = "El número de documento ya está registrado.";
+                    break;
+                case "EMAIL_EXISTS":
+                    statusCode = 400;
+                    message = "El correo electrónico ya está registrado.";
+                    break;
+                case "USUARIO_EXISTS":
+                    statusCode = 400;
+                    message = "El nombre de usuario ya está en uso.";
                     break;
             }
-
+    
             res.status(statusCode).json({
                 success: false,
                 message: message,
@@ -61,24 +73,27 @@ const usuarioController = {
         }
     },
 
-
-    //ELIMINAR USAURIO
-    deleteUser: async (req, res) =>{
+    // Eliminar un usuario
+    deleteUser: async (req, res) => {
         try {
-            const {id_usuario} = req.params; //Extraer el  ID desde la url
-            const resultado = await usuarioService.deleteUser(id_usuario); //llamado servicio
+            // Extraer el ID del usuario desde la URL
+            const { id_usuario } = req.params;
 
+            // Llamar al servicio para eliminar el usuario
+            const resultado = await usuarioService.deleteUser(id_usuario);
+
+            // Verificar si el usuario fue eliminado correctamente
             if (!resultado) {
                 return res.status(404).json({ error: "Usuario no encontrado" });
             }
 
+            // Enviar una respuesta exitosa al frontend
             res.json({ message: "✅ Usuario eliminado correctamente" });
-
         } catch (error) {
-            console.error("❌Error en deleteUser:", error);
-            res.status(500).json({ error: "❌Error al eliminar el usuario" }); // Manejo de errores
+            console.error("❌ Error en deleteUser (Controller):", error);
+            res.status(500).json({ error: "❌ Error al eliminar el usuario" }); // Manejo de errores
         }
     }
 };
 
-module.exports = usuarioController;
+module.exports = usuarioController; // Exportar el controlador

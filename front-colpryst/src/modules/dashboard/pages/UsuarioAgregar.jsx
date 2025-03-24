@@ -8,14 +8,14 @@ const AgregarUsuarioPage = () => {
     tipo_documento: '',
     numero_documento: '',
     nombre_empleado: '',
-    direccion: '',
-    telefono: '',
+    direccion_empelado: '', // Cambiado a direccion_empelado
+    telefono_empleado: '', // Cambiado a telefono_empleado
     email_empleado: '',
-    eps: '',
-    usuario: '',
-    contrasena: '',
+    eps_empleado: '', // Cambiado a eps_empleado
+    usuarioadmin: '', // Cambiado a usuarioadmin
+    contrasenia: '', // Cambiado a contrasenia
     id_cargo: '',
-    fotoBase64: '', //  imagen capturada
+    fotoBase64: '', // imagen capturada
   });
   const [mensaje, setMensaje] = useState('');
   const [mostrarCamara, setMostrarCamara] = useState(false);
@@ -38,9 +38,11 @@ const AgregarUsuarioPage = () => {
     setMostrarCamara(false);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Depuración: Verificar los datos antes de enviar
+    console.log("Datos del formulario:", formData);
 
     try {
       const response = await fetch(API_URL, {
@@ -59,26 +61,42 @@ const AgregarUsuarioPage = () => {
       // Si la respuesta es exitosa, mostrar el mensaje de éxito en la interfaz
       setMensaje(data.message);
 
+      // Limpiar el formulario después de un registro exitoso (opcional)
+      setFormData({
+        tipo_documento: '',
+        numero_documento: '',
+        nombre_empleado: '',
+        direccion_empelado: '',
+        telefono_empleado: '',
+        email_empleado: '',
+        eps_empleado: '',
+        usuarioadmin: '',
+        contrasenia: '',
+        id_cargo: '',
+        fotoBase64: '',
+      });
+
       // Redirigir a la lista de usuarios después de 1 segundo
       setTimeout(() => {
         navigate("/dashboard/users");
-      }, 1000);
+      }, 800);
     } catch (error) {
       console.error("❌ Error en agregarUsuario:", error);
 
       // Mostrar el mensaje de error como una alerta
       if (error.message.includes("CARGO_NOT_FOUND")) {
         window.alert("❌ Error: El cargo especificado no existe.");
-      } else if (error.message.includes("USER_EXISTS")) {
-        window.alert(
-          "❌ Error: El usuario con este documento o correo ya existe."
-        );
+      } else if (error.message.includes("DOCUMENTO_EXISTS")) {
+        window.alert("❌ Error: El número de documento ya está registrado.");
+      } else if (error.message.includes("EMAIL_EXISTS")) {
+        window.alert("❌ Error: El correo electrónico ya está registrado.");
+      } else if (error.message.includes("USUARIO_EXISTS")) {
+        window.alert("❌ Error: El nombre de usuario ya está en uso.");
       } else {
         window.alert(`❌ Error: ${error.message}`); // Mostrar el mensaje de error del backend
       }
     }
   };
-
 
   return (
     <div className="font-sans text-center m-5 ml-64">
@@ -139,14 +157,14 @@ const AgregarUsuarioPage = () => {
 
             {/* Dirección */}
             <div className="input-group">
-              <label htmlFor="direccion" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="direccion_empelado" className="block text-sm font-medium text-gray-700">
                 Dirección
               </label>
               <input
                 type="text"
-                id="direccion"
+                id="direccion_empelado"
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.direccion}
+                value={formData.direccion_empelado}
                 onChange={handleChange}
                 required
               />
@@ -154,14 +172,14 @@ const AgregarUsuarioPage = () => {
 
             {/* Teléfono */}
             <div className="input-group">
-              <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="telefono_empleado" className="block text-sm font-medium text-gray-700">
                 Teléfono
               </label>
               <input
                 type="text"
-                id="telefono"
+                id="telefono_empleado"
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.telefono}
+                value={formData.telefono_empleado}
                 onChange={handleChange}
                 required
               />
@@ -187,14 +205,14 @@ const AgregarUsuarioPage = () => {
 
             {/* EPS */}
             <div className="input-group">
-              <label htmlFor="eps" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="eps_empleado" className="block text-sm font-medium text-gray-700">
                 EPS
               </label>
               <input
                 type="text"
-                id="eps"
+                id="eps_empleado"
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.eps}
+                value={formData.eps_empleado}
                 onChange={handleChange}
                 required
               />
@@ -202,14 +220,14 @@ const AgregarUsuarioPage = () => {
 
             {/* Usuario */}
             <div className="input-group">
-              <label htmlFor="usuario" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="usuarioadmin" className="block text-sm font-medium text-gray-700">
                 Usuario
               </label>
               <input
                 type="text"
-                id="usuario"
+                id="usuarioadmin"
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.usuario}
+                value={formData.usuarioadmin}
                 onChange={handleChange}
                 required
               />
@@ -217,14 +235,14 @@ const AgregarUsuarioPage = () => {
 
             {/* Contraseña */}
             <div className="input-group">
-              <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="contrasenia" className="block text-sm font-medium text-gray-700">
                 Contraseña
               </label>
               <input
                 type="password"
-                id="contrasena"
+                id="contrasenia"
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.contrasena}
+                value={formData.contrasenia}
                 onChange={handleChange}
                 required
               />

@@ -10,11 +10,22 @@ const usuarioService = {
         try {
             //console.log("Ejecutando consulta SQL:", query);
             const [results] = await db.promise().query(query);
-            //console.log("Resultados de la consulta:", results);
+            console.log("Resultados de la consulta:", results);
 
             const usuarios = results.map(row => 
-                new Usuario(row.id_usuario, row.tipo_documento, row.numero_documento, row.nombre_empleado, 
-                    row.email_empleado, row.contrasena, row.id_cargo)
+                new Usuario(
+                    row.id_usuario,
+                    row.tipo_documento,
+                    row.numero_documento,
+                    row.nombre_empleado,
+                    row.direccion_empelado,
+                    row.telefono_empleado,
+                    row.email_empleado,
+                    row.eps_empleado,
+                    row.usuarioadmin,
+                    row.contrasenia,
+                    row.id_cargo
+                )
             );
 
             return usuarios;
@@ -24,41 +35,65 @@ const usuarioService = {
         }
     },
 
-    // Nuevo usuario 
+    // Nuevo usuario
     createUser: async (usuarioData) => {
         try {
-            // Verificar si el usuario ya existe
-            const checkQuery = 'SELECT id_usuario FROM usuario WHERE numero_documento = ? OR email_empleado = ?';
-            const [existingUser] = await db.promise().query(checkQuery, [usuarioData.numero_documento, usuarioData.email_empleado]);
+            console.log("Datos recibidos en el servicio:", usuarioData); // Depuración
     
-            if (existingUser.length > 0) {
-                throw new Error("USER_EXISTS"); // Error técnico
+            // Verificar si el número de documento ya existe
+            const checkDocumentoQuery = 'SELECT id_usuario FROM usuario WHERE numero_documento = ?';
+            const [existingDocumento] = await db.promise().query(checkDocumentoQuery, [usuarioData.numero_documento]);
+    
+            if (existingDocumento.length > 0) {
+                throw new Error("DOCUMENTO_EXISTS"); // Error técnico
+            }
+    
+            // Verificar si el correo electrónico ya existe
+            const checkEmailQuery = 'SELECT id_usuario FROM usuario WHERE email_empleado = ?';
+            const [existingEmail] = await db.promise().query(checkEmailQuery, [usuarioData.email_empleado]);
+    
+            if (existingEmail.length > 0) {
+                throw new Error("EMAIL_EXISTS"); // Error técnico
+            }
+    
+            // Verificar si el nombre de usuario ya existe (si se proporciona)
+            if (usuarioData.usuarioadmin) {
+                const checkUsuarioQuery = 'SELECT id_usuario FROM usuario WHERE usuarioadmin = ?';
+                const [existingUsuario] = await db.promise().query(checkUsuarioQuery, [usuarioData.usuarioadmin]);
+    
+                if (existingUsuario.length > 0) {
+                    throw new Error("USUARIO_EXISTS"); // Error técnico
+                }
             }
     
             // Hashear la contraseña
-            const hashedPassword = await bcrypt.hash(usuarioData.contrasena, 10);
+            const hashedPassword = await bcrypt.hash(usuarioData.contrasenia, 10);
     
             // Insertar usuario
             const insertQuery = `INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, 
-            email_empleado, contrasena, id_cargo) VALUES (?, ?, ?, ?, ?, ?)`;
+            direccion_empelado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     
             const [result] = await db.promise().query(insertQuery, [
                 usuarioData.tipo_documento,
                 usuarioData.numero_documento,
                 usuarioData.nombre_empleado,
+                usuarioData.direccion_empelado,
+                usuarioData.telefono_empleado,
                 usuarioData.email_empleado,
+                usuarioData.eps_empleado,
+                usuarioData.usuarioadmin,
                 hashedPassword,
                 usuarioData.id_cargo
             ]);
     
-            // Obtener el ID recién generado
-            const idUsuarioGenerado = result.insertId;
+            console.log("Usuario insertado correctamente. ID generado:", result.insertId); // Depuración
     
             // Crear registro de reconocimiento facial
-            await reconocimientoService.createReconocimiento(idUsuarioGenerado, null); // null imagen (segundo parámetro)
+            await reconocimientoService.createReconocimiento(result.insertId, null); // null imagen (segundo parámetro)
     
             // Devolver solo el ID generado
-            return idUsuarioGenerado;
+            return result.insertId;
         } catch (err) {
             console.error("❌ Error en createUser (Service):", err);
             throw err; // Lanzar el error técnico sin modificar

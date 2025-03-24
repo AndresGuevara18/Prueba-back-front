@@ -45,8 +45,8 @@ const cargoController = {
 
             res.status(201).json({
                 message: "✅ Cargo agregado correctamente",
-                cargo: cargoCreado, // Enviamos el nuevo cargo creado
-                redirect: "/cargo.html" // URL a la que se redirigirá el usuario
+                cargo: cargoCreado // Enviamos el nuevo cargo creado
+                //redirect: "/cargo.html" // URL a la que se redirigirá el usuario
             });
         } catch (error) {
             res.status(500).json({ error: "Error al crear el cargo" }); // Manejo de errores

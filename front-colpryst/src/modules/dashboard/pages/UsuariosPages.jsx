@@ -4,30 +4,52 @@ import API_BASE_URL from '../../../config/ConfigURL';
 
 const UsuariosPage = () => {
   const [usuarios, setUsuarios] = useState([]);
+  const [cargos, setCargos] = useState([]); // Estado para almacenar los cargos
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
   const navigate = useNavigate();
 
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/usuarios`;
+  const API_CARGOS = `${API_BASE_URL}/api/cargos`;
 
-  // Obtener usuarios desde el backend
+  // Obtener usuarios y cargos desde el backend
   useEffect(() => {
-    const fetchUsuarios = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(API_URL);
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        // Obtener usuarios
+        const usuariosResponse = await fetch(API_URL);
+        if (!usuariosResponse.ok) {
+          throw new Error(`Error ${usuariosResponse.status}: ${usuariosResponse.statusText}`);
         }
-        const data = await response.json();
-        setUsuarios(data);
+        const usuariosData = await usuariosResponse.json();
+
+        // Obtener cargos
+        const cargosResponse = await fetch(API_CARGOS);
+        if (!cargosResponse.ok) {
+          throw new Error(`Error ${cargosResponse.status}: ${cargosResponse.statusText}`);
+        }
+        const cargosData = await cargosResponse.json();
+
+        // Combinar usuarios con sus cargos
+        const usuariosConCargos = usuariosData.map((usuario) => {
+          const cargo = cargosData.find((c) => c.id_cargo === usuario.id_cargo);
+          return {
+            ...usuario,
+            nombre_cargo: cargo ? cargo.nombre_cargo : 'Sin cargo',
+          };
+        });
+
+        setUsuarios(usuariosConCargos);
+        setCargos(cargosData);
       } catch (error) {
-        console.error('❌ Error fetching usuarios:', error);
+        console.error('❌ Error fetching data:', error);
         setError(error.message);
       }
     };
 
-    fetchUsuarios();
-  }, [API_URL]);
+    fetchData();
+  }, [API_URL, API_CARGOS]);
 
   // 🔹 Función para eliminar un usuario
   const handleDelete = async (id) => {
@@ -43,6 +65,21 @@ const UsuariosPage = () => {
       alert('❌ No se pudo eliminar el usuario.');
     }
   };
+
+  // 🔹 Función para buscar usuarios
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // 🔹 Filtrar usuarios según el término de búsqueda
+  const filteredUsuarios = usuarios.filter((usuario) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      usuario.nombre_empleado.toLowerCase().includes(searchLower) ||
+      usuario.numero_documento.toLowerCase().includes(searchLower) ||
+      usuario.email_empleado.toLowerCase().includes(searchLower)
+    );
+  });
 
   // 🔹 Manejo de errores
   if (error) {
@@ -63,17 +100,14 @@ const UsuariosPage = () => {
           ➕ Agregar Usuario
         </button>
 
-        {/* Botón para buscar (sin funcionalidad por ahora) */}
+        {/* Campo de búsqueda */}
         <input
           type="text"
           placeholder="Buscar usuario..."
           className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={searchTerm}
+          onChange={handleSearch}
         />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          🔍 Buscar
-        </button>
 
         {/* Botón para ir a CargoPage */}
         <button
@@ -93,13 +127,16 @@ const UsuariosPage = () => {
               <th className="p-2 border border-black">Tipo Documento</th>
               <th className="p-2 border border-black">Número Documento</th>
               <th className="p-2 border border-black">Nombre</th>
+              <th className="p-2 border border-black">Dirección</th>
+              <th className="p-2 border border-black">Teléfono</th>
               <th className="p-2 border border-black">Email</th>
+              <th className="p-2 border border-black">EPS</th>
               <th className="p-2 border border-black">Cargo</th>
               <th className="p-2 border border-black">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((usuario, index) => (
+            {filteredUsuarios.map((usuario, index) => (
               <tr
                 key={usuario.id_usuario}
                 className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b`}
@@ -108,8 +145,11 @@ const UsuariosPage = () => {
                 <td className="p-2 border border-black">{usuario.tipo_documento}</td>
                 <td className="p-2 border border-black">{usuario.numero_documento}</td>
                 <td className="p-2 border border-black">{usuario.nombre_empleado}</td>
+                <td className="p-2 border border-black">{usuario.direccion_empelado}</td>
+                <td className="p-2 border border-black">{usuario.telefono_empleado}</td>
                 <td className="p-2 border border-black">{usuario.email_empleado}</td>
-                <td className="p-2 border border-black">{usuario.id_cargo}</td>
+                <td className="p-2 border border-black">{usuario.eps_empleado}</td>
+                <td className="p-2 border border-black">{usuario.nombre_cargo}</td>
                 <td className="p-2 border border-black">
                   <button
                     className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
