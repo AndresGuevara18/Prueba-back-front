@@ -1,0 +1,140 @@
+const express = require('express'); // Importa Express
+const horarioController = require('../controllers/horarioController'); // Importa el controlador de Horario
+
+const router = express.Router(); // Crea un enrutador con Express.Router()
+
+/**
+ * @swagger
+ * tags:
+ *   name: Horarios
+ *   description: Endpoints para gestionar los horarios por cargo
+ */
+
+/**
+ * @swagger
+ * /api/horarios:
+ *   post:
+ *     summary: Crea un nuevo horario
+ *     tags: [Horarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cargo_id:
+ *                 type: integer
+ *                 example: 1
+ *               hora_entrada:
+ *                 type: string
+ *                 example: "08:00:00"
+ *               hora_salida:
+ *                 type: string
+ *                 example: "17:00:00"
+ *               dias_semana:
+ *                 type: string
+ *                 example: "1,2,3,4,5"
+ *     responses:
+ *       201:
+ *         description: Horario creado correctamente
+ */
+router.post('/', horarioController.crearHorario);
+
+/**
+ * @swagger
+ * /api/horarios/cargo/{cargo_id}:
+ *   get:
+ *     summary: Obtiene todos los horarios de un cargo específico
+ *     tags: [Horarios]
+ *     parameters:
+ *       - in: path
+ *         name: cargo_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Lista de horarios por cargo obtenida correctamente
+ */
+router.get('/cargo/:cargo_id', horarioController.obtenerHorariosPorCargo);
+
+/**
+ * @swagger
+ * /api/horarios/{id}:
+ *   get:
+ *     summary: Obtiene un horario por su ID
+ *     tags: [Horarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Información del horario obtenida correctamente
+ */
+router.get('/:id', horarioController.obtenerHorarioPorId);
+
+/**
+ * @swagger
+ * /api/horarios/{id}:
+ *   put:
+ *     summary: Actualiza un horario existente
+ *     tags: [Horarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cargo_id:
+ *                 type: integer
+ *                 example: 1
+ *               hora_entrada:
+ *                 type: string
+ *                 example: "09:00:00"
+ *               hora_salida:
+ *                 type: string
+ *                 example: "18:00:00"
+ *               dias_semana:
+ *                 type: string
+ *                 example: "1,2,3,4,5"
+ *     responses:
+ *       200:
+ *         description: Horario actualizado correctamente
+ */
+router.put('/:id', horarioController.actualizarHorario);
+
+/**
+ * @swagger
+ * /api/horarios/{id}:
+ *   delete:
+ *     summary: Elimina un horario por su ID
+ *     tags: [Horarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Horario eliminado correctamente
+ */
+router.delete('/:id', horarioController.eliminarHorario);
+
+// Exporta el enrutador para ser usado en otros archivos
+module.exports = router;
