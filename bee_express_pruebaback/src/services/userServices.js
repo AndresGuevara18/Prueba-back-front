@@ -102,13 +102,15 @@ const usuarioService = {
 
     // ELIMINAR USUARIO
     deleteUser: async (id_usuario) => {
-        const query = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
+        const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
+        const queryUser = 'DELETE FROM usuario WHERE id_usuario = ?';
+
         try {
             // Eliminar reconocimiento facial
-            await db.promise().query(query, [id_usuario]);
+            await db.promise().query(queryReco, [id_usuario]);
 
             // Eliminar el usuario
-            const [result] = await db.promise().query('DELETE FROM usuario WHERE id_usuario = ?', [id_usuario]);
+            const [result] = await db.promise().query(queryUser, [id_usuario]);
 
             if (result.affectedRows === 0) {
                 throw new Error("⚠️ No se encontró el usuario para eliminar.");
