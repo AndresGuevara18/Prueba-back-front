@@ -13,18 +13,19 @@ const CargoPage = () => {
   const API_URL = `${API_BASE_URL}/api/cargos`;
 
   // Cargar todos los cargos al iniciar
-  useEffect(() => {
-    const cargarTodosLosCargos = async () => {
-      try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Error al obtener los cargos");
-        const data = await response.json();
-        setCargos(data);
-      } catch (error) {
-        console.error("Error cargando cargos:", error);
-      }
-    };
+  const cargarTodosLosCargos = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error("Error al obtener los cargos");
+      const data = await response.json();
+      setCargos(data);
+    } catch (error) {
+      console.error("Error cargando cargos:", error);
+    }
+  };
 
+  // Ejecutar al montar el componente
+  useEffect(() => {
     cargarTodosLosCargos();
   }, []);
 
@@ -70,8 +71,7 @@ const CargoPage = () => {
       alert(data.message || "✅ Cargo eliminado correctamente.");
 
       // Recargar la lista de cargos
-      const updatedCargos = cargos.filter((cargo) => cargo.id_cargo !== id);
-      setCargos(updatedCargos);
+      await cargarTodosLosCargos(); // Recargar la lista después de eliminar
     } catch (error) {
       console.error("Error eliminando cargo:", error);
       alert(error.message); // Mostrar el mensaje de error
@@ -85,10 +85,7 @@ const CargoPage = () => {
       if (!cargo) throw new Error("Cargo no encontrado");
 
       const nuevoNombre = prompt("Nuevo nombre del cargo:", cargo.nombre_cargo);
-      const nuevaDescripcion = prompt(
-        "Nueva descripción del cargo:",
-        cargo.descripcion || ""
-      );
+      const nuevaDescripcion = prompt("Nueva descripción del cargo:", cargo.descripcion || "");
 
       if (!nuevoNombre || !nuevaDescripcion) {
         alert("⚠️ Debes ingresar todos los datos.");
@@ -107,17 +104,7 @@ const CargoPage = () => {
       if (!response.ok) throw new Error("Error al actualizar el cargo");
 
       alert("✅ Cargo actualizado correctamente.");
-      // Actualizar la lista de cargos
-      const updatedCargos = cargos.map((cargo) =>
-        cargo.id_cargo === id
-          ? {
-              ...cargo,
-              nombre_cargo: nuevoNombre,
-              descripcion: nuevaDescripcion,
-            }
-          : cargo
-      );
-      setCargos(updatedCargos);
+      cargarTodosLosCargos(); // Recargar la lista actualizada
     } catch (error) {
       console.error("Error editando cargo:", error);
       alert("❌ " + error.message);

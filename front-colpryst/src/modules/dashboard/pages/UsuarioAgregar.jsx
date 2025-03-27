@@ -3,19 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
 //import Camara from '../components/Camara'; // Importar el componente de la cámara
 
+//estado inicial
 const AgregarUsuarioPage = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ //form guarda valores formulario
     tipo_documento: '',
     numero_documento: '',
     nombre_empleado: '',
-    direccion_empelado: '', // Cambiado a direccion_empelado
-    telefono_empleado: '', // Cambiado a telefono_empleado
+    direccion_empelado: '', 
+    telefono_empleado: '', 
     email_empleado: '',
-    eps_empleado: '', // Cambiado a eps_empleado
-    usuarioadmin: '', // Cambiado a usuarioadmin
-    contrasenia: '', // Cambiado a contrasenia
+    eps_empleado: '', 
+    usuarioadmin: '', 
+    contrasenia: '', 
     id_cargo: '',
-    fotoBase64: '', // imagen capturada
+    fotoBase64: '', 
   });
   const [mensaje, setMensaje] = useState('');
   const [mostrarCamara, setMostrarCamara] = useState(false);
@@ -25,9 +26,9 @@ const AgregarUsuarioPage = () => {
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/usuarios`;
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+  const handleChange = (e) => {//evento el formulario
+    const { id, value } = e.target;//obtener id, value contenido ingresado
+    setFormData({ ...formData, [id]: value });//actualizar el estado form data
   };
 
   const handleAbrirCamara = () => {
@@ -38,21 +39,25 @@ const AgregarUsuarioPage = () => {
     setMostrarCamara(false);
   };
 
+
+  //enviar el formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Depuración: Verificar los datos antes de enviar
+    // Verificar los datos antes de enviar
     console.log("Datos del formulario:", formData);
 
+    //peticion post
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_URL, {//solicitud por fetch
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" }, //tipo de contenido
+        body: JSON.stringify(formData), //formData a JSON
       });
 
       const data = await response.json(); // Parsear la respuesta JSON
 
+      //error
       if (!response.ok) {
         // Si la respuesta no es exitosa, lanzar un error con el mensaje del backend
         throw new Error(data.message || "Error al agregar el usuario");
@@ -61,7 +66,7 @@ const AgregarUsuarioPage = () => {
       // Si la respuesta es exitosa, mostrar el mensaje de éxito en la interfaz
       setMensaje(data.message);
 
-      // Limpiar el formulario después de un registro exitoso (opcional)
+      // Limpiar el formulario
       setFormData({
         tipo_documento: '',
         numero_documento: '',

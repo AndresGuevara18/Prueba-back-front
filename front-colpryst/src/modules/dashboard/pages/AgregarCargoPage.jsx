@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
 
 const AgregarCargoPage = () => {
-  const [nombreCargo, setNombreCargo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [mensaje, setMensaje] = useState('');
+    //Almacena el valor
+    const [nombreCargo, setNombreCargo] = useState('');//nombre
+    const [descripcion, setDescripcion] = useState('');//descripcion
+    const [mensaje, setMensaje] = useState('');//mensajes de exito o error
   const navigate = useNavigate();
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/cargos`;
@@ -18,19 +19,21 @@ const AgregarCargoPage = () => {
         return;
       }
 
-      // Hacer la petición POST al backend
+      // petición POST al backend
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre_cargo: nombreCargo, descripcion }),
       });
 
+
+      //error
       if (!response.ok) throw new Error('Error al agregar el cargo');
 
-      const data = await response.json();
-      setMensaje(data.message);
+      const data = await response.json();//parsear respuesta a JSON
+      setMensaje(data.message);//respuesta exitosa
 
-      // Limpiar el formulario
+      // Limpiar
       setNombreCargo('');
       setDescripcion('');
 
