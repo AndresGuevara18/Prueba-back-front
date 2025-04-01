@@ -90,11 +90,35 @@ const eliminarUsuario = async (id) => {
   return (
     <div className="font-sans text-center m-5 ml-46">
       <h1 className="text-3xl font-bold mb-4">Lista de Usuarios</h1>
+
       <div className="flex justify-center space-x-4 mb-4">
-        <button onClick={() => navigate('/dashboard/agregar-users')} className="bg-green-500 text-white px-4 py-2 rounded">➕ Agregar Usuario</button>
-        <input type="text" placeholder="Buscar usuario..." className="p-2 border border-gray-300 rounded" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-        <button onClick={() => navigate('/dashboard/cargos')} className="bg-blue-500 text-white px-4 py-2 rounded">📌 Ver Cargos</button>
+        {/* Botón para agregar usuario */}
+        <button onClick={() => navigate('/dashboard/agregar-users')} 
+          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >➕ Agregar Usuario
+        </button>
+
+        {/* Buscar usuarii */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar usuario..."
+            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            🔍 Buscar
+          </button>
+        </div>
+        
+        <button onClick={() => navigate('/dashboard/cargos')} 
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"    
+        >
+          📌 Ver Cargos</button>
       </div>
+
+
       <div className="table-container overflow-x-auto">
         <table className="w-full bg-white shadow-lg">
           <thead>

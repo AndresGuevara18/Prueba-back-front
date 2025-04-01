@@ -24,6 +24,32 @@ router.get('/', usuarioController.getAllUsers);
 
 /**
  * @swagger
+ * /api/usuarios/{numero_documento}:
+ *   get:
+ *     summary: Obtiene la información de un usuario por su número de documento
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: numero_documento
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "12345678"
+ *     responses:
+ *       200:
+ *         description: Información del usuario obtenida correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/:numero_documento', usuarioController.getUserByDocument);
+
+
+
+
+/**
+ * @swagger
  * /api/usuarios:
  *   post:
  *     summary: Crea un nuevo usuario

@@ -21,7 +21,6 @@ const cargoService = {
     
         try {
             const [cargoResults] = await db.promise().query(queryCargo, [id_cargo]); 
-    
             if (cargoResults.length === 0) return null; // Si no existe el cargo, retorna null
     
             const [countResults] = await db.promise().query(queryUserCount, [id_cargo]); 

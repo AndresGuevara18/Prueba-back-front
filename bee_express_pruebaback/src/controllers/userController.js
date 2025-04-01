@@ -16,6 +16,23 @@ const usuarioController = {
         }
     },
 
+    //obtener usuario mediante documento
+    getUserByDocument: async (req, res) =>{
+        try {
+            const {numero_documento} = req.params; // ID de los parámetros de la URL
+            const user = await usuarioService.getCargoByDocument(numero_documento);//llamado al servicio
+
+            if (!user){
+                return res.status(404).json({ error: "Usuario no encontrado" }); // Si no se encuentra
+            }
+
+            res.json(user);//se envia en formato json
+            
+        } catch (error) {
+            res.status(500).json({ error: "Error al buscar el usuario en el controlador" });
+        }
+    },
+
     // Nuevo usuario
     createUser: async (req, res) => {
         try {

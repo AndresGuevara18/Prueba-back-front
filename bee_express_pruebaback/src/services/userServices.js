@@ -10,28 +10,60 @@ const usuarioService = {
         try {
             //console.log("Ejecutando consulta SQL:", query);
             const [results] = await db.promise().query(query);
-            console.log("Resultados de la consulta:", results);
+            //console.log("Resultados de la consulta:", results);
 
             const usuarios = results.map(row => 
-                new Usuario(
-                    row.id_usuario,
-                    row.tipo_documento,
-                    row.numero_documento,
-                    row.nombre_empleado,
-                    row.direccion_empelado,
-                    row.telefono_empleado,
-                    row.email_empleado,
-                    row.eps_empleado,
-                    row.usuarioadmin,
-                    row.contrasenia,
-                    row.id_cargo
-                )
+                new Usuario( row.id_usuario, row.tipo_documento, row.numero_documento, row.nombre_empleado, 
+                    row.direccion_empelado, row.telefono_empleado, row.email_empleado, row.eps_empleado, 
+                    row.usuarioadmin, row.contrasenia, row.id_cargo)
             );
 
             return usuarios;
         } catch (err) {
             console.error("❌ Error en getAllUsers (Service):", err);
             throw new Error("Error al obtener los usuarios.");
+        }
+    },
+
+    // Obtener usuario mediante documento, incluyendo el nombre del cargo
+    getCargoByDocument: async (numero_documento) => {
+        const queryUser = 'SELECT * FROM usuario WHERE numero_documento = ?';
+        const queryCargo = `
+            SELECT c.nombre_cargo AS cargo_user
+            FROM usuario u 
+            INNER JOIN cargo c ON u.id_cargo = c.id_cargo 
+            WHERE u.numero_documento = ?;
+        `;
+
+        try {
+            // Ejecutar consulta de usuario
+            const [userResult] = await db.promise().execute(queryUser, [numero_documento]);
+
+            if (userResult.length === 0) return null; // Si el usuario no existe
+
+            // Ejecutar consulta de cargo
+            const [cargoResult] = await db.promise().execute(queryCargo, [numero_documento]);
+
+            // Verificar si se encontró un cargo
+            const cargoUser = cargoResult.length > 0 ? cargoResult[0].cargo_user : null;
+
+            console.log("Resultados de la consulta nombre cargo:", cargoUser);
+
+            return {
+                id_usuario: userResult[0].id_usuario,
+                tipo_documento: userResult[0].tipo_documento,
+                numero_documento: userResult[0].numero_documento,
+                nombre_empleado: userResult[0].nombre_empleado,
+                direccion_empelado: userResult[0].direccion_empelado,
+                telefono_empleado: userResult[0].telefono_empleado,
+                email_empleado: userResult[0].email_empleado,
+                eps_empleado: userResult[0].eps_empleado,
+                usuarioadmin: userResult[0].usuarioadmin,
+                cargo_user: cargoUser 
+            };
+
+        } catch (err) {
+            throw err;
         }
     },
 
