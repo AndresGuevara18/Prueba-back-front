@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../../../config/ConfigURL'; 
-//import Camara from '../components/Camara'; // Importar el componente de la cámara
+import API_BASE_URL from '../../../config/ConfigURL';
+import Camara from '../components/Camara';
 
-//estado inicial
 const AgregarUsuarioPage = () => {
-  const [formData, setFormData] = useState({ //form guarda valores formulario
+  const [formData, setFormData] = useState({
     tipo_documento: '',
     numero_documento: '',
     nombre_empleado: '',
@@ -16,57 +15,84 @@ const AgregarUsuarioPage = () => {
     usuarioadmin: '', 
     contrasenia: '', 
     id_cargo: '',
-    fotoBase64: '', 
+    fotoBlob: null,  // Cambiado de fotoBase64 a fotoBlob
   });
   const [mensaje, setMensaje] = useState('');
   const [mostrarCamara, setMostrarCamara] = useState(false);
-
+  const [fotoPreview, setFotoPreview] = useState(null);
   const navigate = useNavigate();
 
-  // URL del backend
   const API_URL = `${API_BASE_URL}/api/usuarios`;
 
-  const handleChange = (e) => {//evento el formulario
-    const { id, value } = e.target;//obtener id, value contenido ingresado
-    setFormData({ ...formData, [id]: value });//actualizar el estado form data
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
   };
 
   const handleAbrirCamara = () => {
+    console.log("🔘 Botón 'Abrir Cámara' clickeado");
     setMostrarCamara(true);
   };
 
   const handleCerrarCamara = () => {
+    console.log("🔘 Botón 'Cerrar Cámara' clickeado");
+    setMostrarCamara(false);
+
+    setTimeout(() => {
+      setMostrarCamara(false);
+    }, 100);
+
+  };
+
+  const handleFotoCapturada = (blob) => {
+    console.log("📸 Foto capturada (Blob):", blob);
+    
+    // Crear URL para la vista previa
+    const previewUrl = URL.createObjectURL(blob);
+    setFotoPreview(previewUrl);
+    
+    // Guardar el Blob directamente en el estado
+    setFormData({
+      ...formData,
+      fotoBlob: blob
+    });
+    
     setMostrarCamara(false);
   };
 
-
-  //enviar el formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verificar los datos antes de enviar
-    console.log("Datos del formulario:", formData);
+    if (!formData.fotoBlob) {
+      alert("Por favor capture una foto antes de registrar");
+      return;
+    }
 
-    //peticion post
+    // Crear FormData para enviar el Blob
+    const formDataToSend = new FormData();
+    for (const key in formData) {
+      if (key === 'fotoBlob') {
+        formDataToSend.append('foto', formData.fotoBlob, 'foto_usuario.jpg');
+      } else {
+        formDataToSend.append(key, formData[key]);
+      }
+    }
+
+    console.log("📋 Datos del formulario a enviar:", Object.fromEntries(formDataToSend));
+
     try {
-      const response = await fetch(API_URL, {//solicitud por fetch
+      const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" }, //tipo de contenido
-        body: JSON.stringify(formData), //formData a JSON
+        body: formDataToSend,  // No necesitamos headers para FormData
       });
 
-      const data = await response.json(); // Parsear la respuesta JSON
+      const data = await response.json();
 
-      //error
       if (!response.ok) {
-        // Si la respuesta no es exitosa, lanzar un error con el mensaje del backend
         throw new Error(data.message || "Error al agregar el usuario");
       }
 
-      // Si la respuesta es exitosa, mostrar el mensaje de éxito en la interfaz
       setMensaje(data.message);
-
-      // Limpiar el formulario
       setFormData({
         tipo_documento: '',
         numero_documento: '',
@@ -78,17 +104,15 @@ const AgregarUsuarioPage = () => {
         usuarioadmin: '',
         contrasenia: '',
         id_cargo: '',
-        fotoBase64: '',
+        fotoBlob: null,
       });
+      setFotoPreview(null);
 
-      // Redirigir a la lista de usuarios después de 1 segundo
       setTimeout(() => {
         navigate("/dashboard/users");
       }, 800);
     } catch (error) {
       console.error("❌ Error en agregarUsuario:", error);
-
-      // Mostrar el mensaje de error como una alerta
       if (error.message.includes("CARGO_NOT_FOUND")) {
         window.alert("❌ Error: El cargo especificado no existe.");
       } else if (error.message.includes("DOCUMENTO_EXISTS")) {
@@ -98,7 +122,7 @@ const AgregarUsuarioPage = () => {
       } else if (error.message.includes("USUARIO_EXISTS")) {
         window.alert("❌ Error: El nombre de usuario ya está en uso.");
       } else {
-        window.alert(`❌ Error: ${error.message}`); // Mostrar el mensaje de error del backend
+        window.alert(`❌ Error: ${error.message}`);
       }
     }
   };
@@ -270,26 +294,50 @@ const AgregarUsuarioPage = () => {
           </div>
         </div>
 
-        {/* Botón para abrir cámara */}
-        <div className="flex justify-center mt-6">
-          {!mostrarCamara && (
+        {/* Botón para abrir cámara y vista previa */}
+        <div className="flex flex-col items-center mt-6">
+          {!mostrarCamara && !fotoPreview && (
             <button
               type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
               onClick={handleAbrirCamara}
             >
               Abrir Cámara
             </button>
           )}
+
+          {/* Vista previa de la foto capturada */}
+          {fotoPreview && (
+            <div className="mb-4 text-center">
+              <h3 className="text-lg font-medium mb-2">Vista previa:</h3>
+              <img 
+                src={fotoPreview} 
+                alt="Foto capturada" 
+                className="max-w-xs mx-auto rounded-lg border border-gray-300"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setFotoPreview(null);
+                  setFormData({...formData, fotoBlob: null});
+                  console.log("🔄 Foto descartada");
+                }}
+                className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              >
+                Eliminar Foto
+              </button>
+            </div>
+          )}
+
+          {/* Mostrar cámara si está activa */}
+          {mostrarCamara && (
+            <Camara
+              onClose={handleCerrarCamara}
+              onCapture={handleFotoCapturada}
+            />
+          )}
         </div>
 
-        {/* Mostrar cámara si está activa */}
-        {mostrarCamara && (
-          <Camara
-            onClose={handleCerrarCamara} // Pasamos la función de cierre
-          />
-        )}
-        
         {/* Botón Registrar */}
         <button type="submit" className="w-full bg-green-500 text-white px-4 py-2 rounded mt-6 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
           Registrar
