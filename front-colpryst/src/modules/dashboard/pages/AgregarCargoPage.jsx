@@ -54,6 +54,7 @@ const AgregarCargoPage = () => {
         <div className="mb-4">
           <input
             type="text"
+            id="nombreCargo"
             placeholder="Nombre del Cargo"
             value={nombreCargo}
             onChange={(e) => setNombreCargo(e.target.value)}
@@ -63,6 +64,7 @@ const AgregarCargoPage = () => {
         <div className="mb-4">
           <input
             type="text"
+            id="descripcionCargo"
             placeholder="Descripción"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
