@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL';
-import Camara from '../components/Camara';
+// import Camara from '../components/Camara'; // Import listo para descomentar
 
 const AgregarUsuarioPage = () => {
   const [formData, setFormData] = useState({
@@ -15,11 +15,11 @@ const AgregarUsuarioPage = () => {
     usuarioadmin: '', 
     contrasenia: '', 
     id_cargo: '',
-    fotoBlob: null,  // Cambiado de fotoBase64 a fotoBlob
+    fotoBlob: null // Campo mantenido pero inactivo
   });
   const [mensaje, setMensaje] = useState('');
-  const [mostrarCamara, setMostrarCamara] = useState(false);
-  const [fotoPreview, setFotoPreview] = useState(null);
+  // const [mostrarCamara, setMostrarCamara] = useState(false); // Listo para reactivar
+  // const [fotoPreview, setFotoPreview] = useState(null); // Listo para reactivar
   const navigate = useNavigate();
 
   const API_URL = `${API_BASE_URL}/api/usuarios`;
@@ -29,70 +29,33 @@ const AgregarUsuarioPage = () => {
     setFormData({ ...formData, [id]: value });
   };
 
+  /* 
+  // Función lista para reactivar
   const handleAbrirCamara = () => {
-    console.log("🔘 Botón 'Abrir Cámara' clickeado");
-    setMostrarCamara(true);
+    alert("Función de cámara desactivada temporalmente");
+    // setMostrarCamara(true); // Descomentar cuando se necesite
   };
-
-  const handleCerrarCamara = () => {
-    console.log("🔘 Botón 'Cerrar Cámara' clickeado");
-    setMostrarCamara(false);
-
-    setTimeout(() => {
-      setMostrarCamara(false);
-    }, 100);
-
-  };
-
-  const handleFotoCapturada = (blob) => {
-    console.log("📸 Foto capturada (Blob):", blob);
-    
-    // Crear URL para la vista previa
-    const previewUrl = URL.createObjectURL(blob);
-    setFotoPreview(previewUrl);
-    
-    // Guardar el Blob directamente en el estado
-    setFormData({
-      ...formData,
-      fotoBlob: blob
-    });
-    
-    setMostrarCamara(false);
-  };
+  */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.fotoBlob) {
-      alert("Por favor capture una foto antes de registrar");
-      return;
-    }
-
-    // Crear FormData para enviar el Blob
-    const formDataToSend = new FormData();
-    for (const key in formData) {
-      if (key === 'fotoBlob') {
-        formDataToSend.append('foto', formData.fotoBlob, 'foto_usuario.jpg');
-      } else {
-        formDataToSend.append(key, formData[key]);
-      }
-    }
-
-    console.log("📋 Datos del formulario a enviar:", Object.fromEntries(formDataToSend));
-
     try {
       const response = await fetch(API_URL, {
         method: "POST",
-        body: formDataToSend,  // No necesitamos headers para FormData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          fotoBlob: null // Envía null como valor
+        })
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Error al agregar el usuario");
 
-      if (!response.ok) {
-        throw new Error(data.message || "Error al agregar el usuario");
-      }
-
-      setMensaje(data.message);
+      setMensaje("✅ Usuario registrado exitosamente");
       setFormData({
         tipo_documento: '',
         numero_documento: '',
@@ -104,26 +67,13 @@ const AgregarUsuarioPage = () => {
         usuarioadmin: '',
         contrasenia: '',
         id_cargo: '',
-        fotoBlob: null,
+        fotoBlob: null
       });
-      setFotoPreview(null);
 
-      setTimeout(() => {
-        navigate("/dashboard/users");
-      }, 800);
+      setTimeout(() => navigate("/dashboard/users"), 800);
     } catch (error) {
-      console.error("❌ Error en agregarUsuario:", error);
-      if (error.message.includes("CARGO_NOT_FOUND")) {
-        window.alert("❌ Error: El cargo especificado no existe.");
-      } else if (error.message.includes("DOCUMENTO_EXISTS")) {
-        window.alert("❌ Error: El número de documento ya está registrado.");
-      } else if (error.message.includes("EMAIL_EXISTS")) {
-        window.alert("❌ Error: El correo electrónico ya está registrado.");
-      } else if (error.message.includes("USUARIO_EXISTS")) {
-        window.alert("❌ Error: El nombre de usuario ya está en uso.");
-      } else {
-        window.alert(`❌ Error: ${error.message}`);
-      }
+      console.error("Error:", error);
+      setMensaje(`❌ Error: ${error.message}`);
     }
   };
 
@@ -294,48 +244,16 @@ const AgregarUsuarioPage = () => {
           </div>
         </div>
 
-        {/* Botón para abrir cámara y vista previa */}
+        {/* Botón de cámara visible pero inactivo */}
         <div className="flex flex-col items-center mt-6">
-          {!mostrarCamara && !fotoPreview && (
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-              onClick={handleAbrirCamara}
-            >
-              Abrir Cámara
-            </button>
-          )}
-
-          {/* Vista previa de la foto capturada */}
-          {fotoPreview && (
-            <div className="mb-4 text-center">
-              <h3 className="text-lg font-medium mb-2">Vista previa:</h3>
-              <img 
-                src={fotoPreview} 
-                alt="Foto capturada" 
-                className="max-w-xs mx-auto rounded-lg border border-gray-300"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setFotoPreview(null);
-                  setFormData({...formData, fotoBlob: null});
-                  console.log("🔄 Foto descartada");
-                }}
-                className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-              >
-                Eliminar Foto
-              </button>
-            </div>
-          )}
-
-          {/* Mostrar cámara si está activa */}
-          {mostrarCamara && (
-            <Camara
-              onClose={handleCerrarCamara}
-              onCapture={handleFotoCapturada}
-            />
-          )}
+          <button
+            type="button"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
+            style={{ pointerEvents: 'none', opacity: 0.7 }}
+            title="Función de cámara no habilitada"
+          >
+            Abrir Cámara
+          </button>
         </div>
 
         {/* Botón Registrar */}
