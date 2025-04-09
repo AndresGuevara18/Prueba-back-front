@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL';
-// import Camara from '../components/Camara'; // Import listo para descomentar
+import Camara from '../components/Camara'; 
 
 const AgregarUsuarioPage = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ const AgregarUsuarioPage = () => {
     fotoBlob: null // Campo mantenido pero inactivo
   });
   const [mensaje, setMensaje] = useState('');
-  // const [mostrarCamara, setMostrarCamara] = useState(false); // Listo para reactivar
+  const [mostrarCamara, setMostrarCamara] = useState(false);
   // const [fotoPreview, setFotoPreview] = useState(null); // Listo para reactivar
   const navigate = useNavigate();
 
@@ -29,13 +29,10 @@ const AgregarUsuarioPage = () => {
     setFormData({ ...formData, [id]: value });
   };
 
-  /* 
   // Función lista para reactivar
   const handleAbrirCamara = () => {
-    alert("Función de cámara desactivada temporalmente");
-    // setMostrarCamara(true); // Descomentar cuando se necesite
-  };
-  */
+    setMostrarCamara(true);
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -249,8 +246,7 @@ const AgregarUsuarioPage = () => {
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-            style={{ pointerEvents: 'none', opacity: 0.7 }}
-            title="Función de cámara no habilitada"
+            onClick={handleAbrirCamara}
           >
             Abrir Cámara
           </button>
@@ -266,8 +262,14 @@ const AgregarUsuarioPage = () => {
           <div className="mt-4 p-4 rounded bg-green-100 text-green-700">
             {mensaje}
           </div>
-        )}
+        )} 
       </form>
+
+      
+    {mostrarCamara && (
+      <Camara onClose={() => setMostrarCamara(false)} />
+    )}
+
     </div>
   );
 };

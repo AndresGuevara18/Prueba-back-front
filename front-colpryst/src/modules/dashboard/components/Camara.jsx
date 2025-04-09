@@ -1,135 +1,127 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const Camara = ({ onClose, onCapture }) => {
+/**
+ * Componente para mostrar y controlar la cámara web
+ * @param {Function} onClose - Función proporcionada por el padre para cerrar el modal
+ */
+const Camara = ({ onClose }) => {
+  // Referencia al elemento <video> del DOM
   const videoRef = useRef(null);
+  
+  // Estado para almacenar el stream de la cámara
   const [stream, setStream] = useState(null);
-  const [permisosConcedidos, setPermisosConcedidos] = useState(false);
-  const [mostrarControles, setMostrarControles] = useState(false);
 
-  // Función para ABRIR LA CÁMARA (similar a tu vanilla JS)
-  const iniciarCamara = async () => {
-    console.log("🔄 Intentando acceder a la cámara...");
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480, facingMode: 'user' },
-        audio: false
-      });
-
-      if (mediaStream) {
-        console.log("✅ Flujo de video recibido");
-        setStream(mediaStream);
-        videoRef.current.srcObject = mediaStream;
-
-        // Esperar a que el video esté listo (como en tu código vanilla)
-        videoRef.current.onloadedmetadata = () => {
-          console.log("🎥 Metadatos de video cargados");
-          videoRef.current.play();
-          setPermisosConcedidos(true);
-          setMostrarControles(true);
-          console.log("✅ Cámara activada correctamente");
-        };
-      } else {
-        console.error("⚠️ No se recibió flujo de video");
-        alert("No se pudo acceder a la cámara");
-        onClose();
-      }
-    } catch (error) {
-      console.error("❌ Error al acceder a la cámara:", error);
-      alert(`No se puede acceder a la cámara: ${error.message}`);
-      onClose();
-    }
-  };
-
-
-  // Función para CERRAR LA CÁMARA mejorada
+  /**
+   * Función para detener completamente la cámara
+   * 1. Detiene todas las pistas (tracks) del stream
+   * 2. Libera los recursos
+   * 3. Ejecuta la función onClose del padre
+   */
   const detenerCamara = () => {
-    console.log("⏹️ Iniciando proceso para detener cámara...");
-    
-    // Detener todas las pistas de video
+    // Verifica si existe un stream activo
     if (stream) {
-      console.log("🔍 Encontrado stream, deteniendo pistas...");
+      // Obtiene todas las pistas de video/audio
       const tracks = stream.getTracks();
-      tracks.forEach(track => {
-        console.log(`🛑 Deteniendo pista: ${track.kind} (${track.label})`);
-        track.stop();
-        track.enabled = false;
-      });
       
-      // Limpiar la referencia del stream
+      // Detiene cada pista individualmente
+      tracks.forEach(track => {
+        track.stop();  // Detiene la transmisión (apaga el LED físico en dispositivos que lo tienen)
+        console.log(`Pista ${track.kind} detenida`); // Log para depuración
+      });
+
+      // Limpia la referencia del elemento video
       if (videoRef.current) {
         videoRef.current.srcObject = null;
       }
-      
+
+      // Resetea el estado del stream
       setStream(null);
     }
-    
-    // Resetear estados
-    setPermisosConcedidos(false);
-    setMostrarControles(false);
-    
-    console.log("✅ Cámara detenida completamente");
-    onClose(); // Notificar al componente padre
+
+    // Cierra el modal llamando a la función del componente padre
+    onClose();
   };
 
-  // Efecto para iniciar/limpiar la cámara
+  /**
+   * Efecto para manejar el ciclo de vida de la cámara
+   * Se ejecuta al montar el componente
+   */
   useEffect(() => {
-    iniciarCamara();
-    
-    return () => {
-      console.log("🧹 Limpieza del componente");
-      if (stream) {
-        detenerCamara();
+    // Función asincrónica para iniciar la cámara
+    const iniciarCamara = async () => {
+      try {
+        // Solicita acceso a la cámara del usuario
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { 
+            width: 640,     // Ancho deseado del video
+            height: 480,    // Alto deseado del video
+            facingMode: 'user'  // Prioriza la cámara frontal
+          },
+          audio: false      // No requiere audio
+        });
+
+        // Si la referencia al video existe, asigna el stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+          setStream(mediaStream);  // Guarda el stream en el estado
+        }
+      } catch (error) {
+        console.error("Error al acceder a la cámara:", error);
+        alert("No se pudo acceder a la cámara: " + error.message);
+        detenerCamara();  // Limpia recursos si hay error
       }
     };
-  }, []);
 
-  const capturarFoto = () => {
-    console.log("📸 Iniciando captura...");
-    const canvas = document.createElement('canvas');
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    
-    canvas.toBlob(blob => {
-      console.log("🖼️ Foto capturada como blob");
-      onCapture(blob);
-      detenerCamara();
-    }, 'image/jpeg', 0.9);
-  };
+    // Inicia la cámara
+    iniciarCamara();
 
+    /**
+     * Función de limpieza que se ejecuta al desmontar el componente
+     * Importante para liberar recursos cuando el modal se cierra
+     * sin usar el botón (ej: al hacer clic fuera del modal)
+     */
+    return () => {
+      if (stream) {
+        // Detiene todas las pistas activas
+        stream.getTracks().forEach(track => {
+          if (track.readyState === 'live') {  // Solo si la pista está activa
+            track.stop();
+          }
+        });
+      }
+    };
+  }, []);  // El array vacío [] significa que solo se ejecuta al montar el componente
+
+  /**
+   * Renderizado del componente:
+   * - Modal oscuro semitransparente
+   * - Vista previa de la cámara
+   * - Botón para cerrar
+   */
   return (
+    // Fondo oscuro que cubre toda la pantalla
     <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50">
+      {/* Elemento de video para mostrar la cámara */}
       <video 
-        ref={videoRef} 
-        autoPlay 
-        playsInline 
-        muted
+        ref={videoRef}          // Asigna la referencia
+        autoPlay={true}         // Autoreproduce el video
+        playsInline={true}      // Necesario para Safari iOS
+        muted={true}            // Silenciado (requerido para autoplay en algunos navegadores)
         className="max-w-full max-h-[70vh] border-2 border-white"
       />
       
-      {mostrarControles && (
-        <div className="mt-4 flex gap-4">
-          <button
-            onClick={capturarFoto}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-          >
-            Capturar Foto
-          </button>
-          <button
-            onClick={detenerCamara}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-          >
-            Cerrar Cámara
-          </button>
-        </div>
-      )}
-      
-      {!permisosConcedidos && (
-        <p className="text-white mt-4">Cargando cámara...</p>
-      )}
+      {/* Contenedor del botón de cerrar */}
+      <div className="mt-4">
+        <button
+          onClick={detenerCamara}  // Al hacer clic ejecuta la función de detener
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+        >
+          Cerrar Cámara
+        </button>
+      </div>
     </div>
   );
 };
 
+// Exporta el componente como módulo por defecto
 export default Camara;
