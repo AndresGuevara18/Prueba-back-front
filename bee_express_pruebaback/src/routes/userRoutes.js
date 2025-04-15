@@ -76,6 +76,66 @@ router.post('/', usuarioController.createUser);
 /**
  * @swagger
  * /api/usuarios/{id_usuario}:
+ *   put:
+ *     summary: Actualiza un usuario por su ID
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id_usuario
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario que se va a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tipo_documento:
+ *                 type: string
+ *                 example: "CC"
+ *               numero_documento:
+ *                 type: string
+ *                 example: "1234567890"
+ *               nombre_empleado:
+ *                 type: string
+ *                 example: "Juan Pérez"
+ *               direccion_empelado:
+ *                 type: string
+ *                 example: "Calle 123 #45-67"
+ *               telefono_empleado:
+ *                 type: string
+ *                 example: "3101234567"
+ *               email_empleado:
+ *                 type: string
+ *                 example: "juan@example.com"
+ *               eps_empleado:
+ *                 type: string
+ *                 example: "Sura"
+ *               usuarioadmin:
+ *                 type: string
+ *                 example: "juanp"
+ *               contrasenia:
+ *                 type: string
+ *                 example: "miNuevaClave123"
+ *               id_cargo:
+ *                 type: integer
+ *                 example: 2
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error al actualizar el usuario
+ */
+router.put('/:id_usuario', usuarioController.updateUser);
+
+/**
+ * @swagger
+ * /api/usuarios/{id_usuario}:
  *   delete:
  *     summary: Elimina un usuario por su ID
  *     tags: [Usuarios]

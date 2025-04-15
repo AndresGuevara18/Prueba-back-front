@@ -163,12 +163,8 @@ const CargoPage = () => {
                 } border-b`}
               >
                 <td className="p-2 border border-black">{cargo.id_cargo}</td>
-                <td className="p-2 border border-black">
-                  {cargo.nombre_cargo}
-                </td>
-                <td className="p-2 border border-black">
-                  {cargo.descripcion || "N/A"}
-                </td>
+                <td className="p-2 border border-black">{cargo.nombre_cargo}</td>
+                <td className="p-2 border border-black">{cargo.descripcion || "N/A"}</td>
                 <td className="p-2 border border-black">
                   <button
                     onClick={() => editarCargo(cargo.id_cargo)}

@@ -59,6 +59,8 @@ const usuarioService = {
                 email_empleado: userResult[0].email_empleado,
                 eps_empleado: userResult[0].eps_empleado,
                 usuarioadmin: userResult[0].usuarioadmin,
+                contrasenia:userResult[0].contrasenia,
+                id_cargo:userResult[0].id_cargo,
                 cargo_user: cargoUser 
             };
 
@@ -132,6 +134,66 @@ const usuarioService = {
         }
     },
 
+    //ACTUALIZAR USUARIO
+    updateUser: async (id_usuario, userData) => {
+        try {
+            // 1. Manejo de la contraseña
+            let hashedPassword;
+            
+            if (userData.contrasenia && userData.contrasenia.trim() !== "") {
+                // Si se proporcionó nueva contraseña: Hashear
+                hashedPassword = await bcrypt.hash(userData.contrasenia, 10);
+            } else {
+                // Si NO se proporcionó contraseña: Obtener la actual
+                const [rows] = await db.promise().execute(
+                    "SELECT contrasenia FROM usuario WHERE id_usuario = ?", 
+                    [id_usuario]
+                );
+                
+                if (rows.length === 0) {
+                    throw new Error("Usuario no encontrado");
+                }
+                
+                hashedPassword = rows[0].contrasenia;
+            }
+    
+            // 2. Consulta SQL de actualización
+            const query = `UPDATE usuario SET 
+                tipo_documento = ?, 
+                numero_documento = ?, 
+                nombre_empleado = ?,
+                direccion_empelado = ?, 
+                telefono_empleado = ?, 
+                email_empleado = ?, 
+                eps_empleado = ?, 
+                usuarioadmin = ?,
+                contrasenia = ?, 
+                id_cargo = ? 
+                WHERE id_usuario = ?`;
+    
+            // 3. Ejecutar la actualización
+            const [result] = await db.promise().execute(query, [
+                userData.tipo_documento,
+                userData.numero_documento,
+                userData.nombre_empleado,
+                userData.direccion_empelado,
+                userData.telefono_empleado,
+                userData.email_empleado,
+                userData.eps_empleado,
+                userData.usuarioadmin,
+                hashedPassword, // Usa la contraseña hasheada (nueva o anterior)
+                userData.id_cargo,
+                id_usuario
+            ]);
+    
+            return result;
+    
+        } catch (error) {
+            console.error("❌ Error en updateUser (Service):", error);
+            throw error;
+        }
+    },
+
     // ELIMINAR USUARIO
     deleteUser: async (id_usuario) => {
         const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
@@ -142,7 +204,7 @@ const usuarioService = {
             await db.promise().query(queryReco, [id_usuario]);
 
             // Eliminar el usuario
-            const [result] = await db.promise().query(queryUser, [id_usuario]);
+            const [result] = await db.promise().execute(queryUser, [id_usuario]);
 
             if (result.affectedRows === 0) {
                 throw new Error("⚠️ No se encontró el usuario para eliminar.");

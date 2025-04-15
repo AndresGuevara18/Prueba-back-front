@@ -48,7 +48,7 @@ const AgregarCargoPage = () => {
   };
 
   return (
-    <div className="font-sans text-center m-5 ml-64">
+    <div className="font-sans text-center m-5">
       <h1 className="text-3xl font-bold mb-4">Agregar Nuevo Cargo</h1>
       <form className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
         <div className="mb-4">

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL';
-import Camara from '../components/Camara'; 
 
 const AgregarUsuarioPage = () => {
   const [formData, setFormData] = useState({
@@ -18,8 +17,6 @@ const AgregarUsuarioPage = () => {
     fotoBlob: null // Campo mantenido pero inactivo
   });
   const [mensaje, setMensaje] = useState('');
-  const [mostrarCamara, setMostrarCamara] = useState(false);
-  // const [fotoPreview, setFotoPreview] = useState(null); // Listo para reactivar
   const navigate = useNavigate();
 
   const API_URL = `${API_BASE_URL}/api/usuarios`;
@@ -29,10 +26,6 @@ const AgregarUsuarioPage = () => {
     setFormData({ ...formData, [id]: value });
   };
 
-  // Función lista para reactivar
-  const handleAbrirCamara = () => {
-    setMostrarCamara(true);
-  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,12 +63,12 @@ const AgregarUsuarioPage = () => {
       setTimeout(() => navigate("/dashboard/users"), 800);
     } catch (error) {
       console.error("Error:", error);
-      setMensaje(`❌ Error: ${error.message}`);
+      alert(`❌ Error: ${error.message}`);
     }
   };
 
   return (
-    <div className="font-sans text-center m-5 ml-64">
+    <div className="font-sans text-center m-5">
       <h1 className="text-3xl font-bold mb-4">Agregar Nuevo Usuario</h1>
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
         <div className="grid grid-cols-2 gap-4">
@@ -246,7 +239,7 @@ const AgregarUsuarioPage = () => {
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-            onClick={handleAbrirCamara}
+            onClick={() => alert("Función de cámara no implementada aún")}
           >
             Abrir Cámara
           </button>
@@ -266,9 +259,7 @@ const AgregarUsuarioPage = () => {
       </form>
 
       
-    {mostrarCamara && (
-      <Camara onClose={() => setMostrarCamara(false)} />
-    )}
+    
 
     </div>
   );

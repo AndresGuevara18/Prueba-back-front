@@ -90,6 +90,49 @@ const usuarioController = {
         }
     },
 
+    //actualizar usaurio
+    updateUser: async (req, res) => {
+        const { id_usuario } = req.params;
+        const userData = req.body;
+    
+        try {
+            // Validaciones básicas (sin incluir contraseña como obligatoria)
+            if (!userData.tipo_documento || !userData.numero_documento || !userData.nombre_empleado) {
+                return res.status(400).json({ 
+                    success: false,
+                    error: "Los campos básicos son obligatorios" 
+                });
+            }
+    
+            // Llamar al servicio de actualización
+            const resultado = await usuarioService.updateUser(id_usuario, userData);
+    
+            if (resultado.affectedRows === 0) {
+                return res.status(404).json({ 
+                    success: false,
+                    error: "No se encontró el usuario para actualizar" 
+                });
+            }
+    
+            res.json({ 
+                success: true,
+                message: "✅ Usuario actualizado correctamente",
+                data: {
+                    id: id_usuario,
+                    camposActualizados: Object.keys(userData).filter(key => key !== 'contrasenia'),
+                    cambioContrasenia: !!userData.contrasenia
+                }
+            });
+    
+        } catch (error) {
+            console.error("❌ Error en updateUser (Controller):", error);
+            res.status(500).json({ 
+                success: false,
+                error: error.message || "Error al actualizar el usuario" 
+            });
+        }
+    },
+
     // Eliminar un usuario
     deleteUser: async (req, res) => {
         try {
