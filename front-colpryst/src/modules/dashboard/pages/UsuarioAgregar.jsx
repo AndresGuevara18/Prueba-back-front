@@ -68,14 +68,41 @@ const AgregarUsuarioPage = () => {
   }, []);
 
   const startFaceDetection = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !faceCanvasRef.current) return;
   
     const detectFaces = async () => {
+
+      const options = new faceapi.TinyFaceDetectorOptions({
+        inputSize: 512, // Tamaño mayor para mejor precisión
+        scoreThreshold: 0.5 // Umbral más alto para descartar falsos positivos
+      });
+
       const detections = await faceapi.detectAllFaces(
         videoRef.current,
         new faceapi.TinyFaceDetectorOptions()
-      );
-  
+      ).withFaceLandmarks();
+      
+      // Limpiar el canvas antes de dibujar
+      const faceCtx = faceCanvasRef.current.getContext('2d');
+      faceCtx.clearRect(0, 0, faceCanvasRef.current.width, faceCanvasRef.current.height);
+      
+      // Ajustar el tamaño del canvas al video
+      faceapi.matchDimensions(faceCanvasRef.current, {
+        width: videoRef.current.videoWidth,
+        height: videoRef.current.videoHeight
+      });
+      
+      // Dibujar detecciones
+      const resizedDetections = faceapi.resizeResults(detections, {
+        width: videoRef.current.videoWidth,
+        height: videoRef.current.videoHeight
+      });
+      
+      // Dibujar cuadro alrededor de cada rostro detectado
+      faceapi.draw.drawDetections(faceCanvasRef.current, resizedDetections);
+      // Opcional: dibujar puntos de referencia faciales
+      faceapi.draw.drawFaceLandmarks(faceCanvasRef.current, resizedDetections);
+      
       if (detections.length === 1) {
         setIsCaptureEnabled(true);
         setFaceDetected(true);
@@ -85,8 +112,7 @@ const AgregarUsuarioPage = () => {
       }
     };
   
-    // Detectar cada 500ms
-    const intervalId = setInterval(detectFaces, 500);
+    const intervalId = setInterval(detectFaces, 100); // Detectar más frecuentemente para mejor fluidez
     setDetectionInterval(intervalId);
   };
 
@@ -403,12 +429,19 @@ const AgregarUsuarioPage = () => {
           <div className="bg-white p-4 rounded-lg max-w-lg w-full">
             <h2 className="text-xl font-bold mb-2">Cámara</h2>
             
-            <video 
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-auto border border-gray-300"
-            />
+            <div className="relative">
+              <video 
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full h-auto border border-gray-300"
+              />
+              <canvas
+                ref={faceCanvasRef}
+                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                style={{ zIndex: 10 }}
+              />
+            </div>
             
             <div className="mt-4 flex justify-end space-x-2">
               <button
