@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef,useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL';
+//reconocimiento
+import * as faceapi from 'face-api.js';//npm install react-webcam face-api.js
 
 const AgregarUsuarioPage = () => {
   const [formData, setFormData] = useState({
@@ -16,16 +18,152 @@ const AgregarUsuarioPage = () => {
     id_cargo: '',
     fotoBlob: null // Campo mantenido pero inactivo
   });
+
   const [mensaje, setMensaje] = useState('');
+  //deteccion
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [detectionInterval, setDetectionInterval] = useState(null);
+  //navegacion
   const navigate = useNavigate();
+  //camara estados
+  const [showCameraModal, setShowCameraModal] = useState(false);// Control modal si es visible
+  const [hasCameraAccess, setHasCameraAccess] = useState(false); // Indica si tenemos permisos
+  //referencias
+  const videoRef = useRef(null);// Referencia al elemento <video>
+  const streamRef = useRef(null);// Guarda el stream de la cámara
+  const canvasRef = useRef(null); //ref para el canvas oculto
+  const faceCanvasRef = useRef(null); //refeencia reconocimeinto
+  const [isCaptureEnabled, setIsCaptureEnabled] = useState(false);//control capturar foto
 
   const API_URL = `${API_BASE_URL}/api/usuarios`;
 
+  //reconocimiento 
+  // Cargar modelos al montar el componente
+  useEffect(() => {
+    
+    const loadModels = async () => {
+      try {
+        //const urlModels = '../../../../public/models';
+        console.log("cargando modelos....")
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');//cargar modelos desde raiz
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+        setModelsLoaded(true);
+        console.log('Modelos cargados correctamente');
+      } catch (error) {
+        console.error('Error cargando modelos:', error);
+      }
+    };
+
+    loadModels();
+
+    return () => {
+      // Limpiar al desmontar
+      if (detectionInterval) clearInterval(detectionInterval);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  const startFaceDetection = () => {
+    if (!videoRef.current) return;
+  
+    const detectFaces = async () => {
+      const detections = await faceapi.detectAllFaces(
+        videoRef.current,
+        new faceapi.TinyFaceDetectorOptions()
+      );
+  
+      if (detections.length === 1) {
+        setIsCaptureEnabled(true);
+        setFaceDetected(true);
+      } else {
+        setIsCaptureEnabled(false);
+        setFaceDetected(false);
+      }
+    };
+  
+    // Detectar cada 500ms
+    const intervalId = setInterval(detectFaces, 500);
+    setDetectionInterval(intervalId);
+  };
+
+
+  //formulario
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
   };
 
+  const openCamera = async () => {
+    try {
+      console.log("Abriendo camara!!")
+      setShowCameraModal(true);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user" } 
+      });
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        streamRef.current = stream;
+      }
+
+      startFaceDetection(); //Detectar rostros después de mostrar la cámara
+    } catch (err) {
+      console.error("Error al acceder a la cámara:", err);
+      alert("No se pudo acceder a la cámara. Por favor verifica los permisos.");
+      setShowCameraModal(false);
+    }
+  };
+
+  const closeCamera = () => {
+    if (detectionInterval) {
+      clearInterval(detectionInterval);
+      setDetectionInterval(null);
+    }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+
+    setIsCaptureEnabled(false);
+    setFaceDetected(false);
+    console.log("Cerrando camara!")
+    setShowCameraModal(false);
+  };
+
+  // Nueva función para capturar la imagen
+  const captureImage = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    
+    // Obtener dimensiones del video
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Dibujar el frame actual del video en el canvas
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Convertir a Blob
+    canvas.toBlob((blob) => {
+      if (blob) {
+        console.log("Imagen capturada como Blob:", blob);
+        setFormData({...formData, fotoBlob: blob});
+        alert("Imagen capturada correctamente!");
+        closeCamera();
+      } else {
+        console.error("Error al convertir a Blob");
+        closeCamera();
+      }
+    }, 'image/jpeg', 0.95); // Calidad del 95%
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -239,7 +377,8 @@ const AgregarUsuarioPage = () => {
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-            onClick={() => alert("Función de cámara no implementada aún")}
+            //onClick={() => alert("Función de cámara no implementada aún")}
+            onClick={openCamera}
           >
             Abrir Cámara
           </button>
@@ -258,9 +397,49 @@ const AgregarUsuarioPage = () => {
         )} 
       </form>
 
-      
-    
+      {/* Modal de la cámara */}
+      {showCameraModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-lg w-full">
+            <h2 className="text-xl font-bold mb-2">Cámara</h2>
+            
+            <video 
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="w-full h-auto border border-gray-300"
+            />
+            
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                onClick={captureImage}
+                className={`px-4 py-2 rounded ${
+                  isCaptureEnabled
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-gray-400 cursor-not-allowed text-white'
+                }`}
+              >
+                Capturar
+              </button>
+              <button
+                onClick={closeCamera}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Cerrar Cámara
+              </button>
+            </div>
 
+            {showCameraModal && !isCaptureEnabled && (
+              <p className="text-red-600 mt-2 text-center">
+                Debe haber exactamente un solo rostro en pantalla.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    
+      {/* Canvas oculto para la captura */}
+      <canvas ref={canvasRef} style={{display: 'none'}} />
     </div>
   );
 };

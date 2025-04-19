@@ -44,6 +44,7 @@ const usuarioController = {
             // Validar si el cargo existe
             const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
             if (!cargo) {
+                console.log("cargo", cargo)
                 throw new Error("CARGO_NOT_FOUND");
             }
     
@@ -96,39 +97,64 @@ const usuarioController = {
         const userData = req.body;
     
         try {
-            // Validaciones básicas (sin incluir contraseña como obligatoria)
+            // Validaciones básicas
             if (!userData.tipo_documento || !userData.numero_documento || !userData.nombre_empleado) {
                 return res.status(400).json({ 
                     success: false,
-                    error: "Los campos básicos son obligatorios" 
+                    message: "Los campos básicos son obligatorios",
+                    error: "MISSING_REQUIRED_FIELDS"
                 });
+            }
+    
+            // Validar si el cargo existe (si se está actualizando)
+            if (userData.id_cargo) {
+                const cargo = await cargoService.getCargoById(userData.id_cargo);
+                if (!cargo) {
+                    throw new Error("CARGO_NOT_FOUND");
+                }
             }
     
             // Llamar al servicio de actualización
-            const resultado = await usuarioService.updateUser(id_usuario, userData);
-    
-            if (resultado.affectedRows === 0) {
-                return res.status(404).json({ 
-                    success: false,
-                    error: "No se encontró el usuario para actualizar" 
-                });
-            }
+            await usuarioService.updateUser(id_usuario, userData);
     
             res.json({ 
                 success: true,
-                message: "✅ Usuario actualizado correctamente",
-                data: {
-                    id: id_usuario,
-                    camposActualizados: Object.keys(userData).filter(key => key !== 'contrasenia'),
-                    cambioContrasenia: !!userData.contrasenia
-                }
+                message: "Usuario actualizado correctamente"
             });
     
         } catch (error) {
             console.error("❌ Error en updateUser (Controller):", error);
-            res.status(500).json({ 
+    
+            let statusCode = 500;
+            let message = "Error al actualizar el usuario";
+    
+            switch (error.message) {
+                case "USER_NOT_FOUND":
+                    statusCode = 404;
+                    message = "El usuario no existe";
+                    break;
+                case "DOCUMENTO_EXISTS":
+                    statusCode = 400;
+                    message = "El número de documento ya está registrado";
+                    break;
+                case "EMAIL_EXISTS":
+                    statusCode = 400;
+                    message = "El correo electrónico ya está registrado";
+                    break;
+                case "USUARIO_EXISTS":
+                    statusCode = 400;
+                    message = "El nombre de usuario ya está en uso";
+                    break;
+                case "CARGO_NOT_FOUND":
+                    statusCode = 400;
+                    message = "El cargo especificado no existe";
+                    break;
+            }
+    
+            res.status(statusCode).json({
                 success: false,
-                error: error.message || "Error al actualizar el usuario" 
+                message: message,
+                error: error.message
             });
         }
     },

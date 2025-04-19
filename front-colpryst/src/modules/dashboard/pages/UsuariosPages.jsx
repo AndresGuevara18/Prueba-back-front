@@ -136,15 +136,16 @@ const UsuariosPage = () => {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || "Error al actualizar el usuario");
-        }
-
-        alert(data.message || "✅ Usuario actualizado correctamente");
+          alert(`❌ ${data.message}`);
+          return;
+      }
+      
+      alert(data.message || "✅ Usuario actualizado correctamente");
         setModalEditarAbierto(false);
         cargarTodosLosUsuarios();
     } catch (error) {
         console.error("Error actualizando usuario:", error);
-        alert(`❌ ${error.message}`);
+        alert(`❌Error ${error.message}`);
     }
   };
 

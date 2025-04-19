@@ -3,6 +3,7 @@ const usuarioController = require('../controllers/userController');
 
 const router = express.Router(); // 🚀 Definir el router antes de usarlo
 
+//OBTENER TODOS LOS USUARIOS
 /**
  * @swagger
  * tags:
@@ -45,9 +46,6 @@ router.get('/', usuarioController.getAllUsers);
  */
 router.get('/:numero_documento', usuarioController.getUserByDocument);
 
-
-
-
 /**
  * @swagger
  * /api/usuarios:
@@ -60,38 +58,16 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *         application/json:
  *           schema:
  *             type: object
- *             properties:
- *               nombre:
- *                 type: string
- *                 example: "Juan Pérez"
- *               email:
- *                 type: string
- *                 example: "juan@example.com"
- *     responses:
- *       201:
- *         description: Usuario creado correctamente
- */
-router.post('/', usuarioController.createUser);
-
-/**
- * @swagger
- * /api/usuarios/{id_usuario}:
- *   put:
- *     summary: Actualiza un usuario por su ID
- *     tags: [Usuarios]
- *     parameters:
- *       - in: path
- *         name: id_usuario
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del usuario que se va a actualizar
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
+ *             required:
+ *               - tipo_documento
+ *               - numero_documento
+ *               - nombre_empleado
+ *               - direccion_empelado
+ *               - telefono_empleado
+ *               - email_empleado
+ *               - eps_empleado
+ *               - contrasenia
+ *               - id_cargo
  *             properties:
  *               tipo_documento:
  *                 type: string
@@ -107,29 +83,131 @@ router.post('/', usuarioController.createUser);
  *                 example: "Calle 123 #45-67"
  *               telefono_empleado:
  *                 type: string
- *                 example: "3101234567"
+ *                 example: "3216549870"
  *               email_empleado:
  *                 type: string
- *                 example: "juan@example.com"
+ *                 example: "juan.perez@example.com"
  *               eps_empleado:
  *                 type: string
- *                 example: "Sura"
+ *                 example: "Nueva EPS"
  *               usuarioadmin:
  *                 type: string
- *                 example: "juanp"
+ *                 example: "jperez"
  *               contrasenia:
  *                 type: string
- *                 example: "miNuevaClave123"
+ *                 example: "miClaveSegura123"
  *               id_cargo:
  *                 type: integer
  *                 example: 2
  *     responses:
+ *       201:
+ *         description: Usuario creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Usuario creado exitosamente.
+ *                 data:
+ *                   type: integer
+ *                   example: 5
+ *       400:
+ *         description: Error de validación (documento, email, usuario o cargo no válidos)
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.post('/', usuarioController.createUser);
+
+/**
+ * @swagger
+ * /api/usuarios/{id_usuario}:
+ *   put:
+ *     summary: Actualiza la información de un usuario existente
+ *     description: Permite actualizar los datos de un usuario. La contraseña es opcional (si no se envía, se mantiene la actual).
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id_usuario
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: ID numérico del usuario que se va a actualizar
+ *         example: 123
+ *     requestBody:
+ *       required: true
+ *       description: Datos del usuario a actualizar (campos obligatorios marcados con *)
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - tipo_documento
+ *               - numero_documento
+ *               - nombre_empleado
+ *             properties:
+ *               tipo_documento:
+ *                 type: string
+ *                 description: Tipo de documento (CC, CE, PASAPORTE, etc)*
+ *                 example: "CC"
+ *                 enum: ["CC", "CE", "TI", "PASAPORTE", "OTRO"]
+ *               numero_documento:
+ *                 type: string
+ *                 description: Número de documento (debe ser único)*
+ *                 example: "1234567890"
+ *               nombre_empleado:
+ *                 type: string
+ *                 description: Nombre completo del usuario*
+ *                 example: "Juan Pérez"
+ *               direccion_empelado:
+ *                 type: string
+ *                 description: Dirección de residencia
+ *                 example: "Calle 123 #45-67"
+ *                 nullable: true
+ *               telefono_empleado:
+ *                 type: string
+ *                 description: Teléfono de contacto
+ *                 example: "3101234567"
+ *                 nullable: true
+ *               email_empleado:
+ *                 type: string
+ *                 description: Correo electrónico (debe ser único)
+ *                 example: "juan@example.com"
+ *                 format: email
+ *               eps_empleado:
+ *                 type: string
+ *                 description: EPS del usuario
+ *                 example: "Sura"
+ *                 nullable: true
+ *               usuarioadmin:
+ *                 type: string
+ *                 description: Nombre de usuario para acceso al sistema (debe ser único)
+ *                 example: "juanp"
+ *                 minLength: 4
+ *               contrasenia:
+ *                 type: string
+ *                 description: Nueva contraseña (opcional, mínimo 8 caracteres)
+ *                 example: "miNuevaClave123"
+ *                 minLength: 8
+ *                 format: password
+ *               id_cargo:
+ *                 type: integer
+ *                 description: ID del cargo que ocupa el usuario
+ *                 example: 2
+ *     responses:
  *       200:
- *         description: Usuario actualizado correctamente
+ *         description: Usuario actualizado exitosamente
  *       404:
  *         description: Usuario no encontrado
  *       500:
- *         description: Error al actualizar el usuario
+ *         description: Error interno del servidor
  */
 router.put('/:id_usuario', usuarioController.updateUser);
 
