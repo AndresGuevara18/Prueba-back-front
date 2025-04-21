@@ -124,7 +124,9 @@ const usuarioService = {
             console.log("Usuario insertado correctamente. ID generado:", result.insertId); // Depuración
     
             // Crear registro de reconocimiento facial
-            await reconocimientoService.createReconocimiento(result.insertId, null); // null imagen (segundo parámetro)
+            const fotoBuffer = usuarioData.foto ? usuarioData.foto.data : null;
+            await reconocimientoService.createReconocimiento(result.insertId, fotoBuffer);
+            //await reconocimientoService.createReconocimiento(result.insertId, null); // null imagen (segundo parámetro)
     
             // Devolver solo el ID generado
             return result.insertId;
@@ -134,7 +136,6 @@ const usuarioService = {
         }
     },
 
-    //ACTUALIZAR USUARIO
     //ACTUALIZAR USUARIO
     updateUser: async (id_usuario, userData) => {      
         try {

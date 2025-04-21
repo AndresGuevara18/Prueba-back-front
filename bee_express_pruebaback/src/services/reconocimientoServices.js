@@ -10,8 +10,10 @@ const reconocimientoService = {
 
         try {
             //comprobar envio de datos el id
-            console.log("📸 Insertando usuario en reconocimiento_facial con imagen NULL...");
-            
+            //console.log("📸 Insertando usuario en reconocimiento_facial con imagen NULL...");
+            console.log("Tipo de dato de fotoBuffer:", typeof fotoBuffer);
+            console.log("Longitud de fotoBuffer:", fotoBuffer?.length);
+
             // Insertar el ID del usuario en la tabla `reconocimiento_facial`
             // Si no hay imagen (`fotoBuffer = null`), se insertará NULL en `fotografia_emple`
             const insertQuery = 'INSERT INTO reconocimiento_facial (fotografia_emple, id_usuario) VALUES (?, ?)';

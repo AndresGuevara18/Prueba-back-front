@@ -10,7 +10,7 @@ const app = express(); // Instancia de Express
 const PORT = 3000; // Define el puerto
 
 
-// 🔹 Habilitar CORS para permitir peticiones del frontend y de Swagger
+// CORS para permitir peticiones del frontend y de Swagger
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000'], // Permitir peticiones desde el frontend (Vite) y Swagger UI
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
@@ -37,22 +37,24 @@ const swaggerOptions = {
   apis: ["./src/routes/*.js"], // Especifica dónde están las rutas documentadas
 };
 
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita la documentación de Swagger
+const swaggerDocs = swaggerJsdoc(swaggerOptions);//documentacion basada en cometarios y rutas
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita interfaz de la documentación de Swagger
 
+//parseo del body
 app.use((req, res, next) => {
-  if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {
-    // Skip body parsing for multipart/form-data
+  if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {//verificar ruta y metodo
+    //No aplica el middleware express.json()
     next();
   } else {
-    express.json()(req, res, next);
+    ////para demas rutas y metodos
+    express.json()(req, res, next);//Aplica el middleware estándar para parsear JSON
   }
 });
 
-// Middleware para analizar application/x-www-form-urlencoded (solo para rutas que no usen multipart/form-data)
+// Middleware para analizar application/x-www-form-urlencoded
 app.use((req, res, next) => {
   if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {
-    next();
+    next();//Solo aplica el bypass a POST Formularios con archivos (multipart/form-data)
   } else {
     express.urlencoded({ extended: true })(req, res, next);
   }
@@ -62,7 +64,7 @@ app.use((req, res, next) => {
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cargos', cargoRoutes);
 
-// Redirigir la ruta principal al frontend (Vite)
+// ruta principal al frontend (Vite)
 app.get('/', (req, res) => {
   res.redirect('http://localhost:5173'); // Redirige al frontend (Vite)
 });

@@ -117,43 +117,8 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *     responses:
  *       201:
  *         description: Usuario creado correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Usuario creado exitosamente.
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 5
- *                     fotoUrl:
- *                       type: string
- *                       example: "/uploads/fotos/usuario-5.jpg"
  *       400:
  *         description: Error de validación (documento, email, usuario o cargo no válidos)
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "El número de documento ya está registrado."
- *       413:
- *         description: Archivo demasiado grande (más de 5MB)
- *       415:
- *         description: Tipo de archivo no soportado (solo imágenes JPEG/PNG)
  *       500:
  *         description: Error interno del servidor
  */

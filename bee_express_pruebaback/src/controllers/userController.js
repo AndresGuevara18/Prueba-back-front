@@ -36,18 +36,17 @@ const usuarioController = {
     // Nuevo usuario
     createUser: async (req, res) => {
         try {
-            console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
+            /*console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
             console.log("Archivo recibido:", req.file ? {
                 originalname: req.file.originalname,
                 mimetype: req.file.mimetype,
                 size: req.file.size
-            } : null);
+            } : null);*/
     
             // Preparar datos del usuario
-            const usuarioData = {
-                ...req.body,
-                // Si hay archivo, procesarlo
-                foto: req.file ? {
+            const usuarioData = {//objeto 
+                ...req.body,//todos los campos del body
+                foto: req.file ? {//foto
                     data: req.file.buffer,
                     contentType: req.file.mimetype
                 } : null
@@ -56,14 +55,14 @@ const usuarioController = {
             // Validar si el cargo existe
             const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
             if (!cargo) {
-                console.log("Cargo no encontrado:", usuarioData.id_cargo);
+                //console.log("Cargo no encontrado:", usuarioData.id_cargo);
                 throw new Error("CARGO_NOT_FOUND");
             }
     
             // Validar tipo de archivo si se subió uno
             if (req.file) {
-                const allowedTypes = ['image/jpeg', 'image/png'];
-                if (!allowedTypes.includes(req.file.mimetype)) {
+                const allowedTypes = ['image/jpeg', 'image/png'];//tipos aceptados
+                if (!allowedTypes.includes(req.file.mimetype)) {// tipos de contenido en internet
                     throw new Error("INVALID_FILE_TYPE");
                 }
             }
