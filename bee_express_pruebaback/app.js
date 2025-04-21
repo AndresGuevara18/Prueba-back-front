@@ -9,6 +9,15 @@ const swaggerJsdoc = require('swagger-jsdoc'); // Importa Swagger JSDoc
 const app = express(); // Instancia de Express
 const PORT = 3000; // Define el puerto
 
+
+// 🔹 Habilitar CORS para permitir peticiones del frontend y de Swagger
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'], // Permitir peticiones desde el frontend (Vite) y Swagger UI
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
+  credentials: true // Permitir cookies o autenticación si es necesario
+}));
+
 // Configuración de Swagger
 const swaggerOptions = {
   definition: {
@@ -31,33 +40,27 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita la documentación de Swagger
 
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {
+    // Skip body parsing for multipart/form-data
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 
-// 🔹 Habilitar CORS para permitir peticiones del frontend y de Swagger
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'], // Permitir peticiones desde el frontend (Vite) y Swagger UI
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
-  credentials: true // Permitir cookies o autenticación si es necesario
-}));
-
-// Habilitar CORS
-//app.use(cors());
-
-// Middleware para analizar JSON
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Permite recibir datos de formularios
-
-// **Comentado**: Servir archivos estáticos desde la carpeta 'public'
-// app.use(express.static(path.join(__dirname, 'public')));
+// Middleware para analizar application/x-www-form-urlencoded (solo para rutas que no usen multipart/form-data)
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {
+    next();
+  } else {
+    express.urlencoded({ extended: true })(req, res, next);
+  }
+});
 
 // Rutas de API
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cargos', cargoRoutes);
-
-// **Comentado**: Ruta principal - Servir el archivo HTML
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'public','usuario.html'));
-// });
 
 // Redirigir la ruta principal al frontend (Vite)
 app.get('/', (req, res) => {

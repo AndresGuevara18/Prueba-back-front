@@ -1,7 +1,16 @@
 const express = require('express'); // Importar Express
+const router = express.Router(); // 🚀 Definir el router antes de usarlo
+const multer = require('multer'); // multer para manejo del blob //npm install multer
 const usuarioController = require('../controllers/userController');
 
-const router = express.Router(); // 🚀 Definir el router antes de usarlo
+// Configura multer para manejar multipart/form-data
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB
+    }
+  });
+
 
 //OBTENER TODOS LOS USUARIOS
 /**
@@ -50,12 +59,14 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  * @swagger
  * /api/usuarios:
  *   post:
- *     summary: Crea un nuevo usuario
+ *     summary: Crea un nuevo usuario (con foto opcional)
  *     tags: [Usuarios]
+ *     consumes:
+ *       - multipart/form-data
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -99,6 +110,10 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *               id_cargo:
  *                 type: integer
  *                 example: 2
+ *               foto:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagen del usuario (opcional, máximo 5MB)
  *     responses:
  *       201:
  *         description: Usuario creado correctamente
@@ -114,14 +129,40 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *                   type: string
  *                   example: Usuario creado exitosamente.
  *                 data:
- *                   type: integer
- *                   example: 5
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 5
+ *                     fotoUrl:
+ *                       type: string
+ *                       example: "/uploads/fotos/usuario-5.jpg"
  *       400:
  *         description: Error de validación (documento, email, usuario o cargo no válidos)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "El número de documento ya está registrado."
+ *       413:
+ *         description: Archivo demasiado grande (más de 5MB)
+ *       415:
+ *         description: Tipo de archivo no soportado (solo imágenes JPEG/PNG)
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/', usuarioController.createUser);
+router.post('/', upload.single('foto'), (req, res, next) => {
+    console.log('Body recibido:', req.body);
+    console.log('Archivo recibido:', req.file);
+    next();
+  }, usuarioController.createUser);// Ruta POST específica con multer
+//router.post('/', usuarioController.createUser);
 
 /**
  * @swagger

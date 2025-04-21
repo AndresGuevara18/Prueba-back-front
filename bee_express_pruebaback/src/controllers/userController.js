@@ -36,34 +36,62 @@ const usuarioController = {
     // Nuevo usuario
     createUser: async (req, res) => {
         try {
-            console.log("Datos recibidos en el controlador:", req.body); // Depuración
+            console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
+            console.log("Archivo recibido:", req.file ? {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            } : null);
     
-            // Obtener los datos del usuario desde el cuerpo de la solicitud (req.body)
-            const usuarioData = req.body;
+            // Preparar datos del usuario
+            const usuarioData = {
+                ...req.body,
+                // Si hay archivo, procesarlo
+                foto: req.file ? {
+                    data: req.file.buffer,
+                    contentType: req.file.mimetype
+                } : null
+            };
     
             // Validar si el cargo existe
             const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
             if (!cargo) {
-                console.log("cargo", cargo)
+                console.log("Cargo no encontrado:", usuarioData.id_cargo);
                 throw new Error("CARGO_NOT_FOUND");
             }
     
-            // Llamar servicio "crear el usuario"
+            // Validar tipo de archivo si se subió uno
+            if (req.file) {
+                const allowedTypes = ['image/jpeg', 'image/png'];
+                if (!allowedTypes.includes(req.file.mimetype)) {
+                    throw new Error("INVALID_FILE_TYPE");
+                }
+            }
+    
+            // Llamar servicio para crear el usuario
             const nuevoUsuario = await usuarioService.createUser(usuarioData);
     
-            // Enviar una respuesta exitosa al frontend
-            res.status(201).json({
+            // Construir respuesta
+            const response = {
                 success: true,
                 message: "Usuario creado exitosamente.",
-                data: nuevoUsuario
-            });
+                data: {
+                    id: nuevoUsuario.id
+                }
+            };
+    
+            // Si se subió una foto, añadir la URL a la respuesta
+            if (req.file) {
+                response.data.fotoUrl = `/uploads/fotos/usuario-${nuevoUsuario.id}.jpg`;
+            }
+    
+            res.status(201).json(response);
         } catch (error) {
             console.error("❌ Error en createUser (Controller):", error.message);
     
             let statusCode = 500;
             let message = "Error interno del servidor.";
     
-            // Traducir errores técnicos a mensajes amigables
             switch (error.message) {
                 case "CARGO_NOT_FOUND":
                     statusCode = 400;
@@ -80,6 +108,14 @@ const usuarioController = {
                 case "USUARIO_EXISTS":
                     statusCode = 400;
                     message = "El nombre de usuario ya está en uso.";
+                    break;
+                case "INVALID_FILE_TYPE":
+                    statusCode = 415;
+                    message = "Solo se permiten imágenes JPEG o PNG.";
+                    break;
+                case "LIMIT_FILE_SIZE":
+                    statusCode = 413;
+                    message = "La imagen es demasiado grande (máximo 5MB).";
                     break;
             }
     
