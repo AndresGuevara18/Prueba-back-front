@@ -1,5 +1,9 @@
 const usuarioService = require('../services/userServices'); // Importar el servicio de usuario
 const cargoService = require('../services/cargoServices'); // Importar el servicio de cargos
+//reconocimeinto
+const axios = require('axios');
+const FormData = require('form-data');
+const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8000';
 
 const usuarioController = {
     // Obtener todos los usuarios
@@ -34,14 +38,15 @@ const usuarioController = {
     },
 
     // Nuevo usuario
+    // Nuevo usuario
     createUser: async (req, res) => {
         try {
-            /*console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
-            console.log("Archivo recibido:", req.file ? {
-                originalname: req.file.originalname,
-                mimetype: req.file.mimetype,
-                size: req.file.size
-            } : null);*/
+            //console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
+            //console.log("Archivo recibido:", req.file ? {
+                //originalname: req.file.originalname,
+                //mimetype: req.file.mimetype,
+                //size: req.file.size
+            //} : null);
     
             // Preparar datos del usuario
             const usuarioData = {//objeto 

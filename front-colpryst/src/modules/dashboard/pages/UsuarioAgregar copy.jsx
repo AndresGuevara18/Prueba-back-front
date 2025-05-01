@@ -1,11 +1,13 @@
-import React, { useState, useRef,useEffect  } from 'react';
-import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../../../config/ConfigURL';
+import React, { useState, useRef,useEffect  } from 'react';//{manejar estados, referencia elementos del dom,efecetos secundarios llamado apis}
+import { useNavigate } from 'react-router-dom';//hook para navegacion
+import API_BASE_URL from '../../../config/ConfigURL';//importacion url peticiones al back puerto 3000
 //reconocimiento
 import * as faceapi from 'face-api.js';//npm install react-webcam face-api.js
 
+//componete funcional en arrow function
 const AgregarUsuarioPage = () => {
-  const [formData, setFormData] = useState({
+  //estado para el formulario
+  const [formData, setFormData] = useState({//[obejto almacena campos, actualziar el estado]
     tipo_documento: '',
     numero_documento: '',
     nombre_empleado: '',
@@ -19,57 +21,61 @@ const AgregarUsuarioPage = () => {
     fotoBlob: null // Campo mantenido pero inactivo
   });
 
-  const [mensaje, setMensaje] = useState('');
+  const [mensaje, setMensaje] = useState('');//mensajes exito o error 
   //deteccion
-  const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [faceDetected, setFaceDetected] = useState(false);
-  const [detectionInterval, setDetectionInterval] = useState(null);
+  const [modelsLoaded, setModelsLoaded] = useState(false);// carga de modelos
+  const [faceDetected, setFaceDetected] = useState(false);// deteccion rostro
+  const [detectionInterval, setDetectionInterval] = useState(null);//almacenar id de intervalo para detteccion
   //navegacion
-  const navigate = useNavigate();
+  const navigate = useNavigate();//cambiar ruta
   //camara estados
   const [showCameraModal, setShowCameraModal] = useState(false);// Control modal si es visible
-  const [hasCameraAccess, setHasCameraAccess] = useState(false); // Indica si tenemos permisos
+  const [hasCameraAccess, setHasCameraAccess] = useState(false); // Indica si hay permisos
   //referencias
   const videoRef = useRef(null);// Referencia al elemento <video>
   const streamRef = useRef(null);// Guarda el stream de la cámara
-  const canvasRef = useRef(null); //ref para el canvas oculto
-  const faceCanvasRef = useRef(null); //refeencia reconocimeinto
-  const [isCaptureEnabled, setIsCaptureEnabled] = useState(false);//control capturar foto
+  const canvasRef = useRef(null); //ref para el <canvas> oculto
+  const faceCanvasRef = useRef(null); //canvas dibujar cuadro reconocimiento
 
-  const API_URL = `${API_BASE_URL}/api/usuarios`;
+  const [isCaptureEnabled, setIsCaptureEnabled] = useState(false);//control capturar foto 
+
+  const API_URL = `${API_BASE_URL}/api/usuarios`;//url completa de api
 
   //reconocimiento 
   // Cargar modelos al montar el componente
   useEffect(() => {
-    
+    //funcion cargar modelos
     const loadModels = async () => {
       try {
         //const urlModels = '../../../../public/models';
         console.log("cargando modelos....")
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');//cargar modelos desde raiz
-        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
-        setModelsLoaded(true);
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');//Modelo liviano para detección de rostros
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');//Para identificar 68 puntos clave del rostro
+        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');//Para reconocimiento facial
+        setModelsLoaded(true);//si se cargan actualizar estado
         console.log('Modelos cargados correctamente');
       } catch (error) {
         console.error('Error cargando modelos:', error);
       }
     };
 
-    loadModels();
+    loadModels();//llamdo funcion 
 
+    //ejecutar la carga
     return () => {
       // Limpiar al desmontar
       if (detectionInterval) clearInterval(detectionInterval);
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+      if (streamRef.current) {//verificar sie xiste
+        streamRef.current.getTracks().forEach(track => track.stop());//cierra tracks del video
       }
     };
-  }, []);
+  }, []);//rray vacion efecto solo se ejecuta al montar el componente
 
+  //fucnion iniciar deteccion facial
   const startFaceDetection = () => {
-    if (!videoRef.current || !faceCanvasRef.current) return;
+    if (!videoRef.current || !faceCanvasRef.current) return;//verificar referencia de video y canvas
   
+    //funcion detectar rostro
     const detectFaces = async () => {
 
       const options = new faceapi.TinyFaceDetectorOptions({
@@ -77,14 +83,15 @@ const AgregarUsuarioPage = () => {
         scoreThreshold: 0.5 // Umbral más alto para descartar falsos positivos
       });
 
+      //
       const detections = await faceapi.detectAllFaces(
-        videoRef.current,
+        videoRef.current,//video como entrada
         new faceapi.TinyFaceDetectorOptions()
-      ).withFaceLandmarks();
+      ).withFaceLandmarks();//añadir deteccion puntos faciales
       
       // Limpiar el canvas antes de dibujar
       const faceCtx = faceCanvasRef.current.getContext('2d');
-      faceCtx.clearRect(0, 0, faceCanvasRef.current.width, faceCanvasRef.current.height);
+      faceCtx.clearRect(0, 0, faceCanvasRef.current.width, faceCanvasRef.current.height);//borra cnavas antes de dibujar otro
       
       // Ajustar el tamaño del canvas al video
       faceapi.matchDimensions(faceCanvasRef.current, {
@@ -93,16 +100,15 @@ const AgregarUsuarioPage = () => {
       });
       
       // Dibujar detecciones
-      const resizedDetections = faceapi.resizeResults(detections, {
+      const resizedDetections = faceapi.resizeResults(detections, {//ajustar cordenadas
         width: videoRef.current.videoWidth,
         height: videoRef.current.videoHeight
       });
       
-      // Dibujar cuadro alrededor de cada rostro detectado
-      faceapi.draw.drawDetections(faceCanvasRef.current, resizedDetections);
-      // Opcional: dibujar puntos de referencia faciales
-      faceapi.draw.drawFaceLandmarks(faceCanvasRef.current, resizedDetections);
+      faceapi.draw.drawDetections(faceCanvasRef.current, resizedDetections);// Dibujar cuadro alrededor de cada rostro detectado   
+      faceapi.draw.drawFaceLandmarks(faceCanvasRef.current, resizedDetections);// dibujar puntos de referencia faciales
       
+      //activa boton caprurar si solo hay un rostro
       if (detections.length === 1) {
         setIsCaptureEnabled(true);
         setFaceDetected(true);
@@ -112,60 +118,66 @@ const AgregarUsuarioPage = () => {
       }
     };
   
-    const intervalId = setInterval(detectFaces, 100); // Detectar más frecuentemente para mejor fluidez
-    setDetectionInterval(intervalId);
+    const intervalId = setInterval(detectFaces, 100); // Ejecuta detectFaces cada 100ms
+    setDetectionInterval(intervalId);// Guarda el ID del intervalo para poder limpiarlo después
   };
 
-
-  //formulario
-  const handleChange = (e) => {
-    const { id, value } = e.target;
+  //manejo formulario
+  const handleChange = (e) => {//handleChange: Función que maneja cambios en los inputs
+    const { id, value } = e.target;//Desestructura el evento obtine id y el nuevo valor
     setFormData({ ...formData, [id]: value });
+    /*Copia todo el estado anterior (...formData)
+    Actualiza  la propiedad cuyo nombre coincide con el id del input*/ 
   };
 
+  //apertura camara
   const openCamera = async () => {
     try {
       console.log("Abriendo camara!!")
-      setShowCameraModal(true);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "user" } 
+      setShowCameraModal(true);//hace visible el modal de la cámara
+      await new Promise(resolve => setTimeout(resolve, 100));//deleay asegurar que el modal esté visible antes de acceder a la cámara
+      //acceso a la camara
+      const stream = await navigator.mediaDevices.getUserMedia({ //solicitar permiso acceder a  camara
+        video: { facingMode: "user" } //acceder  a camara
       });
-
+      //si existe referencia video
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        streamRef.current = stream;
+        videoRef.current.srcObject = stream;//asignar stream video a el elemento mostrado
+        streamRef.current = stream;//para cerrarlo despues
       }
 
-      startFaceDetection(); //Detectar rostros después de mostrar la cámara
+      startFaceDetection(); //llama duncion detectar rostros después de mostrar la cámara
     } catch (err) {
       console.error("Error al acceder a la cámara:", err);
       alert("No se pudo acceder a la cámara. Por favor verifica los permisos.");
-      setShowCameraModal(false);
+      setShowCameraModal(false);//cierra modal
     }
   };
 
+  //cierra camara
   const closeCamera = () => {
-    if (detectionInterval) {
-      clearInterval(detectionInterval);
-      setDetectionInterval(null);
+    if (detectionInterval) {//detener deteccion facial
+      clearInterval(detectionInterval);//limpiar
+      setDetectionInterval(null);//resetea estado
     }
 
+    //si hay stream activo
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
+      streamRef.current.getTracks().forEach(track => track.stop());//detener todas pistas
+      streamRef.current = null;//limpia referencias
     }
 
-    setIsCaptureEnabled(false);
-    setFaceDetected(false);
+    setIsCaptureEnabled(false);//desabilitar boton captura
+    setFaceDetected(false);//no rostro detectado
     console.log("Cerrando camara!")
-    setShowCameraModal(false);
+    setShowCameraModal(false);//ocultar modal
   };
 
-  // Nueva función para capturar la imagen
+
+
+  // capturar la imagen
   const captureImage = () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    if (!videoRef.current || !canvasRef.current) return;//si no hay referencias validas  de vido o canvas
     
     // Obtener dimensiones del video
     const video = videoRef.current;
@@ -174,14 +186,14 @@ const AgregarUsuarioPage = () => {
     canvas.height = video.videoHeight;
     
     // Dibujar el frame actual del video en el canvas
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext('2d');//obtiene contexto 2d del canvas
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);//dibuja el frame actual del video
     
     // Convertir a Blob
-    canvas.toBlob((blob) => {
-      if (blob) {
+    canvas.toBlob((blob) => {//Convierte el canvas a imagen JPEG con 95% de calidad
+      if (blob) {//recibe el blob
         console.log("Imagen capturada como Blob:", blob);
-        setFormData({...formData, fotoBlob: blob});
+        setFormData({...formData, fotoBlob: blob});//Guarda el blob en el estado del formulario
         alert("Imagen capturada correctamente!");
         closeCamera();
       } else {
@@ -193,23 +205,34 @@ const AgregarUsuarioPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
+      // Crear FormData para enviar datos binarios
+      const formDataToSend = new FormData();
+      
+      // Agregar todos los campos del formulario
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== 'fotoBlob' && value !== null) {
+          formDataToSend.append(key, value);
+        }
+      });
+  
+      // Agregar la imagen si existe
+      if (formData.fotoBlob) {
+        formDataToSend.append('foto', formData.fotoBlob, 'foto_usuario.jpg');
+      }
+  
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData,
-          fotoBlob: null // Envía null como valor
-        })
+        body: formDataToSend // No necesitamos headers Content-Type con FormData
       });
-
+  
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Error al agregar el usuario");
-
+  
       setMensaje("✅ Usuario registrado exitosamente");
+      
+      // Resetear formulario
       setFormData({
         tipo_documento: '',
         numero_documento: '',
@@ -223,7 +246,7 @@ const AgregarUsuarioPage = () => {
         id_cargo: '',
         fotoBlob: null
       });
-
+  
       setTimeout(() => navigate("/dashboard/users"), 800);
     } catch (error) {
       console.error("Error:", error);

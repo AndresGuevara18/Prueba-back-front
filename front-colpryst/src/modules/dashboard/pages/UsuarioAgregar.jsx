@@ -118,16 +118,8 @@ const AgregarUsuarioPage = () => {
       }
     };
   
-    const intervalId = setInterval(detectFaces, 100); // Ejecuta detectFaces cada 100ms
+    const intervalId = setInterval(detectFaces, 300); // Ejecuta detectFaces cada 100ms
     setDetectionInterval(intervalId);// Guarda el ID del intervalo para poder limpiarlo después
-  };
-
-  //manejo formulario
-  const handleChange = (e) => {//handleChange: Función que maneja cambios en los inputs
-    const { id, value } = e.target;//Desestructura el evento obtine id y el nuevo valor
-    setFormData({ ...formData, [id]: value });
-    /*Copia todo el estado anterior (...formData)
-    Actualiza  la propiedad cuyo nombre coincide con el id del input*/ 
   };
 
   //apertura camara
@@ -173,6 +165,8 @@ const AgregarUsuarioPage = () => {
     setShowCameraModal(false);//ocultar modal
   };
 
+
+
   // capturar la imagen
   const captureImage = () => {
     if (!videoRef.current || !canvasRef.current) return;//si no hay referencias validas  de vido o canvas
@@ -199,6 +193,14 @@ const AgregarUsuarioPage = () => {
         closeCamera();
       }
     }, 'image/jpeg', 0.95); // Calidad del 95%
+  };
+
+  //manejo formulario
+  const handleChange = (e) => {//handleChange: Función que maneja cambios en los inputs
+    const { id, value } = e.target;//Desestructura el evento obtine id y el nuevo valor
+    setFormData({ ...formData, [id]: value });
+    /*Copia todo el estado anterior (...formData)
+    Actualiza  la propiedad cuyo nombre coincide con el id del input*/ 
   };
 
   const handleSubmit = async (e) => {
