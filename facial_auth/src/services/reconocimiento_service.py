@@ -12,12 +12,7 @@ def obtener_todos_reconocimientos():
             resultados = cursor.fetchall()
 
             for fila in resultados:
-                reconocimiento = ReconocimientoFacial(
-                    id_foto=fila[0],
-                    fotografia_emple=fila[1],
-                    id_usuario=fila[2]
-                )
-                reconocimientos.append(reconocimiento)
+                reconocimientos.append(ReconocimientoFacial(*fila))
 
         except Exception as e:
             print(f"❌ Error al obtener datos: {e}")
@@ -28,7 +23,6 @@ def obtener_todos_reconocimientos():
     return reconocimientos
 
 
-# reconocimiento_service.py
 def obtener_foto_por_id_usuario(id_usuario: int):
     conexion = get_connection()
     if conexion:
@@ -40,15 +34,10 @@ def obtener_foto_por_id_usuario(id_usuario: int):
             )
             fila = cursor.fetchone()
             if fila:
-                return ReconocimientoFacial(
-                    id_foto=fila[0],
-                    fotografia_emple=fila[1],
-                    id_usuario=fila[2]
-                )
-            return None
+                return ReconocimientoFacial(*fila)
         except Exception as e:
-            print(f"Error al obtener foto por ID usuario: {e}")
-            return None
+            print(f"❌ Error al obtener foto por ID usuario: {e}")
         finally:
             cursor.close()
             conexion.close()
+    return None

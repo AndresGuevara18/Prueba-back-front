@@ -37,121 +37,117 @@ const usuarioController = {
         }
     },
 
-    // Nuevo usuario
-    createUser: async (req, res) => {
+     // Crear nuevo usuario
+  createUser: async (req, res) => {
+    try {
+      // 1. Preparar datos del usuario desde req.body y req.file
+      const usuarioData = {
+        ...req.body,
+        foto: req.file ? {
+          data: req.file.buffer,
+          contentType: req.file.mimetype
+        } : null
+      };
+
+      // 2. Validar que el cargo exista
+      const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
+      if (!cargo) {
+        throw new Error("CARGO_NOT_FOUND");
+      }
+
+      // 3. Validar si se subió una foto y enviar a FastAPI para verificar duplicado
+      if (req.file) {
         try {
-            //console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
-            //console.log("Archivo recibido:", req.file ? {
-                //originalname: req.file.originalname,
-                //mimetype: req.file.mimetype,
-                //size: req.file.size
-            //} : null);
-    
-            // Preparar datos del usuario
-            const usuarioData = {//objeto 
-                ...req.body,//todos los campos del body
-                foto: req.file ? {//foto
-                    data: req.file.buffer,
-                    contentType: req.file.mimetype
-                } : null
-            };
-    
-            // Validar si el cargo existe
-            const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
-            if (!cargo) {
-                //console.log("Cargo no encontrado:", usuarioData.id_cargo);
-                throw new Error("CARGO_NOT_FOUND");
-            }
-    
-            // Validar tipo de archivo si se subió uno
-            if (req.file) {
-                try {
-                    const formData = new FormData();
-                    formData.append('file', req.file.buffer, {
-                        filename: 'imagen.jpg',
-                        contentType: req.file.mimetype
-                    });
-            
-                    const response = await axios.post('http://localhost:8000/verificar-imagen', formData, {
-                        headers: formData.getHeaders()
-                    });
-            
-                    console.log("✅ Respuesta de FastAPI:", response.data);
-            
-                } catch (err) {
-                    console.error("❌ Error al enviar imagen a FastAPI:", err.response ? err.response.data : err.message);
-                    return res.status(500).json({
-                        success: false,
-                        message: "Error al verificar imagen en FastAPI",
-                        error: err.message
-                    });
-                }
-            }
-            /*if (req.file) {
-                const allowedTypes = ['image/jpeg', 'image/png'];//tipos aceptados
-                if (!allowedTypes.includes(req.file.mimetype)) {// tipos de contenido en internet
-                    throw new Error("INVALID_FILE_TYPE");
-                }
-            }*/
-    
-            // Llamar servicio para crear el usuario
-            const nuevoUsuario = await usuarioService.createUser(usuarioData);
-    
-            // Construir respuesta
-            const response = {
-                success: true,
-                message: "Usuario creado exitosamente.",
-                data: {
-                    id: nuevoUsuario.id
-                }
-            };
-    
-            // Si se subió una foto, añadir la URL a la respuesta
-            if (req.file) {
-                response.data.fotoUrl = `/uploads/fotos/usuario-${nuevoUsuario.id}.jpg`;
-            }
-    
-            res.status(201).json(response);
-        } catch (error) {
-            console.error("❌ Error en createUser (Controller):", error.message);
-    
-            let statusCode = 500;
-            let message = "Error interno del servidor.";
-    
-            switch (error.message) {
-                case "CARGO_NOT_FOUND":
-                    statusCode = 400;
-                    message = "El cargo especificado no existe.";
-                    break;
-                case "DOCUMENTO_EXISTS":
-                    statusCode = 400;
-                    message = "El número de documento ya está registrado.";
-                    break;
-                case "EMAIL_EXISTS":
-                    statusCode = 400;
-                    message = "El correo electrónico ya está registrado.";
-                    break;
-                case "USUARIO_EXISTS":
-                    statusCode = 400;
-                    message = "El nombre de usuario ya está en uso.";
-                    break;
-                case "INVALID_FILE_TYPE":
-                    statusCode = 415;
-                    message = "Solo se permiten imágenes JPEG o PNG.";
-                    break;
-                case "LIMIT_FILE_SIZE":
-                    statusCode = 413;
-                    message = "La imagen es demasiado grande (máximo 5MB).";
-                    break;
-            }
-    
-            res.status(statusCode).json({
-                success: false,
-                message: message,
-                error: error.message
+          const formData = new FormData();
+          formData.append('file', req.file.buffer, {
+            filename: 'imagen.jpg',
+            contentType: req.file.mimetype
+          });
+
+          const respuestaFastAPI = await axios.post('http://localhost:8000/verificar-imagen', formData, {
+            headers: formData.getHeaders()
+          });
+
+          console.log("✅ Respuesta de FastAPI:", respuestaFastAPI.data);
+
+          if (respuestaFastAPI.data.match === true) {
+            return res.status(400).json({
+              success: false,
+              message: "El rostro ya está registrado previamente con otro usuario.",
+              id_usuario: respuestaFastAPI.data.id_usuario
             });
+          }
+
+        } catch (err) {
+          console.error("❌ Error al enviar imagen a FastAPI:", err.response ? err.response.data : err.message);
+          return res.status(500).json({
+            success: false,
+            message: "Error al verificar imagen en FastAPI",
+            error: err.message
+          });
         }
-    },
+      }
+
+      // 4. Crear el usuario en la base de datos
+      const nuevoUsuario = await usuarioService.createUser(usuarioData);
+
+      // 5. Construir respuesta exitosa
+      const respuestaFinal = {
+        success: true,
+        message: "Usuario creado exitosamente.",
+        data: {
+          id: nuevoUsuario.id
+        }
+      };
+
+      // Añadir URL de la foto si fue cargada
+      if (req.file) {
+        respuestaFinal.data.fotoUrl = `/uploads/fotos/usuario-${nuevoUsuario.id}.jpg`;
+      }
+
+      res.status(201).json(respuestaFinal);
+
+    } catch (error) {
+      console.error("❌ Error en createUser (Controller):", error.message);
+
+      let statusCode = 500;
+      let message = "Error interno del servidor.";
+
+      // 6. Manejo de errores personalizados
+      switch (error.message) {
+        case "CARGO_NOT_FOUND":
+          statusCode = 400;
+          message = "El cargo especificado no existe.";
+          break;
+        case "DOCUMENTO_EXISTS":
+          statusCode = 400;
+          message = "El número de documento ya está registrado.";
+          break;
+        case "EMAIL_EXISTS":
+          statusCode = 400;
+          message = "El correo electrónico ya está registrado.";
+          break;
+        case "USUARIO_EXISTS":
+          statusCode = 400;
+          message = "El nombre de usuario ya está en uso.";
+          break;
+        case "INVALID_FILE_TYPE":
+          statusCode = 415;
+          message = "Solo se permiten imágenes JPEG o PNG.";
+          break;
+        case "LIMIT_FILE_SIZE":
+          statusCode = 413;
+          message = "La imagen es demasiado grande (máximo 5MB).";
+          break;
+      }
+
+      res.status(statusCode).json({
+        success: false,
+        message: message,
+        error: error.message
+      });
+    }
+  },
 
     //actualizar usaurio
     updateUser: async (req, res) => {

@@ -1,15 +1,11 @@
-# main.py
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import cv2
-import numpy as np
-from deepface import DeepFace
-from typing import List
-from src.services.reconocimiento_service import obtener_todos_reconocimientos, obtener_foto_por_id_usuario
+from src.services.reconocimiento_service import obtener_todos_reconocimientos
+from src.logic.face_verification import comparar_imagen_con_lista
 
 app = FastAPI()
 
-# Configura CORS para permitir comunicación con Node.js
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,26 +18,25 @@ async def verificar_imagen(file: UploadFile = File(...)):
     try:
         if not file:
             raise HTTPException(status_code=400, detail="No se proporcionó imagen")
-        
+
         contents = await file.read()
         if not contents:
             raise HTTPException(status_code=400, detail="Imagen vacía")
 
-        nparr = np.frombuffer(contents, np.uint8)
-        img_nueva = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        
-        if img_nueva is None:
-            raise HTTPException(status_code=400, detail="Formato de imagen no válido")
-        
-        # Obtener información básica de la imagen
-        height, width, channels = img_nueva.shape
+        reconocimientos = obtener_todos_reconocimientos()
+        match, id_usuario = comparar_imagen_con_lista(contents, reconocimientos)
+
+        if match:
+            return {
+                "match": True,
+                "id_usuario": id_usuario,
+                "message": "El rostro ya está registrado"
+            }
+
         return {
-            "message": "Imagen recibida correctamente",
-            "width": width,
-            "height": height,
-            "channels": channels,
-            "content_type": file.content_type
+            "match": False,
+            "message": "Rostro no encontrado en la base de datos"
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Error general: {str(e)}")
