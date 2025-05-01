@@ -1,11 +1,11 @@
 class Usuario {
-    constructor( id_usuario, tipo_documento, numero_documento, nombre_empleado, direccion_empelado, 
+    constructor( id_usuario, tipo_documento, numero_documento, nombre_empleado, direccion_empleado, 
         telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo) {
         this.id_usuario = id_usuario;
         this.tipo_documento = tipo_documento;
         this.numero_documento = numero_documento;
         this.nombre_empleado = nombre_empleado;
-        this.direccion_empelado = direccion_empelado;
+        this.direccion_empleado = direccion_empleado;
         this.telefono_empleado = telefono_empleado;
         this.email_empleado = email_empleado;
         this.eps_empleado = eps_empleado;
@@ -34,8 +34,8 @@ class Usuario {
     getNombreEmpleado() { return this.nombre_empleado; }
     setNombreEmpleado(nombre) { this.nombre_empleado = nombre; }
 
-    getDireccionEmpleado() { return this.direccion_empelado; }
-    setDireccionEmpleado(direccion) { this.direccion_empelado = direccion; }
+    getDireccionEmpleado() { return this.direccion_empleado; }
+    setDireccionEmpleado(direccion) { this.direccion_empleado = direccion; }
 
     getTelefonoEmpleado() { return this.telefono_empleado; }
     setTelefonoEmpleado(telefono) { this.telefono_empleado = telefono; }

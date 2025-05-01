@@ -16,8 +16,8 @@ create table usuario (
     tipo_documento varchar(20) not null,
     numero_documento varchar(20) not null unique,
     nombre_empleado varchar(80) not null,
-    direccion_empelado varchar(20),
-    telefono_empleado varchar(20), 
+    direccion_empleado varchar(80),
+    telefono_empleado varchar(80), 
     email_empleado varchar(80) not null unique,
     eps_empleado varchar(80),
     usuarioadmin varchar(80) unique,
@@ -51,7 +51,7 @@ INSERT INTO Cargo (nombre_cargo, descripcion) VALUES
 ('Administrativo', 'Administración general');
 
 -- Inserción de registros en la tabla Usuario
-INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empelado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo
+INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo
 ) VALUES
 -- 📌 1 Gerente (ID Cargo = 1)
 ('DNI', '12345678A', 'Carlos Pérez', 'Calle 123, Ciudad A', '3001234567', 'carlos.perez@colpryst.com', 'EPS001', 'carlos.perez', 'admin123', 1),  

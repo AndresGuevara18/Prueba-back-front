@@ -5,6 +5,7 @@ front-colpryst/node_modules/
 # Ignorar archivos de entorno
 bee_express_pruebaback/.env
 front-colpryst/.env
+facial_auth/venv310/
 
 # Ignorar archivos de configuración local
 bee_express_pruebaback/.vscode/

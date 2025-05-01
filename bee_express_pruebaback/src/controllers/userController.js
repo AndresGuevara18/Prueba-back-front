@@ -38,7 +38,6 @@ const usuarioController = {
     },
 
     // Nuevo usuario
-    // Nuevo usuario
     createUser: async (req, res) => {
         try {
             //console.log("Datos recibidos en el controlador:", req.body); // Campos del formulario
@@ -66,11 +65,34 @@ const usuarioController = {
     
             // Validar tipo de archivo si se subió uno
             if (req.file) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', req.file.buffer, {
+                        filename: 'imagen.jpg',
+                        contentType: req.file.mimetype
+                    });
+            
+                    const response = await axios.post('http://localhost:8000/verificar-imagen', formData, {
+                        headers: formData.getHeaders()
+                    });
+            
+                    console.log("✅ Respuesta de FastAPI:", response.data);
+            
+                } catch (err) {
+                    console.error("❌ Error al enviar imagen a FastAPI:", err.response ? err.response.data : err.message);
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error al verificar imagen en FastAPI",
+                        error: err.message
+                    });
+                }
+            }
+            /*if (req.file) {
                 const allowedTypes = ['image/jpeg', 'image/png'];//tipos aceptados
                 if (!allowedTypes.includes(req.file.mimetype)) {// tipos de contenido en internet
                     throw new Error("INVALID_FILE_TYPE");
                 }
-            }
+            }*/
     
             // Llamar servicio para crear el usuario
             const nuevoUsuario = await usuarioService.createUser(usuarioData);

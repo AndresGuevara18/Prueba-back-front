@@ -11,7 +11,7 @@ const AgregarUsuarioPage = () => {
     tipo_documento: '',
     numero_documento: '',
     nombre_empleado: '',
-    direccion_empelado: '', 
+    direccion_empleado: '', 
     telefono_empleado: '', 
     email_empleado: '',
     eps_empleado: '', 
@@ -237,7 +237,7 @@ const AgregarUsuarioPage = () => {
         tipo_documento: '',
         numero_documento: '',
         nombre_empleado: '',
-        direccion_empelado: '',
+        direccion_empleado: '',
         telefono_empleado: '',
         email_empleado: '',
         eps_empleado: '',
@@ -313,14 +313,14 @@ const AgregarUsuarioPage = () => {
 
             {/* Dirección */}
             <div className="input-group">
-              <label htmlFor="direccion_empelado" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="direccion_empleado" className="block text-sm font-medium text-gray-700">
                 Dirección
               </label>
               <input
                 type="text"
-                id="direccion_empelado"
+                id="direccion_empleado"
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.direccion_empelado}
+                value={formData.direccion_empleado}
                 onChange={handleChange}
                 required
               />

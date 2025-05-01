@@ -14,7 +14,7 @@ const usuarioService = {
 
             const usuarios = results.map(row => 
                 new Usuario( row.id_usuario, row.tipo_documento, row.numero_documento, row.nombre_empleado, 
-                    row.direccion_empelado, row.telefono_empleado, row.email_empleado, row.eps_empleado, 
+                    row.direccion_empleado, row.telefono_empleado, row.email_empleado, row.eps_empleado, 
                     row.usuarioadmin, row.contrasenia, row.id_cargo)
             );
 
@@ -54,7 +54,7 @@ const usuarioService = {
                 tipo_documento: userResult[0].tipo_documento,
                 numero_documento: userResult[0].numero_documento,
                 nombre_empleado: userResult[0].nombre_empleado,
-                direccion_empelado: userResult[0].direccion_empelado,
+                direccion_empleado: userResult[0].direccion_empleado,
                 telefono_empleado: userResult[0].telefono_empleado,
                 email_empleado: userResult[0].email_empleado,
                 eps_empleado: userResult[0].eps_empleado,
@@ -105,14 +105,14 @@ const usuarioService = {
     
             // Insertar usuario
             const insertQuery = `INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, 
-            direccion_empelado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo) 
+            direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     
             const [result] = await db.promise().query(insertQuery, [
                 usuarioData.tipo_documento,
                 usuarioData.numero_documento,
                 usuarioData.nombre_empleado,
-                usuarioData.direccion_empelado,
+                usuarioData.direccion_empleado,
                 usuarioData.telefono_empleado,
                 usuarioData.email_empleado,
                 usuarioData.eps_empleado,
@@ -204,7 +204,7 @@ const usuarioService = {
                 tipo_documento = COALESCE(?, tipo_documento), 
                 numero_documento = COALESCE(?, numero_documento), 
                 nombre_empleado = COALESCE(?, nombre_empleado),
-                direccion_empelado = COALESCE(?, direccion_empelado), 
+                direccion_empleado = COALESCE(?, direccion_empleado), 
                 telefono_empleado = COALESCE(?, telefono_empleado), 
                 email_empleado = COALESCE(?, email_empleado), 
                 eps_empleado = COALESCE(?, eps_empleado), 
@@ -218,7 +218,7 @@ const usuarioService = {
                 userData.tipo_documento,
                 userData.numero_documento,
                 userData.nombre_empleado,
-                userData.direccion_empelado,
+                userData.direccion_empleado,
                 userData.telefono_empleado,
                 userData.email_empleado,
                 userData.eps_empleado,
@@ -235,64 +235,6 @@ const usuarioService = {
             throw error;
         }
     },
-    /*updateUser: async (id_usuario, userData) => {
-        try {
-            // 1. Manejo de la contraseña
-            let hashedPassword;
-            
-            if (userData.contrasenia && userData.contrasenia.trim() !== "") {
-                // Si se proporcionó nueva contraseña: Hashear
-                hashedPassword = await bcrypt.hash(userData.contrasenia, 10);
-            } else {
-                // Si NO se proporcionó contraseña: Obtener la actual
-                const [rows] = await db.promise().execute(
-                    "SELECT contrasenia FROM usuario WHERE id_usuario = ?", 
-                    [id_usuario]
-                );
-                
-                if (rows.length === 0) {
-                    throw new Error("Usuario no encontrado");
-                }
-                
-                hashedPassword = rows[0].contrasenia;
-            }
-    
-            // 2. Consulta SQL de actualización
-            const query = `UPDATE usuario SET 
-                tipo_documento = ?, 
-                numero_documento = ?, 
-                nombre_empleado = ?,
-                direccion_empelado = ?, 
-                telefono_empleado = ?, 
-                email_empleado = ?, 
-                eps_empleado = ?, 
-                usuarioadmin = ?,
-                contrasenia = ?, 
-                id_cargo = ? 
-                WHERE id_usuario = ?`;
-    
-            // 3. Ejecutar la actualización
-            const [result] = await db.promise().execute(query, [
-                userData.tipo_documento,
-                userData.numero_documento,
-                userData.nombre_empleado,
-                userData.direccion_empelado,
-                userData.telefono_empleado,
-                userData.email_empleado,
-                userData.eps_empleado,
-                userData.usuarioadmin,
-                hashedPassword, // Usa la contraseña hasheada (nueva o anterior)
-                userData.id_cargo,
-                id_usuario
-            ]);
-    
-            return result;
-    
-        } catch (error) {
-            console.error("❌ Error en updateUser (Service):", error);
-            throw error;
-        }
-    }*/
 
     // ELIMINAR USUARIO
     deleteUser: async (id_usuario) => {

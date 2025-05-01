@@ -73,7 +73,7 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *               - tipo_documento
  *               - numero_documento
  *               - nombre_empleado
- *               - direccion_empelado
+ *               - direccion_empleado
  *               - telefono_empleado
  *               - email_empleado
  *               - eps_empleado
@@ -89,7 +89,7 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *               nombre_empleado:
  *                 type: string
  *                 example: "Juan Pérez"
- *               direccion_empelado:
+ *               direccion_empleado:
  *                 type: string
  *                 example: "Calle 123 #45-67"
  *               telefono_empleado:
@@ -172,7 +172,7 @@ router.post('/', upload.single('foto'), (req, res, next) => {
  *                 type: string
  *                 description: Nombre completo del usuario*
  *                 example: "Juan Pérez"
- *               direccion_empelado:
+ *               direccion_empleado:
  *                 type: string
  *                 description: Dirección de residencia
  *                 example: "Calle 123 #45-67"
