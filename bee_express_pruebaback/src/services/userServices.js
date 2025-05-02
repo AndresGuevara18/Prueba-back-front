@@ -72,42 +72,57 @@ const usuarioService = {
     // Nuevo usuario
     createUser: async (usuarioData) => {
         try {
-            console.log("Datos recibidos en el servicio:", usuarioData); // Depuración
+            console.log("📡 [DEBUG] Datos recibidos en el servicio:", {
+                ...usuarioData,
+                foto: usuarioData.foto ? `[Buffer de ${usuarioData.foto.data.length} bytes]` : null,
+                embedding: usuarioData.embedding ? `[Array de ${usuarioData.embedding.length} elementos]` : null,
+                contrasenia: '[PROTEGIDO]'
+            });
     
-            // Verificar si el número de documento ya existe
-            const checkDocumentoQuery = 'SELECT id_usuario FROM usuario WHERE numero_documento = ?';
-            const [existingDocumento] = await db.promise().query(checkDocumentoQuery, [usuarioData.numero_documento]);
-    
+            // 1. Validar número de documento
+            const [existingDocumento] = await db.promise().query(
+                'SELECT id_usuario FROM usuario WHERE numero_documento = ?',
+                [usuarioData.numero_documento]
+            );
             if (existingDocumento.length > 0) {
-                throw new Error("DOCUMENTO_EXISTS"); // Error técnico
+                console.log("❌ [DEBUG] Documento ya existe:", usuarioData.numero_documento);
+                throw new Error("DOCUMENTO_EXISTS");
             }
     
-            // Verificar si el correo electrónico ya existe
-            const checkEmailQuery = 'SELECT id_usuario FROM usuario WHERE email_empleado = ?';
-            const [existingEmail] = await db.promise().query(checkEmailQuery, [usuarioData.email_empleado]);
-    
+            // 2. Validar email
+            const [existingEmail] = await db.promise().query(
+                'SELECT id_usuario FROM usuario WHERE email_empleado = ?',
+                [usuarioData.email_empleado]
+            );
             if (existingEmail.length > 0) {
-                throw new Error("EMAIL_EXISTS"); // Error técnico
+                console.log("❌ [DEBUG] Email ya existe:", usuarioData.email_empleado);
+                throw new Error("EMAIL_EXISTS");
             }
     
-            // Verificar si el nombre de usuario ya existe (si se proporciona)
+            // 3. Validar usuario admin (si aplica)
             if (usuarioData.usuarioadmin) {
-                const checkUsuarioQuery = 'SELECT id_usuario FROM usuario WHERE usuarioadmin = ?';
-                const [existingUsuario] = await db.promise().query(checkUsuarioQuery, [usuarioData.usuarioadmin]);
-    
+                const [existingUsuario] = await db.promise().query(
+                    'SELECT id_usuario FROM usuario WHERE usuarioadmin = ?',
+                    [usuarioData.usuarioadmin]
+                );
                 if (existingUsuario.length > 0) {
-                    throw new Error("USUARIO_EXISTS"); // Error técnico
+                    console.log("❌ [DEBUG] Usuario admin ya existe:", usuarioData.usuarioadmin);
+                    throw new Error("USUARIO_EXISTS");
                 }
             }
     
-            // Hashear la contraseña
+            // 4. Hashear contraseña
             const hashedPassword = await bcrypt.hash(usuarioData.contrasenia, 10);
+            console.log("🔐 [DEBUG] Contraseña hasheada correctamente");
     
-            // Insertar usuario
-            const insertQuery = `INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, 
-            direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    
+            // 5. Insertar usuario
+            const insertQuery = `
+                INSERT INTO usuario (
+                    tipo_documento, numero_documento, nombre_empleado,
+                    direccion_empleado, telefono_empleado, email_empleado,
+                    eps_empleado, usuarioadmin, contrasenia, id_cargo
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
             const [result] = await db.promise().query(insertQuery, [
                 usuarioData.tipo_documento,
                 usuarioData.numero_documento,
@@ -121,18 +136,25 @@ const usuarioService = {
                 usuarioData.id_cargo
             ]);
     
-            console.log("Usuario insertado correctamente. ID generado:", result.insertId); // Depuración
+            const userId = result.insertId;
+            console.log("✅ [DEBUG] Usuario insertado correctamente. ID:", userId);
+            //console.log("🔢 [DEBUG] Embedding recibido:", usuarioData.embedding ? `Array[${usuarioData.embedding.length}]` : null);
+            
+            // 6. [OPCIONAL] Si necesitas procesar el reconocimiento después:
+            // await reconocimientoService.createReconocimiento(userId, usuarioData.embedding);
+            // Después de crear el usuario:
+            await reconocimientoService.createReconocimiento(
+                userId,                // ID del usuario nuevo
+                usuarioData.embedding  // Array[128] del embedding
+            );
+            return userId;
     
-            // Crear registro de reconocimiento facial
-            const fotoBuffer = usuarioData.foto ? usuarioData.foto.data : null;
-            await reconocimientoService.createReconocimiento(result.insertId, fotoBuffer);
-            //await reconocimientoService.createReconocimiento(result.insertId, null); // null imagen (segundo parámetro)
-    
-            // Devolver solo el ID generado
-            return result.insertId;
         } catch (err) {
-            console.error("❌ Error en createUser (Service):", err);
-            throw err; // Lanzar el error técnico sin modificar
+            console.error("❌ [DEBUG] Error en createUser (Service):", {
+                message: err.message,
+                stack: err.stack
+            });
+            throw err; // Re-lanzar el error para el controlador
         }
     },
 

@@ -1,42 +1,33 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from src.services.reconocimiento_service import obtener_todos_reconocimientos
-from src.logic.face_verification import comparar_imagen_con_lista
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+import numpy as np
+import cv2
+from deepface import DeepFace
 
 app = FastAPI()
-
-# CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 @app.post("/verificar-imagen")
 async def verificar_imagen(file: UploadFile = File(...)):
     try:
-        if not file:
-            raise HTTPException(status_code=400, detail="No se proporcionó imagen")
-
         contents = await file.read()
-        if not contents:
-            raise HTTPException(status_code=400, detail="Imagen vacía")
 
-        reconocimientos = obtener_todos_reconocimientos()
-        match, id_usuario = comparar_imagen_con_lista(contents, reconocimientos)
+        # Convertir blob a imagen
+        nparr = np.frombuffer(contents, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-        if match:
+        if img is None:
+            return JSONResponse(status_code=400, content={"message": "No se pudo leer la imagen."})
+
+        # Obtener embedding con DeepFace
+        result = DeepFace.represent(img_path=img, model_name='Facenet', enforce_detection=False)
+
+        if result and len(result) > 0:
             return {
-                "match": True,
-                "id_usuario": id_usuario,
-                "message": "El rostro ya está registrado"
+                "match": False,  # Puedes usar DeepFace.find más adelante si quieres verificar duplicados
+                "embedding": result[0]["embedding"]
             }
 
-        return {
-            "match": False,
-            "message": "Rostro no encontrado en la base de datos"
-        }
+        return JSONResponse(status_code=400, content={"message": "No se generó el embedding."})
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error general: {str(e)}")
+        return JSONResponse(status_code=500, content={"message": "Error interno", "error": str(e)})

@@ -27,14 +27,23 @@ create table usuario (
     constraint fk_usuario_cargo foreign key (id_cargo) references cargo (id_cargo)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
--- Crear tabla 'reconocimiento_facial' con columna tipo BLOB
+-- Crear tabla 'reconocimiento_facial'
+CREATE TABLE reconocimiento_facial (
+    id_foto INT AUTO_INCREMENT NOT NULL,
+    embedding LONGTEXT NOT NULL,  -- Aquí se guarda el embedding como texto (ej: "[0.1, -0.2, ...]")
+    id_usuario INT NOT NULL,
+    CONSTRAINT pk_reconocimiento_facial PRIMARY KEY (id_foto),
+    CONSTRAINT fk_reconocimiento_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+/*-- Crear tabla 'reconocimiento_facial' con columna tipo BLOB
 create table reconocimiento_facial (
     id_foto int auto_increment not null,
     fotografia_emple LONGBLOB , -- BLOB not null 
     id_usuario int not null,
     constraint pk_reconocimiento_facial primary key (id_foto),
     constraint fk_reconocimiento_usuario foreign key (id_usuario) references usuario (id_usuario)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;*/
 
 -- INSERT
 -- Inserción de registros en la tabla Cargo

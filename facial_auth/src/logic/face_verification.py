@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from deepface import DeepFace
-from src.models.reconocimiento_facial import ReconocimientoFacial
+from models.reconocimiento_facial import ReconocimientoFacial
 from typing import Tuple, List
 
 def comparar_imagen_con_lista(blob_imagen: bytes, lista_reconocimientos: List[ReconocimientoFacial]) -> Tuple[bool, int]:

@@ -37,118 +37,197 @@ const usuarioController = {
         }
     },
 
-     // Crear nuevo usuario
-  createUser: async (req, res) => {
-    try {
-      // 1. Preparar datos del usuario desde req.body y req.file
-      const usuarioData = {
-        ...req.body,
-        foto: req.file ? {
-          data: req.file.buffer,
-          contentType: req.file.mimetype
-        } : null
-      };
-
-      // 2. Validar que el cargo exista
-      const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
-      if (!cargo) {
-        throw new Error("CARGO_NOT_FOUND");
-      }
-
-      // 3. Validar si se subió una foto y enviar a FastAPI para verificar duplicado
-      if (req.file) {
-        try {
-          const formData = new FormData();
-          formData.append('file', req.file.buffer, {
-            filename: 'imagen.jpg',
+    // Crear nuevo usuario
+    createUser: async (req, res) => {
+      try {
+        console.log('✅ 1. Iniciando creación de usuario');
+        
+        // 1. Validar tipo de archivo
+        if (req.file && !["image/jpeg", "image/png"].includes(req.file.mimetype)) {
+          console.log('❌ Tipo de archivo no válido:', req.file.mimetype);
+          throw new Error("INVALID_FILE_TYPE");
+        } else if (req.file) {
+          console.log('✔ Archivo válido recibido. Tipo:', req.file.mimetype, 'Tamaño:', req.file.size, 'bytes');
+        }
+    
+        // 2. Preparar datos del usuario
+        const usuarioData = {
+          ...req.body,
+          foto: req.file ? {
+            data: req.file.buffer,
             contentType: req.file.mimetype
-          });
-
-          const respuestaFastAPI = await axios.post('http://localhost:8000/verificar-imagen', formData, {
-            headers: formData.getHeaders()
-          });
-
-          console.log("✅ Respuesta de FastAPI:", respuestaFastAPI.data);
-
-          if (respuestaFastAPI.data.match === true) {
-            return res.status(400).json({
-              success: false,
-              message: "El rostro ya está registrado previamente con otro usuario.",
-              id_usuario: respuestaFastAPI.data.id_usuario
+          } : null,
+          contrasenia: req.body.contrasenia // Asegurar que la contraseña esté incluida
+        };
+        
+        console.log('📋 Datos del usuario preparados:', {
+          ...usuarioData,
+          foto: usuarioData.foto ? `[Buffer de ${usuarioData.foto.data.length} bytes]` : null,
+          contrasenia: '[PROTEGIDO]'
+        });
+    
+        // 3. Validar que el cargo exista
+        console.log('🔍 Validando cargo con ID:', usuarioData.id_cargo);
+        const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
+        if (!cargo) {
+          console.log('❌ Cargo no encontrado con ID:', usuarioData.id_cargo);
+          throw new Error("CARGO_NOT_FOUND");
+        }
+        console.log('✔ Cargo válido encontrado:', cargo);
+    
+        // 4. Validar y obtener embedding desde FastAPI
+        let embedding = null;
+        
+        if (req.file) {
+          try {
+            console.log('🖼 Procesando imagen facial...');
+            
+            const formData = new FormData();
+            formData.append('file', req.file.buffer, {
+              filename: 'imagen.jpg',
+              contentType: req.file.mimetype
             });
+    
+            console.log('📤 Enviando imagen a FastAPI...', {
+              bufferSize: req.file.buffer.length,
+              headers: formData.getHeaders()
+            });
+    
+            const respuestaFastAPI = await axios.post('http://localhost:8000/verificar-imagen', formData, {
+              headers: formData.getHeaders()
+            });
+    
+            console.log('📥 Respuesta recibida de FastAPI:', {
+              status: respuestaFastAPI.status,
+              data: {
+                match: respuestaFastAPI.data.match,
+                id_usuario: respuestaFastAPI.data.id_usuario,
+                embedding: respuestaFastAPI.data.embedding ? `[Array de ${respuestaFastAPI.data.embedding.length} elementos]` : null
+              }
+            });
+    
+            const data = respuestaFastAPI.data;
+    
+            if (data.match === true) {
+              console.log('❌ Rostro ya registrado. ID usuario existente:', data.id_usuario);
+              return res.status(400).json({
+                success: false,
+                message: "El rostro ya está registrado previamente con otro usuario.",
+                id_usuario: data.id_usuario
+              });
+            }
+    
+            if (Array.isArray(data.embedding) && data.embedding.length > 0) {
+              console.log('✔ Embedding recibido. Longitud:', data.embedding.length);
+              embedding = data.embedding;
+            } else {
+              console.log('❌ No se recibió embedding válido:', data.embedding);
+              throw new Error("EMBEDDING_NOT_RECEIVED");
+            }
+          } catch (err) {
+            console.error("❌ Error en comunicación con FastAPI:", {
+              message: err.message,
+              response: err.response ? {
+                status: err.response.status,
+                data: err.response.data
+              } : null,
+              stack: err.stack
+            });
+            throw new Error("EMBEDDING_NOT_RECEIVED");
           }
-
-        } catch (err) {
-          console.error("❌ Error al enviar imagen a FastAPI:", err.response ? err.response.data : err.message);
-          return res.status(500).json({
-            success: false,
-            message: "Error al verificar imagen en FastAPI",
-            error: err.message
-          });
+        } else {
+          console.log('⚠ No se proporcionó imagen facial - Se omitirá verificación');
         }
-      }
-
-      // 4. Crear el usuario en la base de datos
-      const nuevoUsuario = await usuarioService.createUser(usuarioData);
-
-      // 5. Construir respuesta exitosa
-      const respuestaFinal = {
-        success: true,
-        message: "Usuario creado exitosamente.",
-        data: {
-          id: nuevoUsuario.id
+    
+        // 5. Agregar embedding a los datos del usuario si existe
+        if (embedding) {
+          usuarioData.embedding = embedding; // Corregí el typo (embedding no embedding)
+          console.log('🔢 Embedding agregado a datos del usuario. Longitud:', embedding.length);
+        } else {
+          console.log('⚠ No se agregó embedding a los datos del usuario');
         }
-      };
-
-      // Añadir URL de la foto si fue cargada
-      if (req.file) {
-        respuestaFinal.data.fotoUrl = `/uploads/fotos/usuario-${nuevoUsuario.id}.jpg`;
+    
+        // 6. Llamar al servicio de usuario para creación REAL
+        console.log('📨 Enviando datos al servicio de usuario...');
+        const nuevoUsuarioId = await usuarioService.createUser(usuarioData);
+        console.log('🆔 ID de usuario creado:', nuevoUsuarioId);
+    
+        // 7. Generar URL de foto (si existe)
+        let fotoUrl = null;
+        if (req.file) {
+          fotoUrl = `/uploads/fotos/usuario-${nuevoUsuarioId}.jpg`;
+          // Aquí deberías guardar físicamente el archivo si es necesario
+          // await guardarArchivo(req.file.buffer, fotoUrl);
+        }
+    
+        // 8. Respuesta exitosa
+        console.log('🎉 Usuario creado exitosamente');
+        return res.status(201).json({
+          success: true,
+          message: "Usuario creado exitosamente.",
+          data: {
+            id: nuevoUsuarioId,
+            fotoUrl: fotoUrl
+          }
+        });
+    
+      } catch (error) {
+        console.error("❌ Error en createUser (Controller):", {
+          message: error.message,
+          stack: error.stack
+        });
+        
+        let statusCode = 500;
+        let message = "Error interno del servidor.";
+    
+        switch (error.message) {
+          case "CARGO_NOT_FOUND":
+            statusCode = 400;
+            message = "El cargo especificado no existe.";
+            break;
+          case "DOCUMENTO_EXISTS":
+            statusCode = 400;
+            message = "El número de documento ya está registrado.";
+            break;
+          case "EMAIL_EXISTS":
+            statusCode = 400;
+            message = "El correo electrónico ya está registrado.";
+            break;
+          case "USUARIO_EXISTS":
+            statusCode = 400;
+            message = "El nombre de usuario ya está en uso.";
+            break;
+          case "INVALID_FILE_TYPE":
+            statusCode = 415;
+            message = "Solo se permiten imágenes JPEG o PNG.";
+            break;
+          case "LIMIT_FILE_SIZE":
+            statusCode = 413;
+            message = "La imagen es demasiado grande (máximo 5MB).";
+            break;
+          case "EMBEDDING_NOT_RECEIVED":
+            statusCode = 500;
+            message = "No se recibió el embedding desde FastAPI.";
+            break;
+          case "RECONOCIMIENTO_INSERT_FAILED":
+            statusCode = 500;
+            message = "Error al guardar en la tabla de reconocimiento facial.";
+            break;
+        }
+    
+        return res.status(statusCode).json({
+          success: false,
+          message: message,
+          error: error.message,
+          ...(process.env.NODE_ENV === 'development' && {
+            debug_info: {
+              stack: error.stack
+            }
+          })
+        });
       }
-
-      res.status(201).json(respuestaFinal);
-
-    } catch (error) {
-      console.error("❌ Error en createUser (Controller):", error.message);
-
-      let statusCode = 500;
-      let message = "Error interno del servidor.";
-
-      // 6. Manejo de errores personalizados
-      switch (error.message) {
-        case "CARGO_NOT_FOUND":
-          statusCode = 400;
-          message = "El cargo especificado no existe.";
-          break;
-        case "DOCUMENTO_EXISTS":
-          statusCode = 400;
-          message = "El número de documento ya está registrado.";
-          break;
-        case "EMAIL_EXISTS":
-          statusCode = 400;
-          message = "El correo electrónico ya está registrado.";
-          break;
-        case "USUARIO_EXISTS":
-          statusCode = 400;
-          message = "El nombre de usuario ya está en uso.";
-          break;
-        case "INVALID_FILE_TYPE":
-          statusCode = 415;
-          message = "Solo se permiten imágenes JPEG o PNG.";
-          break;
-        case "LIMIT_FILE_SIZE":
-          statusCode = 413;
-          message = "La imagen es demasiado grande (máximo 5MB).";
-          break;
-      }
-
-      res.status(statusCode).json({
-        success: false,
-        message: message,
-        error: error.message
-      });
-    }
-  },
-
+    }, 
+    
     //actualizar usaurio
     updateUser: async (req, res) => {
         const { id_usuario } = req.params;
