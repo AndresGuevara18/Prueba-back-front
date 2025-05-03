@@ -1,5 +1,5 @@
 # src/services/reconocimiento_service.py
-
+#sin funcionalidad
 from src.config.db import get_connection
 from src.models.reconocimiento_facial import ReconocimientoFacial
 
