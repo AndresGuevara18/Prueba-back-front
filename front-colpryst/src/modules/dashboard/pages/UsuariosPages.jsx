@@ -14,7 +14,7 @@ const UsuariosPage = () => {
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
   const [usuarioAEditar, setUsuarioAEditar] = useState(null);
   const [formData, setFormData] = useState({ tipo_documento: "", numero_documento: "", nombre_empleado: "", 
-    direccion_empelado: "", telefono_empleado: "", email_empleado: "", eps_empleado: "", usuarioadmin: "", 
+    direccion_empleado: "", telefono_empleado: "", email_empleado: "", eps_empleado: "", usuarioadmin: "", 
     contrasenia: "", id_cargo: ""});
   
 
@@ -96,7 +96,7 @@ const UsuariosPage = () => {
       tipo_documento: usuario.tipo_documento,
       numero_documento: usuario.numero_documento,
       nombre_empleado: usuario.nombre_empleado,
-      direccion_empelado: usuario.direccion_empelado,
+      direccion_empleado: usuario.direccion_empleado,
       telefono_empleado: usuario.telefono_empleado,
       email_empleado: usuario.email_empleado,
       eps_empleado: usuario.eps_empleado,
@@ -346,8 +346,8 @@ const UsuariosPage = () => {
                 <label className="block text-left mb-1">Dirección:</label>
                 <input
                   type="text"
-                  name="direccion_empelado"
-                  value={formData.direccion_empelado}
+                  name="direccion_empleado"
+                  value={formData.direccion_empleado}
                   onChange={handleChange}
                   className="w-full p-2 border rounded"
                 />
