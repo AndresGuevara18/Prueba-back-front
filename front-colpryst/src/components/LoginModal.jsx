@@ -31,7 +31,8 @@ function LoginModal({ isOpen, onClose, onLogin }) {
 
         <div className="p-8">
           <div className="flex justify-center mb-6">
-            <span className="text-[#2D3748] text-2xl font-bold">COLPRYST</span>
+            {/* <span className="text-[#2D3748] text-2xl font-bold">COLPRYST</span> */}
+            <img src="../../public/img/colpryst-icon.png" alt="COLPRYST Logo" className="h-12" />
           </div>
 
           <h2 className="text-[#2D3748] text-2xl font-medium text-center mb-8">

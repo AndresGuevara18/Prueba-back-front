@@ -59,6 +59,7 @@ const AgregarUsuarioPage = () => {
       }
     };
 
+    document.title = "COLPRYST | Agregar Usuario";
     loadModels();//llamdo funcion 
 
     //ejecutar la carga
@@ -69,7 +70,9 @@ const AgregarUsuarioPage = () => {
         streamRef.current.getTracks().forEach(track => track.stop());//cierra tracks del video
       }
     };
-  }, []);//rray vacion efecto solo se ejecuta al montar el componente
+
+    
+  }, []);//array vacion efecto solo se ejecuta al montar el componente
 
   //fucnion iniciar deteccion facial
   const startFaceDetection = () => {

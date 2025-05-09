@@ -12,6 +12,10 @@ const CargoPage = () => {
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/cargos`;
 
+  useEffect(() => {
+    document.title = "COLPRYST | Cargos"; // Cambiar el título de la página
+  }, []);
+
   // Cargar todos los cargos al iniciar
   const cargarTodosLosCargos = async () => {
     try {

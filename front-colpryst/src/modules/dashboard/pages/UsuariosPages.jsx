@@ -158,6 +158,8 @@ const UsuariosPage = () => {
 
   useEffect(() => {
     cargarTodosLosUsuarios();
+
+    document.title = "COLPRYST | Usuarios";
   }, []);
 
   return (

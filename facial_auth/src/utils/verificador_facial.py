@@ -5,7 +5,7 @@ import json
 from scipy.spatial.distance import cosine
 from src.config.db import get_connection
 
-UMBRAL_SIMILITUD = 0.4  # Ajusta según pruebas
+UMBRAL_SIMILITUD = 0.3  # Ajusta según pruebas
 
 def verificar_embedding(nuevo_embedding):
     try:

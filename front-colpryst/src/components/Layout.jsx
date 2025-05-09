@@ -57,7 +57,7 @@ function Layout() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2 hover:text-blue-700 transition-colors">
-                <img src="/colpryst-logo.png" alt="COLPRYST" className="h-10" />
+                <img src="../../public/img/colpryst-icon.png" alt="COLPRYST" className="h-10" />
               </Link>
             </div>
 

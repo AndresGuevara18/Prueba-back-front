@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
 
@@ -10,6 +10,10 @@ const AgregarCargoPage = () => {
   const navigate = useNavigate();
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/cargos`;
+
+  useEffect(() => {
+    document.title = "COLPRYST | Agregar Cargo"; // Cambiar el título de la página
+  }, []);
 
   const agregarCargo = async () => {
     try {

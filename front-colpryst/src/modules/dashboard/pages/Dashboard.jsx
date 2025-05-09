@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Menu, Shield } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
@@ -6,7 +6,7 @@ import Novelties from './Novelties';
 import UsuariosPage from './UsuariosPages';
 import CargoPage from './cargoPages';
 import AgregarCargoPage from './AgregarCargoPage';
-import AgregarUsuarioPage from './usuarioAgregar';
+import AgregarUsuarioPage from './UsuarioAgregar';
 import Reports from './Reports';
 import Stats from './Stats';
 import FacialScan from './FacialScan';
@@ -15,14 +15,35 @@ import Profile from './Profile';
 
 function Dashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const currentDate = new Date().toLocaleDateString('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  const [capitalizedDate, setCapitalizedDate] = useState('');
 
-  const capitalizedDate = currentDate.charAt(0).toUpperCase() + currentDate.slice(1);
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+
+      const date = now.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+
+      const time = now.toLocaleTimeString('es-ES', {
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit', // <-- Aquí agregamos los segundos
+        hour12: true,
+      });
+
+      const fullDate = `${date} - ${time}`;
+      setCapitalizedDate(fullDate.charAt(0).toUpperCase() + fullDate.slice(1));
+    };
+
+    updateDateTime(); // Llamado inmediato
+    const intervalId = setInterval(updateDateTime, 1000); // <-- Actualiza cada segundo
+
+    return () => clearInterval(intervalId); // Limpieza
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -43,8 +64,9 @@ function Dashboard() {
                 <Menu className="h-6 w-6" />
               </button>
               <Link to="/" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
-                <Shield className="w-6 h-6 text-blue-600" />
-                <span className="text-xl font-bold">COLPRYST</span>
+                {/* <Shield className="w-6 h-6 text-blue-600" /> */}
+                {/* <span className="text-xl font-bold">COLPRYST</span> */}
+                <img src="../../../../public/img/colpryst-icon.png" alt="COLPRYST logo" className="h-8" />
               </Link>
             </div>
             <div className="text-gray-700 text-sm md:text-base">
