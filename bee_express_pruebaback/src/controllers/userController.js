@@ -93,7 +93,7 @@ const usuarioController = {
               headers: formData.getHeaders()
             });
     
-            const respuestaFastAPI = await axios.post('http://localhost:8000/verificar-imagen', formData, {
+            const respuestaFastAPI = await axios.post('http://localhost:8000/api/verificar-imagen', formData, {
               headers: formData.getHeaders()
             });
     

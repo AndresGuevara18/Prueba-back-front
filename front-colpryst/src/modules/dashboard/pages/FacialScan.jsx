@@ -1,116 +1,107 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, X } from 'lucide-react';
+import React from 'react';
+import { Camera } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 function FacialScan() {
-  const [isScanning, setIsScanning] = useState(false);
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
+  
+  const handleEntrada = async () => {
+  const { value: documento } = await Swal.fire({
+    title: 'Registro de Entrada',
+    text: 'Ingrese el número de documento:',
+    input: 'text',
+    inputPlaceholder: 'Ej. 123456789',
+    confirmButtonText: 'Verificar',
+    showCancelButton: true,
+    confirmButtonColor: '#10B981',
+    cancelButtonColor: '#EF4444',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Debes ingresar un número de documento';
+      }
+      return null;
+    }
+  });
 
-  const startScanning = async () => {
+  
+
+  if (documento) {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: 640,
-          height: 480,
-          facingMode: 'user'
-        }
-      });
-      
-      streamRef.current = stream;
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-      
-      setIsScanning(true);
-      
-      // Simulación de escaneo exitoso
-      setTimeout(() => {
-        stopScanning();
+    const formData = new FormData();
+    formData.append("numero_documento", documento);
+
+    const response = await fetch("http://localhost:8000/api/verificar-documento", {
+      method: "POST",
+      body: formData
+    });
+
+    // Si no hay respuesta válida, no intentes convertirla a JSON
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.message || "Error en la respuesta del servidor");
+    }
+
+    const data = await response.json();
+    console.log("📥 Respuesta del backend:", data);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Usuario encontrado, POR FAVOR ESPERE UN MOMENTO, mientras inicia la camara.',
+      text: `ID usuario: ${data.id_usuario}`,
+      confirmButtonColor: '#10B981'
+    });
+
+    }   catch (error) {
+        console.error("❌ Error de conexión:", error);
         Swal.fire({
-          icon: 'success',
-          title: '¡Escaneo completado!',
-          text: 'Identificación facial realizada con éxito',
-          confirmButtonColor: '#3B82F6',
-          timer: 3000,
-          timerProgressBar: true
-        });
-      }, 5000);
-    } catch (err) {
-      console.error('Error accessing camera:', err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo acceder a la cámara',
-        confirmButtonColor: '#3B82F6'
+          icon: 'error',
+          title: 'Error del servidor',
+          text: error.message || 'No se pudo verificar el documento.',
+          confirmButtonColor: '#EF4444'
       });
     }
-  };
+  }
+};
 
-  const stopScanning = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-    }
-    setIsScanning(false);
-  };
+  const handleSalida = async () => {
+    Swal.fire({
+      icon: 'info',
+      title: 'Registro de Salida',
+      text: 'Se ha iniciado el proceso de escaneo para registrar la salida.',
+      confirmButtonColor: '#3B82F6',
+      timer: 2500,
+      timerProgressBar: true
+    });
 
-  useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
+    // Aquí se hará la petición al backend
+  };
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Scanner Facial</h1>
+    <div className="flex flex-col items-center p-10">
+      <h1 className="text-3xl font-bold text-gray-800 mb-10">Scanner Facial</h1>
+
+      <div className="flex gap-16">
+        {/* Botón Registro Entrada */}
+        <button
+          onClick={handleEntrada}
+          className="flex flex-col items-center justify-center w-[20rem] h-[20rem] bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-xl transition duration-300"
+        >
+          <Camera className="w-32 h-32 mb-8" />
+          <span className="text-2xl font-bold">Registro Entrada</span>
+        </button>
+
+        {/* Botón Registro Salida */}
+        <button
+          onClick={handleSalida}
+          className="flex flex-col items-center justify-center w-[20rem] h-[20rem] bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-xl transition duration-300"
+        >
+          <Camera className="w-32 h-32 mb-8" />
+          <span className="text-2xl font-bold">Registro Salida</span>
+        </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-6">
-            {isScanning ? (
-              <>
-                <video
-                  ref={videoRef}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute w-full h-1 bg-blue-500 opacity-50 animate-scan" />
-                  <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-blue-500" />
-                  <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-blue-500" />
-                  <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-blue-500" />
-                  <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-blue-500" />
-                </div>
-                <button
-                  onClick={stopScanning}
-                  className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-600" />
-                </button>
-              </>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button
-                  onClick={startScanning}
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  <Camera className="w-5 h-5" />
-                  Iniciar escaneo
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="text-center text-sm text-gray-600">
-            <p>Posicione su rostro frente a la cámara y manténgase quieto durante el escaneo.</p>
-            <p>Asegúrese de tener buena iluminación y un fondo claro.</p>
-          </div>
-        </div>
+      <div className="text-center text-base text-gray-600 mt-10">
+        <p>Al hacer clic en una opción, se activará la cámara desde el servidor.</p>
+        <p>Mantén tu rostro visible, centrado y con buena iluminación.</p>
       </div>
     </div>
   );

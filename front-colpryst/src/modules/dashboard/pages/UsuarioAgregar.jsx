@@ -36,6 +36,8 @@ const AgregarUsuarioPage = () => {
   const streamRef = useRef(null);// Guarda el stream de la cámara
   const canvasRef = useRef(null); //ref para el <canvas> oculto
   const faceCanvasRef = useRef(null); //canvas dibujar cuadro reconocimiento
+  //carga de registro
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isCaptureEnabled, setIsCaptureEnabled] = useState(false);//control capturar foto 
 
@@ -208,6 +210,7 @@ const AgregarUsuarioPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Mostrar spinner
   
     try {
       // Crear FormData para enviar datos binarios
@@ -254,6 +257,8 @@ const AgregarUsuarioPage = () => {
     } catch (error) {
       console.error("Error:", error);
       alert(`❌ Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false); // 👈 DEBE estar aquí SIEMPRE
     }
   };
 
@@ -436,6 +441,7 @@ const AgregarUsuarioPage = () => {
           </button>
         </div>
 
+        
         {/* Botón Registrar */}
         <button type="submit" className="w-full bg-green-500 text-white px-4 py-2 rounded mt-6 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
           Registrar
@@ -499,6 +505,16 @@ const AgregarUsuarioPage = () => {
     
       {/* Canvas oculto para la captura */}
       <canvas ref={canvasRef} style={{display: 'none'}} />
+
+      {isSubmitting && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg">
+      <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin" />
+      <p className="mt-4 text-blue-600 font-semibold text-lg">Procesando registro facial...</p>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
