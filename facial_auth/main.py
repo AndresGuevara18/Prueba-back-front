@@ -14,5 +14,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(imagen_router, prefix="/api")
-app.include_router(escaneo_router, prefix="/api")
+app.include_router(imagen_router, prefix="/api")#verificar imagen registro usuario desde NODE
+app.include_router(escaneo_router, prefix="/api")#registro entrada desde react
