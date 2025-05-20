@@ -8,7 +8,7 @@ def get_connection():
             host='localhost',
             database='colpryst_col3',
             user='root',
-            password='admin123'
+            password=''
         )
         if connection.is_connected():
             print("✅ Conexión a la base de datos exitosa")
