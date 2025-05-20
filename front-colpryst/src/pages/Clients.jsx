@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Building2, Shield, Store, GraduationCap, Pill, Droplet } from 'lucide-react';
 
 function Clients() {
@@ -29,6 +29,10 @@ function Clients() {
       icon: <Droplet className="w-12 h-12 md:w-16 md:h-16 text-white" />
     }
   ];
+
+  useEffect(() => {
+        document.title = "Clientes";
+  }, []);
 
   return (
     <div className="bg-gray-50">

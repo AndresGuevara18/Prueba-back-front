@@ -65,8 +65,8 @@ const usuarioController = {
           foto: usuarioData.foto ? `[Buffer de ${usuarioData.foto.data.length} bytes]` : null,
           contrasenia: '[PROTEGIDO]'
         });
-    
-        // 3. Validar que el cargo exista
+        // 3. Validaciones BÁSICAS antes de FastAPI
+        // 3.1 Validar que el cargo exista
         console.log('🔍 Validando cargo con ID:', usuarioData.id_cargo);
         const cargo = await cargoService.getCargoById(usuarioData.id_cargo);
         if (!cargo) {
@@ -74,7 +74,11 @@ const usuarioController = {
           throw new Error("CARGO_NOT_FOUND");
         }
         console.log('✔ Cargo válido encontrado:', cargo);
-    
+
+        // 3.2 Validar datos únicos ANTES de procesar imagen
+        console.log('🔍 Validando datos únicos (documento, email, usuarioadmin)');
+        await usuarioService.validarDatosUnicos(usuarioData); // <- EXTRAER ESTO como función aparte
+
         // 4. Validar y obtener embedding desde FastAPI
         let embedding = null;
         
@@ -297,7 +301,31 @@ const usuarioController = {
     },
 
     // Eliminar un usuario
+    // Método para eliminar un usuario
     deleteUser: async (req, res) => {
+        try {
+            const { id_usuario } = req.params;
+            const resultado = await usuarioService.deleteUser(id_usuario);
+        
+            if (!resultado.exists) {
+                return res.status(404).json({ error: "❌ Usuario no encontrado." });
+            }
+          
+            if (resultado.hasRegistros) {
+                return res.status(400).json({ error: "⚠️ No se puede eliminar porque el usuario tiene registros de entrada asociados." });
+            }
+          
+            if (resultado.deleted) {
+                return res.status(200).json({ message: "✅ Usuario eliminado correctamente." });
+            }
+          
+            res.status(400).json({ error: "⚠️ No se pudo eliminar el usuario." });
+        } catch (error) {
+            console.error("❌ Error en deleteUser (Controller):", error);
+            res.status(500).json({ error: "❌ Error interno al eliminar el usuario." });
+        }
+    }
+    /*deleteUser: async (req, res) => {
         try {
             // Extraer el ID del usuario desde la URL
             const { id_usuario } = req.params;
@@ -316,7 +344,7 @@ const usuarioController = {
             console.error("❌ Error en deleteUser (Controller):", error);
             res.status(500).json({ error: "❌ Error al eliminar el usuario" }); // Manejo de errores
         }
-    }
+    }*/
 };
 
 module.exports = usuarioController; // Exportar el controlador

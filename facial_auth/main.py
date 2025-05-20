@@ -1,8 +1,8 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.routes.imagen_routes import router as imagen_router
-from src.routes.escaneo_routes import router as escaneo_router
+from src.routes.reconocimiento_facial_routes import router as reconocimiento_facial
+from src.routes.registro_entrada_routes import router as registro_entrada
 
 app = FastAPI()
 
@@ -14,5 +14,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(imagen_router, prefix="/api")#verificar imagen registro usuario desde NODE
-app.include_router(escaneo_router, prefix="/api")#registro entrada desde react
+print("en main")
+app.include_router(reconocimiento_facial, prefix="/api")#verificar imagen registro usuario desde NODE
+app.include_router(registro_entrada, prefix="/api")#registro entrada desde react

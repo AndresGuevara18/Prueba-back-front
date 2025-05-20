@@ -1,4 +1,4 @@
-# src/controllers/verificacion_controller.py
+# src/controllers/reconocimiento_facial_controller.py
 
 from fastapi import UploadFile
 from fastapi.responses import JSONResponse

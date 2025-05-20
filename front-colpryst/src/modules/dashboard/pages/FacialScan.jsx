@@ -29,7 +29,7 @@ function FacialScan() {
     const formData = new FormData();
     formData.append("numero_documento", documento);
 
-    const response = await fetch("http://localhost:8000/api/verificar-documento", {
+    const response = await fetch("http://localhost:8000/api/registro-entrada", {
       method: "POST",
       body: formData
     });

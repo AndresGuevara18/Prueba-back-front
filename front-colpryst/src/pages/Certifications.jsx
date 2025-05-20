@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Shield, Award, CheckCircle, Star } from 'lucide-react';
 
 function Certifications() {
+  useEffect(() => {
+        document.title = "Certificaciones";
+  }, []);
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}

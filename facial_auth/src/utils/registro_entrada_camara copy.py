@@ -1,4 +1,4 @@
-# src/utils/camara.py (versión con validación de movimiento)
+# src/utils/registro_entrada_camara.py (versión con validación de movimiento)
 
 import cv2
 from multiprocessing import Process
@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 from deepface import DeepFace
 import time
 from scipy.spatial.distance import cosine
-from src.services.reconocimiento_service import registrar_entrada
+from src.services.registro_entrada_service import registrar_entrada
 import numpy as np
 
 def mostrar_camara(embedding_db, id_usuario):
@@ -26,7 +26,7 @@ def mostrar_camara(embedding_db, id_usuario):
         return
 
     root = Tk()
-    root.title("Reconocimiento Facial")
+    root.title("REGISTRO ENTRADA")
     root.attributes('-topmost', True)
     root.lift()
     root.after(100, lambda: root.attributes('-topmost', False))

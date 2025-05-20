@@ -1,12 +1,12 @@
-# src/controllers/escaneo_controller.py
+# src/controllers/registro_entrada_controller.py
 
 from fastapi.responses import JSONResponse
-from src.services.reconocimiento_service import (
+from src.services.registro_entrada_service import (
     obtener_usuario_y_embedding_por_documento,
     verificar_registro_hoy,
     registrar_entrada
 )
-from src.utils.camara import iniciar_camara_tkinter
+from src.utils.registro_entrada_camara import iniciar_camara_tkinter
 from datetime import datetime
 
 async def verificar_documento_logic(numero_documento: str):

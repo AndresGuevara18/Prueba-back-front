@@ -1,4 +1,4 @@
-# src/services/reconocimiento_service.py
+# src/services/registro_entrada_service.py
 
 from src.config.db import get_connection
 from datetime import datetime
