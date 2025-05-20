@@ -39,7 +39,7 @@ function Contact() {
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
-      <div className="relative h-[300px] md:h-[400px] w-full max-w-[1440px] mx-auto">
+      <div className="relative h-[300px] md:h-[400px] w-full">
         <img 
           src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80" 
           alt="Contact Hero"

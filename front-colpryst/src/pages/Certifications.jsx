@@ -5,7 +5,7 @@ function Certifications() {
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
-      <div className="relative h-[300px] md:h-[400px] w-full max-w-[1440px] mx-auto">
+      <div className="relative h-[300px] md:h-[400px] w-full">
         <img 
           src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80" 
           alt="Certifications Hero"
@@ -39,7 +39,7 @@ function Certifications() {
                 <div className="md:w-1/2 p-8">
                   <div className="h-64 relative">
                     <img 
-                      src="https://www.wbasco.org/wp-content/uploads/2021/02/cropped-basc-logo.png" 
+                      src="/img/Certifications/basc.png"  // Ruta desde public/
                       alt="BASC Logo"
                       className="w-full h-full object-contain"
                     />
@@ -86,7 +86,7 @@ function Certifications() {
                 <div className="md:w-1/2 p-8">
                   <div className="h-64 relative">
                     <img 
-                      src="https://www.supervigilancia.gov.co/images/logo.png" 
+                      src="/img/Certifications/Logo-Supervigilancia.png" 
                       alt="SuperVigilancia Logo"
                       className="w-full h-full object-contain"
                     />
