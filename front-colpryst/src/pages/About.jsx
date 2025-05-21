@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Shield, Users, FileSearch, BookOpen } from 'lucide-react';
 
 function About() {
+  useEffect(() => {
+      document.title = "Nosotros";
+  }, []);
+
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}

@@ -158,6 +158,37 @@ const usuarioService = {
         }
     },
 
+    validarDatosUnicos: async (usuarioData) => {
+      // Validar número de documento
+      const [existingDocumento] = await db.promise().query(
+        'SELECT id_usuario FROM usuario WHERE numero_documento = ?',
+        [usuarioData.numero_documento]
+      );
+      if (existingDocumento.length > 0) {
+        throw new Error("DOCUMENTO_EXISTS");
+      }
+  
+      // Validar email
+      const [existingEmail] = await db.promise().query(
+        'SELECT id_usuario FROM usuario WHERE email_empleado = ?',
+        [usuarioData.email_empleado]
+      );
+      if (existingEmail.length > 0) {
+        throw new Error("EMAIL_EXISTS");
+      }
+  
+      // Validar nombre de usuario si existe
+      if (usuarioData.usuarioadmin) {
+        const [existingUsuario] = await db.promise().query(
+          'SELECT id_usuario FROM usuario WHERE usuarioadmin = ?',
+          [usuarioData.usuarioadmin]
+        );
+        if (existingUsuario.length > 0) {
+          throw new Error("USUARIO_EXISTS");
+        }
+      }
+    },
+
     //ACTUALIZAR USUARIO
     updateUser: async (id_usuario, userData) => {      
         try {
@@ -260,6 +291,45 @@ const usuarioService = {
 
     // ELIMINAR USUARIO
     deleteUser: async (id_usuario) => {
+        const queryCheckUser = 'SELECT id_usuario FROM usuario WHERE id_usuario = ?';
+        const queryCheckRegistro = 'SELECT COUNT(*) AS total FROM registro_entrada WHERE id_usuario = ?';
+        const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
+        const queryUser = 'DELETE FROM usuario WHERE id_usuario = ?';
+        
+        try {
+            // Verificar si el usuario existe
+            const [userResult] = await db.promise().query(queryCheckUser, [parseInt(id_usuario)]);
+            if (userResult.length === 0) {
+                console.log(`❌ Usuario con ID ${id_usuario} no encontrado.`);
+                return { exists: false };
+            }
+        
+            // Verificar si hay registros de entrada asociados
+            const [registroResult] = await db.promise().query(queryCheckRegistro, [parseInt(id_usuario)]);
+            if (registroResult[0].total > 0) {
+                console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${registroResult[0].total} registros de entrada asociados.`);
+                return { exists: true, hasRegistros: true };
+            }
+        
+            // Eliminar reconocimiento facial primero (si no hay registros de entrada)
+            await db.promise().query(queryReco, [parseInt(id_usuario)]);
+        
+            // Eliminar el usuario
+            const [deleteResult] = await db.promise().query(queryUser, [parseInt(id_usuario)]);
+        
+            if (deleteResult.affectedRows > 0) {
+                console.log(`✅ Usuario con ID ${id_usuario} eliminado correctamente.`);
+                return { exists: true, deleted: true };
+            } else {
+                console.log(`⚠️ Usuario con ID ${id_usuario} no se eliminó.`);
+                return { exists: true, deleted: false };
+            }
+        } catch (err) {
+            console.error("❌ Error en deleteUser (Service):", err);
+            throw err;
+        }
+    }
+    /*deleteUser: async (id_usuario) => {
         const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
         const queryUser = 'DELETE FROM usuario WHERE id_usuario = ?';
 
@@ -279,7 +349,7 @@ const usuarioService = {
             console.error("❌ Error en deleteUser (Service):", err);
             throw new Error("Error al eliminar el usuario: " + err.message);
         }
-    }
+    }*/
 };
 
 module.exports = usuarioService; // Exportamos el servicio

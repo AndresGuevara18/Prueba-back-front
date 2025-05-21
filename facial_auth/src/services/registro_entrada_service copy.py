@@ -1,4 +1,4 @@
-# src/services/reconocimiento_service.py
+# src/services/registro_entrada_service.py
 
 from src.config.db import get_connection
 from datetime import datetime
@@ -42,18 +42,53 @@ def obtener_usuario_y_embedding_por_documento(numero_documento):
     finally:
         if connection:
             connection.close()
-
 # -----------------------------------------
-# 2. Registrar entrada en la tabla
+# 2. Verificar registro hoy
 # -----------------------------------------
-def registrar_entrada(id_usuario, comentarios="Registro desde escaneo facial"):
+def verificar_registro_hoy(id_usuario):
+    """Verifica si el usuario ya tiene un registro hoy"""
     try:
         connection = get_connection()
         if connection is None:
             raise Exception("Sin conexión a la base de datos")
 
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
 
+        query = """
+            SELECT COUNT(*) AS conteo 
+            FROM registro_entrada 
+            WHERE id_usuario = %s 
+            AND DATE(fecha_hora) = CURDATE()
+        """
+
+        cursor.execute(query, (id_usuario,))
+        result = cursor.fetchone()
+
+        return result['conteo'] > 0
+
+    except Exception as e:
+        print(f"❌ Error al verificar registro: {e}")
+        return True  # Por seguridad, asumir que ya está registrado si hay error
+    finally:
+        if connection:
+            connection.close()
+
+# -----------------------------------------
+# 3. Registrar entrada en la tabla
+# -----------------------------------------
+def registrar_entrada(id_usuario, comentarios="Registro desde escaneo facial"):
+    """Registra la entrada solo si no hay registro hoy"""
+    try:
+        # Primero verificar si ya existe registro hoy
+        if verificar_registro_hoy(id_usuario):
+            print(f"⚠️ Usuario {id_usuario} ya registró entrada hoy")
+            return None
+
+        connection = get_connection()
+        if connection is None:
+            raise Exception("Sin conexión a la base de datos")
+
+        cursor = connection.cursor()
         fecha_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         insert_query = """
@@ -65,12 +100,11 @@ def registrar_entrada(id_usuario, comentarios="Registro desde escaneo facial"):
         connection.commit()
 
         print(f"✅ Entrada registrada correctamente para usuario {id_usuario} a las {fecha_actual}")
-        return cursor.lastrowid  # Devuelve el ID generado
+        return cursor.lastrowid
 
     except Exception as e:
         print(f"❌ Error al registrar entrada: {e}")
         return None
-
     finally:
         if connection:
             connection.close()

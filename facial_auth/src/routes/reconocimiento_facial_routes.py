@@ -1,7 +1,7 @@
-# src/routes/imagen_routes.py
+# src/routes/reconocimiento_facial_routes.py
 
 from fastapi import APIRouter, File, UploadFile
-from src.controllers.imagen_controller import verificar_imagen_logic
+from src.controllers.reconocimiento_facial_controller import verificar_imagen_logic
 
 router = APIRouter()
 
