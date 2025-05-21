@@ -1,31 +1,201 @@
-# Proyecto
-Este proyecto consiste en un backend desarrollado con Express y un frontend desarrollado con React Vite.
 
-# Backend (bee_express_pruebaback)
-- Instalar dependencias: `cd bee_express_pruebaback && npm install`
-- Ejecutar el servidor: `node app.js`
+# 📌 Proyecto Visual Scan
 
-# Frontend (front-vite-prueba)
-- Instalar dependencias: `cd front-vite-prueba && npm install`
-- Ejecutar el servidor de desarrollo: `npm run dev`
+Este proyecto tiene como objetivo crear una solución integral para el **registro de asistencia mediante reconocimiento facial**, desarrollado a solicitud de **Colpryst Asesores Ltda**. Está compuesto por un backend en **Node.js (Express)**, un frontend en **React con Vite**, y una API de reconocimiento facial desarrollada en **Python**.
 
-# Backend (Python)
-## 1. Crear el entorno virtual (desde la raíz de tu proyecto)
-Hay que tener la version 3.10.* de Python
-`cd facial_auth`
-`py -3.10 -m venv venv310`
+---
 
-## 2. Activar el entorno virtual
-### En Windows:
-`.\venv310\Scripts\Activate.ps1`
+## 📁 Estructura del Proyecto
 
-## 3. Instalar las dependencias
-`pip install -r requirements.txt`
+```
+/root
+│
+├── bee_express_pruebaback/       # Backend Node.js (Express)
+├── front-vite-prueba/            # Frontend React + Vite
+└── facial_auth/                  # Backend de reconocimiento facial (Python)
+```
 
-## 4. Verificar que las dependencias se instalaron correctamente
-`pip list`
+---
 
-## 5. Para desactivar el entorno virtual cuando termines
-`deactivate`
+## 🚀 Instalación y Ejecución
 
-# VERIFICAR LA CONEXION A BASE DATOS 
+### 🔧 Backend (Node.js con Express)
+
+1. Ir al directorio:
+   ```bash
+   cd bee_express_pruebaback
+   ```
+
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Ejecutar el servidor:
+   ```bash
+   node app.js
+   ```
+
+---
+
+### 💻 Frontend (React + Vite)
+
+1. Ir al directorio:
+   ```bash
+   cd front-vite-prueba
+   ```
+
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Ejecutar el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+### 🧠 Backend de Reconocimiento Facial (Python)
+
+1. Ir al directorio:
+   ```bash
+   cd facial_auth
+   ```
+
+2. Crear entorno virtual (requiere Python 3.10.x):
+   ```bash
+   py -3.10 -m venv venv310
+   ```
+
+3. Activar entorno virtual (Windows):
+   ```bash
+   .\venv310\Scripts\Activate.ps1
+   ```
+
+4. Instalar dependencias:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Verificar instalación:
+   ```bash
+   pip list
+   ```
+
+6. Para salir del entorno virtual:
+   ```bash
+   deactivate
+   ```
+
+---
+
+## ✅ Requisitos Funcionales
+
+Los módulos clave del sistema incluyen:
+
+| Código  | Funcionalidad                   |
+|---------|----------------------------------|
+| RF01    | Registro de usuarios            |
+| RF02    | Asignación de roles             |
+| RF03    | Inicio de sesión                |
+| RF04    | Recuperación de contraseña      |
+| RF05    | Búsqueda de usuarios            |
+| RF06    | Actualización de datos          |
+| RF07    | Eliminación de usuarios         |
+| RT08    | Reconocimiento facial           |
+| RT09    | Registro en tiempo real         |
+| RT10    | Registro de novedades           |
+| RT11    | Registro de ingreso             |
+| RT12    | Registro de salida              |
+| RT13    | Notificación por retardos       |
+| RT14    | Cierre de sesión                |
+
+Ver detalles en: `requisitos_funcionales.md`
+
+---
+
+## 🧪 Historias de Usuario Destacadas
+
+- **HU1**: Registro de usuario con validaciones.
+- **HU3**: Inicio de sesión con credenciales.
+- **HU8**: Reconocimiento facial para entrada/salida.
+- **HU13**: Notificación automática tras 3 retardos.
+- **HU14**: Cierre seguro de sesión.
+
+Consulta el archivo `historias_usuarios.md` para el listado completo.
+
+---
+
+## ⚙️ Requisitos No Funcionales
+
+Alcances técnicos y de calidad que se cumplen:
+
+| Código   | Requisito                                  |
+|----------|---------------------------------------------|
+| RNF01    | Interfaz fácil de usar                      |
+| RNF03    | Diseño coherente                            |
+| RNF05    | Responsive design                           |
+| RNF10    | Seguridad y privacidad                      |
+| RNF12    | Protección de datos personales              |
+| RNF13    | Tiempo de carga optimizado                  |
+| RNF16    | Soporte para múltiples navegadores          |
+| RNF18    | Documentación y mantenibilidad              |
+
+Consulta completa en: `requisitos_no_funcionales.md`
+
+---
+
+## 🧩 Verificación de Conexión a Base de Datos
+
+Para verificar que la base de datos esté conectada correctamente:
+
+1. Revisa la configuración en el archivo `.env` o `config.js`.
+2. Asegúrate de que el servicio de base de datos esté activo.
+3. Usa herramientas como Postman o Insomnia para probar los endpoints.
+4. Verifica en consola que el backend loguee una conexión exitosa.
+
+---
+
+## 📬 Contacto
+
+Desarrollado para: **Colpryst Asesores Ltda**  
+Versión: **3.0**  
+Código interno: **PT-ERS-01**
+
+---
+
+## 👥 Autores
+
+- **Nombre:** Mauricio Andres Castro Guevara 
+
+  **Rol:** Desarrollador Backend (Express) y Backend Reconocimiento Facial (Python)
+
+- **Nombre:** Jhon jairo Moreno Montoya 
+
+  **Rol:** Desarrolladora Frontend (React Vite)
+
+- **Nombre:** Diller Adrian Chaguala Marin
+
+  **Rol:** Desarrolladora Frontend (React Vite)
+
+- **Nombre:** Leydi Johana Arevalo
+
+  **Rol:** Documentación y QA
+
+  
+- **Nombre:** Ivan Dario Jimenez
+
+  **Rol:** Desarrollador Backend (Express)
+
+---
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo los términos de la **Licencia MIT**.  
+Puedes usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, siempre que incluyas el aviso de derechos de autor original.
+
+---
+
+Copyright (c) 2025 Colpryst Asesores Ltda.
