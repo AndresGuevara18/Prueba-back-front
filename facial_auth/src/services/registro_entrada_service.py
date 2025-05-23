@@ -81,8 +81,9 @@ def registrar_entrada(id_usuario, comentarios="Registro desde escaneo facial"):
     try:
         # Primero verificar si ya existe registro hoy
         if verificar_registro_hoy(id_usuario):
-            print(f"⚠️ Usuario {id_usuario} ya registró entrada hoy")
-            return None
+            mensaje = f"⚠️ Usuario {id_usuario} ya registró entrada hoy"
+            print(mensaje)
+            return {"success": False, "message": mensaje}
 
         connection = get_connection()
         if connection is None:
@@ -99,12 +100,18 @@ def registrar_entrada(id_usuario, comentarios="Registro desde escaneo facial"):
         cursor.execute(insert_query, (fecha_actual, comentarios, id_usuario))
         connection.commit()
 
-        print(f"✅ Entrada registrada correctamente para usuario {id_usuario} a las {fecha_actual}")
-        return cursor.lastrowid
+        mensaje = f"✅ Entrada registrada correctamente para usuario {id_usuario} a las {fecha_actual}"
+        print(mensaje)
+        return {
+            "success": True,
+            "message": mensaje,
+            "id_registro": cursor.lastrowid
+        }
 
     except Exception as e:
-        print(f"❌ Error al registrar entrada: {e}")
-        return None
+        mensaje = f"❌ Error al registrar entrada: {e}"
+        print(mensaje)
+        return {"success": False, "message": mensaje}
     finally:
         if connection:
             connection.close()
