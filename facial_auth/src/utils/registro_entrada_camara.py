@@ -2,7 +2,7 @@
 
 import cv2
 from multiprocessing import Process
-from tkinter import Tk, Label
+from tkinter import Tk, Label, CENTER
 from PIL import Image, ImageTk
 from deepface import DeepFace
 import time
@@ -10,10 +10,48 @@ from scipy.spatial.distance import cosine
 from src.services.registro_entrada_service import registrar_entrada
 import numpy as np
 
+def mostrar_mensaje(mensaje, exito=True):
+    ventana = Tk()
+    ventana.title("Resultado del Registro")
+    ventana.geometry("400x150")
+    ventana.resizable(False, False)
+    ventana.attributes('-topmost', True)
+
+    # Centrar la ventana en la pantalla
+    ventana.update_idletasks()
+    screen_width = ventana.winfo_screenwidth()
+    screen_height = ventana.winfo_screenheight()
+    size = tuple(int(_) for _ in ventana.geometry().split('+')[0].split('x'))
+    x = (screen_width // 2) - (size[0] // 2)
+    y = (screen_height // 2) - (size[1] // 2)
+    ventana.geometry(f"{size[0]}x{size[1]}+{x}+{y}")
+
+    # Color de fondo: verde para éxito, rojo para error
+    bg_color = "#d4edda" if exito else "#f8d7da"
+    text_color = "#155724" if exito else "#721c24"
+
+    ventana.configure(bg=bg_color)
+
+    label = Label(
+        ventana,
+        text=mensaje,
+        font=("Arial", 14, "bold"),
+        wraplength=360,
+        justify=CENTER,
+        bg=bg_color,
+        fg=text_color
+    )
+    label.pack(expand=True)
+
+    ventana.after(4000, ventana.destroy)  # Cierra automáticamente después de 4 segundos
+    ventana.mainloop()
+
+
 def mostrar_camara(embedding_db, id_usuario):
     print("🧠 Embedding recibido desde base de datos:")
     print(f"🧑 ID usuario: {id_usuario}")
     print(f"🧬 Embedding (primeros 5 valores): {embedding_db[:5]}...")
+
 
     # Configuración de cámara optimizada
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -44,9 +82,13 @@ def mostrar_camara(embedding_db, id_usuario):
     reconocimiento_realizado = False
     estado_reconocimiento = "analizando"
     frame_anterior = None
+
+    after_id = None
+    max_intentos_fallidos = 6
+    intentos_fallidos = 0
     
     def update_frame():
-        nonlocal last_recognition_time, frame_anterior
+        nonlocal last_recognition_time, frame_anterior, after_id
         
         if reconocimiento_realizado:
             return
@@ -112,10 +154,10 @@ def mostrar_camara(embedding_db, id_usuario):
             except Exception as e:
                 print("❌ Error en reconocimiento:", str(e))
 
-        lmain.after(30, update_frame)
+        after_id = lmain.after(30, update_frame)
     
     def process_recognition(frame):
-        nonlocal last_face_region, reconocimiento_realizado, estado_reconocimiento
+        nonlocal last_face_region, reconocimiento_realizado, estado_reconocimiento, intentos_fallidos
         
         if reconocimiento_realizado:
             return
@@ -167,13 +209,44 @@ def mostrar_camara(embedding_db, id_usuario):
                         print(f"✅✅✅ Coincidencia confirmada para usuario ID {id_usuario}")
                         reconocimiento_realizado = True
                         estado_reconocimiento = "reconocido"
+                        resultado = registrar_entrada(id_usuario)
+
+                        #registrar_entrada(id_usuario)
+                        # 🔸 Cancelar el after pendiente antes de cerrar la ventana
+                        if after_id:
+                            lmain.after_cancel(after_id)
                         
-                        registrar_entrada(id_usuario)
+                        # 🔸 Cerrar la cámara y la ventana principal
+                        root.destroy()
+                        cap.release()
+                        cv2.destroyAllWindows()
                         print("📝 Registro de entrada realizado. Cerrando cámara...")
-                        root.after(2000, root.destroy)
+                        #root.after(2000, root.destroy)
+                        # Mostrar ventana nueva con mensaje
+                        mostrar_mensaje(resultado["message"] if resultado["success"] else "Error en el registro")
+
                 else:
+                    #process_recognition.coincidencias_consecutivas = 0
+                    #estado_reconocimiento = "no_reconocido"
                     process_recognition.coincidencias_consecutivas = 0
                     estado_reconocimiento = "no_reconocido"
+                    intentos_fallidos += 1
+                    print(f"❌ Intento fallido {intentos_fallidos}/{max_intentos_fallidos}")
+
+                    if intentos_fallidos >= max_intentos_fallidos:
+                        print("🚫 Límite de intentos fallidos alcanzado")
+
+                        if after_id:
+                            lmain.after_cancel(after_id)
+
+                        cap.release()
+                        root.destroy()
+                        cv2.destroyAllWindows()
+
+                        mostrar_mensaje("El rostro no coincide con el documento.", exito=False)
+
+
+
         except Exception as e:
             print("❌ Error al comparar embedding:", str(e))
             estado_reconocimiento = "no_reconocido"

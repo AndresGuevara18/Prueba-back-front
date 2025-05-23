@@ -166,11 +166,46 @@ Código interno: **PT-ERS-01**
 
 ---
 
+## 👥 Roles Principales del Proyecto
+
+### 1️⃣ Product Owner
+- **Nombre:** Leydi Johana Arevalo  
+  **Responsabilidades:**  
+  - Definir la visión y prioridades del producto  
+  - Gestionar el product backlog  
+  - Validar entregables con stakeholders  
+
+### 2️⃣ Scrum Master  
+- **Nombre:** Ivan Dario Jimenez  
+  **Responsabilidades:**  
+  - Facilitar ceremonias ágiles (dailies, retrospectivas)  
+  - Remover obstáculos del equipo  
+  - Velar por el cumplimiento de Scrum  
+
+### 3️⃣ Tech Lead  
+- **Nombre:** Mauricio Andres Castro Guevara  
+  **Responsabilidades:**  
+  - Arquitectura de la solución (backend y base de datos)  
+  - Revisión de código y estándares técnicos  
+  - Mentoría técnica al equipo    
+
+### 4️⃣ UX/UI Team  
+- **Nombres:**  
+  - Jhon Jairo Moreno Montoya  
+  - Diller Adrian Chaguala Marín  
+  **Responsabilidades:**  
+  - Diseño de interfaces en Figma  
+  - Prototipado y validación con usuarios  
+  - Implementación frontend (React Vite)  
+
+---
+
+
 ## 👥 Autores
 
 - **Nombre:** Mauricio Andres Castro Guevara 
 
-  **Rol:** Desarrollador Backend (Express) y Backend Reconocimiento Facial (Python)
+  **Rol:** Desarrollador Backend (Express), Backend Reconocimiento Facial (Python), Diseñador de Base de Datos
 
 - **Nombre:** Jhon jairo Moreno Montoya 
 
@@ -178,16 +213,16 @@ Código interno: **PT-ERS-01**
 
 - **Nombre:** Diller Adrian Chaguala Marin
 
-  **Rol:** Desarrolladora Frontend (React Vite)
+  **Rol:** Desarrolladora Frontend (React Vite), Documentación
 
 - **Nombre:** Leydi Johana Arevalo
 
-  **Rol:** Documentación y QA
+  **Rol:** Documentación y QA (Pruebas)
 
   
 - **Nombre:** Ivan Dario Jimenez
 
-  **Rol:** Desarrollador Backend (Express)
+  **Rol:** Desarrollador Backend (Express), QA (Pruebas)
 
 ---
 
