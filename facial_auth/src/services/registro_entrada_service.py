@@ -8,6 +8,7 @@ import json
 # 1. Buscar usuario + embedding por documento
 # -----------------------------------------
 def obtener_usuario_y_embedding_por_documento(numero_documento):
+    connection = None  # Añade esto al inicio de cada función
     try:
         connection = get_connection()
         if connection is None:
@@ -46,6 +47,7 @@ def obtener_usuario_y_embedding_por_documento(numero_documento):
 # 2. Verificar registro hoy
 # -----------------------------------------
 def verificar_registro_hoy(id_usuario):
+    connection = None  # Añade esto al inicio de cada función
     """Verifica si el usuario ya tiene un registro hoy"""
     try:
         connection = get_connection()
@@ -76,8 +78,9 @@ def verificar_registro_hoy(id_usuario):
 # -----------------------------------------
 # 3. Registrar entrada en la tabla
 # -----------------------------------------
-def registrar_entrada(id_usuario, comentarios="Registro desde escaneo facial"):
+def registrar_entrada(id_usuario, comentarios=""):
     """Registra la entrada solo si no hay registro hoy"""
+    connection = None  # Añade esto al inicio de cada función
     try:
         # Primero verificar si ya existe registro hoy
         if verificar_registro_hoy(id_usuario):

@@ -7,5 +7,5 @@ router = APIRouter()
 
 @router.post("/verificar-imagen")
 async def verificar_imagen(file: UploadFile = File(...)):
-    print("----> En router imagen")
+    print("----> EN route verificar imagen")
     return await verificar_imagen_logic(file)
