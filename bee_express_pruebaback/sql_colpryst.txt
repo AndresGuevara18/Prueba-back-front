@@ -45,6 +45,61 @@ create table reconocimiento_facial (
     constraint fk_reconocimiento_usuario foreign key (id_usuario) references usuario (id_usuario)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;*/
 
+
+-- Crear tabla 'registro_entrada'
+create table registro_entrada (
+    id_entrada int auto_increment not null,
+    fecha_hora datetime not null,
+    comentarios varchar(500),
+    id_usuario int not null,
+    constraint pk_registro_entrada primary key (id_entrada),
+    constraint fk_registro_usuario foreign key (id_usuario) references usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- Crear tabla 'notificacion_entrada_tarde'
+create table notificacion_entrada_tarde (
+    id_notificacion int auto_increment not null,
+    id_entrada int not null,
+    id_usuario int not null,
+    estado boolean not null,
+    fecha_hora datetime not null,
+    comentarios varchar(500) not null,
+    constraint pk_notificacion primary key (id_notificacion),
+    constraint fk_notificacion_entrada foreign key (id_entrada) references registro_entrada (id_entrada)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+
+
+/*--------------------------------------------------------------------------------------------------------------
+-------------------------TRIGGER (PARA QUE EMPIECE A FUNCIONAR ANTES DE INSERTAR DATOS)-------------------------*/
+
+-- 	TRIGGER --- PARA LLEGADA TARDE DESPUES DE LAS 7:30
+DELIMITER $$
+
+CREATE TRIGGER notificar_llegada_tarde
+AFTER INSERT ON registro_entrada
+FOR EACH ROW
+BEGIN
+    -- Verifica si la hora de entrada es después de las 07:30 AM
+    IF TIME(NEW.fecha_hora) > '07:15:00' THEN
+        -- Inserta un registro en la tabla notificacion_entrada_tarde
+        INSERT INTO notificacion_entrada_tarde (id_entrada, id_usuario, estado, fecha_hora, comentarios) 
+        VALUES (
+            NEW.id_entrada, 
+            NEW.id_usuario, 
+            FALSE,  -- Estado en false por defecto
+            NEW.fecha_hora, 
+            COALESCE(NEW.comentarios, 'Sin comentarios') -- Si comentarios es NULL, usa "Sin comentarios"
+        );
+    END IF;
+END $$
+
+DELIMITER ;
+
+-- DROP TRIGGER IF EXISTS notificar_llegada_tarde;
+
+
+/*--------------------------------------------------------------------------------------------------------------*/
 -- INSERT
 -- Inserción de registros en la tabla Cargo
 INSERT INTO Cargo (nombre_cargo, descripcion) VALUES 
