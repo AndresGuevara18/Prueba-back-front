@@ -100,17 +100,16 @@ Los módulos clave del sistema incluyen:
 | RF01    | Registro de usuarios            |
 | RF02    | Asignación de roles             |
 | RF03    | Inicio de sesión                |
-| RF04    | Recuperación de contraseña      |
-| RF05    | Búsqueda de usuarios            |
-| RF06    | Actualización de datos          |
-| RF07    | Eliminación de usuarios         |
-| RT08    | Reconocimiento facial           |
-| RT09    | Registro en tiempo real         |
-| RT10    | Registro de novedades           |
-| RT11    | Registro de ingreso             |
-| RT12    | Registro de salida              |
-| RT13    | Notificación por retardos       |
-| RT14    | Cierre de sesión                |
+| RF04    | Búsqueda de usuarios            |
+| RF05    | Actualización de datos          |
+| RF06    | Eliminación de usuarios         |
+| RT07    | Reconocimiento facial           |
+| RT08    | Registro en tiempo real         |
+| RT09    | Registro de novedades           |
+| RT10    | Registro de ingreso             |
+| RT11    | Registro de salida              |
+| RT12    | Notificación por retardos       |
+| RT13    | Cierre de sesión                |
 
 Ver detalles en: `requisitos_funcionales.md`
 

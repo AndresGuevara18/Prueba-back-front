@@ -2,13 +2,80 @@
 
 import cv2
 from multiprocessing import Process
-from tkinter import Tk, Label, CENTER
+from tkinter import Tk, Label, CENTER,Button,Text, StringVar
 from PIL import Image, ImageTk
 from deepface import DeepFace
 import time
 from scipy.spatial.distance import cosine
 from src.services.registro_entrada_service import registrar_entrada
 import numpy as np
+
+from tkinter import Tk, Label, Text, Button, StringVar
+import tkinter as tk
+
+def mostrar_ventana_comentario():
+    ventana = Tk()
+    ventana.title("Registro de Llegada Tardía")
+    
+    # Configuración de tamaño y posición
+    ventana.geometry("500x300")  # Más grande (500px ancho x 300px alto)
+    ventana.resizable(False, False)  # Evitar redimensionamiento
+    
+    # Centrar ventana en pantalla
+    ventana.update_idletasks()  # Actualizar geometría
+    ancho_ventana = ventana.winfo_width()
+    alto_ventana = ventana.winfo_height()
+    x_pos = (ventana.winfo_screenwidth() // 2) - (ancho_ventana // 2)
+    y_pos = (ventana.winfo_screenheight() // 2) - (alto_ventana // 2)
+    ventana.geometry(f"+{x_pos}+{y_pos}")
+    
+    # Hacer que aparezca siempre adelante
+    ventana.attributes('-topmost', True)
+    ventana.after(100, lambda: ventana.attributes('-topmost', False))  # Permitir interactuar con otras ventanas después
+    
+    # Estilo mejorado
+    ventana.configure(bg="#f0f0f0")  # Fondo gris claro
+    
+    # Variable para almacenar el comentario
+    comentario = None
+    
+    # Widgets con mejor formato
+    label = Label(ventana, 
+                 text="Por favor ingrese el motivo de la llegada tardía:",
+                 font=("Arial", 12, "bold"),
+                 bg="#f0f0f0")
+    label.pack(pady=15)
+    
+    cuadro_texto = Text(ventana, 
+                       height=8,  # Más alto
+                       width=50,  # Más ancho
+                       font=("Arial", 11),
+                       wrap=tk.WORD)  # Ajuste de palabras
+    cuadro_texto.pack(pady=10, padx=20)
+    cuadro_texto.focus_set()  # Foco automático en el cuadro de texto
+    
+    # Función para guardar
+    def guardar():
+        nonlocal comentario
+        comentario = cuadro_texto.get("1.0", "end-1c").strip()  # Eliminar espacios en blanco
+        ventana.destroy()
+    
+    # Botón con mejor estilo
+    btn_continuar = Button(ventana,
+                          text="Continuar",
+                          command=guardar,
+                          font=("Arial", 10, "bold"),
+                          bg="#4CAF50",  # Verde
+                          fg="white",
+                          padx=20,
+                          pady=5)
+    btn_continuar.pack(pady=15)
+    
+    # Configurar Enter para guardar
+    ventana.bind('<Return>', lambda e: guardar())
+    
+    ventana.mainloop()
+    return comentario if comentario else None
 
 def mostrar_mensaje(mensaje, exito=True):
     ventana = Tk()
@@ -47,9 +114,9 @@ def mostrar_mensaje(mensaje, exito=True):
     ventana.mainloop()
 
 
-def mostrar_camara(embedding_db, id_usuario):
+def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
     print("🧠 Embedding recibido desde base de datos:")
-    print(f"🧑 ID usuario: {id_usuario}")
+    print(f"🧑 Usuario: {id_usuario} | Comentario: {comentario_tardia or 'Ninguno'}")  # Debug... (resto del código)
     print(f"🧬 Embedding (primeros 5 valores): {embedding_db[:5]}...")
 
 
@@ -84,7 +151,7 @@ def mostrar_camara(embedding_db, id_usuario):
     frame_anterior = None
 
     after_id = None
-    max_intentos_fallidos = 6
+    max_intentos_fallidos = 8
     intentos_fallidos = 0
     
     def update_frame():
@@ -209,7 +276,11 @@ def mostrar_camara(embedding_db, id_usuario):
                         print(f"✅✅✅ Coincidencia confirmada para usuario ID {id_usuario}")
                         reconocimiento_realizado = True
                         estado_reconocimiento = "reconocido"
-                        resultado = registrar_entrada(id_usuario)
+                        #esultado = registrar_entrada(id_usuario)
+
+                        # Usar comentario de tardía si existe
+                        comentario_final = f"Llegada tardía: {comentario_tardia}" if comentario_tardia else "Registro normal"
+                        resultado = registrar_entrada(id_usuario, comentario_final)  # Registrar con comentario
 
                         #registrar_entrada(id_usuario)
                         # 🔸 Cancelar el after pendiente antes de cerrar la ventana
@@ -257,5 +328,5 @@ def mostrar_camara(embedding_db, id_usuario):
     cap.release()
     cv2.destroyAllWindows()
 
-def iniciar_camara_tkinter(embedding_db, id_usuario):
-    Process(target=mostrar_camara, args=(embedding_db, id_usuario)).start()
+def iniciar_camara_tkinter(embedding_db, id_usuario, comentario=None):
+    Process(target=mostrar_camara, args=(embedding_db, id_usuario, comentario)).start()  # ¡Aquí va el 5to parámetro!
