@@ -63,17 +63,59 @@ function FacialScan() {
 };
 
   const handleSalida = async () => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Registro de Salida',
-      text: 'Se ha iniciado el proceso de escaneo para registrar la salida.',
-      confirmButtonColor: '#3B82F6',
-      timer: 2500,
-      timerProgressBar: true
-    });
+  const { value: documento } = await Swal.fire({
+    title: 'Registro de Salida',
+    text: 'Ingrese el número de documento:',
+    input: 'text',
+    inputPlaceholder: 'Ej. 123456789',
+    confirmButtonText: 'Verificar',
+    showCancelButton: true,
+    confirmButtonColor: '#3B82F6',
+    cancelButtonColor: '#EF4444',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Debes ingresar un número de documento';
+      }
+      return null;
+    }
+  });
 
-    // Aquí se hará la petición al backend
-  };
+  if (documento) {
+    try {
+      const formData = new FormData();
+      formData.append("numero_documento", documento);
+
+      const response = await fetch("http://localhost:8000/api/registro-salida", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Error en la respuesta del servidor");
+      }
+
+      const data = await response.json();
+      console.log("📥 Respuesta del backend (salida):", data);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Usuario encontrado, POR FAVOR ESPERE UN MOMENTO, mientras inicia la cámara para salida.',
+        text: `ID usuario: ${data.id_usuario}`,
+        confirmButtonColor: '#3B82F6'
+      });
+
+    } catch (error) {
+      console.error("❌ Error de conexión (salida):", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error del servidor',
+        text: error.message || 'No se pudo verificar el documento para salida.',
+        confirmButtonColor: '#EF4444'
+      });
+    }
+  }
+};
 
   return (
     <div className="flex flex-col items-center p-10">
