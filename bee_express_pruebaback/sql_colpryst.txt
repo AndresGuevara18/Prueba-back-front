@@ -98,6 +98,61 @@ DELIMITER ;
 
 -- DROP TRIGGER IF EXISTS notificar_llegada_tarde;
 
+-- Crear tabla 'registro_salida'
+create table registro_salida (
+    id_salida int auto_increment not null,
+    fecha_hora datetime not null,
+    comentarios varchar(500),
+    id_usuario int not null,
+    constraint pk_registro_salida primary key (id_salida),
+    constraint fk_salida_usuario foreign key (id_usuario) references usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- Crear tabla 'notificacion_salida_temprana'
+CREATE TABLE notificacion_salida_temprana (
+    id_notificacion INT AUTO_INCREMENT NOT NULL,
+    id_salida INT NOT NULL,
+    id_usuario INT NOT NULL,
+    estado BOOLEAN NOT NULL,
+    fecha_hora DATETIME NOT NULL,
+    comentarios VARCHAR(500) NOT NULL,
+    CONSTRAINT pk_notificacion_salida PRIMARY KEY (id_notificacion),
+    CONSTRAINT fk_notificacion_salida FOREIGN KEY (id_salida) REFERENCES registro_salida (id_salida),
+    CONSTRAINT fk_notificacion_salida_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+
+
+/*--------------------------------------------------------------------------------------------------------------
+-------------------------TRIGGER (PARA QUE EMPIECE A FUNCIONAR ANTES DE INSERTAR DATOS)-------------------------*/
+
+DELIMITER $$
+
+CREATE TRIGGER notificar_salida_temprana
+AFTER INSERT ON registro_salida
+FOR EACH ROW
+BEGIN
+    -- Verifica si la hora de salida es antes de las 16:30 PM
+    IF TIME(NEW.fecha_hora) < '16:30:00' THEN
+        -- Inserta un registro en la tabla notificacion_salida_temprana
+        INSERT INTO notificacion_salida_temprana (
+            id_salida, 
+            id_usuario, 
+            estado, 
+            fecha_hora, 
+            comentarios
+        ) VALUES (
+            NEW.id_salida, 
+            NEW.id_usuario, 
+            FALSE,  -- Estado en false por defecto (no revisado)
+            NEW.fecha_hora, 
+            COALESCE(NEW.comentarios, 'Sin comentarios')
+        );
+    END IF;
+END $$
+
+DELIMITER ;
+
 
 /*--------------------------------------------------------------------------------------------------------------*/
 -- INSERT
