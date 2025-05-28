@@ -1,0 +1,65 @@
+name: CI Básico
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Puedes ajustar la versión de Node
+
+      - name: Instalar dependencias del Backend (Node.js)
+        run: npm install
+        working-directory: ./bee_express_pruebaback
+
+      # Descomenta y ajusta si tienes linters configurados en el backend Node.js
+      # - name: Ejecutar Linter del Backend (Node.js)
+      #   run: npm run lint # O el comando que uses para el linter
+      #   working-directory: ./bee_express_pruebaback
+
+      - name: Configurar Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10' # Puedes ajustar la versión de Python
+
+      - name: Instalar dependencias del Backend de Autenticación Facial (Python)
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+        working-directory: ./facial_auth
+
+      # Descomenta y ajusta si tienes linters o tests para el backend Python
+      # - name: Ejecutar Linter/Tests del Backend (Python)
+      #   run: |
+      #     source venv/bin/activate
+      #     # flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      #     # pytest
+      #   working-directory: ./facial_auth
+
+      - name: Instalar dependencias del Frontend (React)
+        run: npm install
+        working-directory: ./front-colpryst # Asegúrate que esta es la ruta correcta a tu frontend
+
+      # Descomenta y ajusta si tienes linters o build steps para el frontend
+      # - name: Ejecutar Linter del Frontend
+      #   run: npm run lint # O el comando que uses
+      #   working-directory: ./front-colpryst
+      
+      # - name: Construir Frontend
+      #   run: npm run build
+      #   working-directory: ./front-colpryst
+
+      - name: Verificar archivos generados por migraciones (opcional)
+        run: |
+          ls -la bee_express_pruebaback/migrations
+          ls -la bee_express_pruebaback/migrations/sqls

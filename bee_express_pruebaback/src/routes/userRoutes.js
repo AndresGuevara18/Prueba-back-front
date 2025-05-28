@@ -2,6 +2,7 @@ const express = require('express'); // Importar Express
 const router = express.Router(); // 🚀 Definir el router antes de usarlo
 const multer = require('multer'); // multer para manejo del blob //npm install multer
 const usuarioController = require('../controllers/userController');
+const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
 // Configura multer para manejar multipart/form-data
 const upload = multer({
@@ -215,7 +216,7 @@ router.post('/', upload.single('foto'), (req, res, next) => {
  *       500:
  *         description: Error interno del servidor
  */
-router.put('/:id_usuario', usuarioController.updateUser);
+router.put('/:id_usuario', verifyToken, usuarioController.updateUser);
 
 /**
  * @swagger
@@ -234,6 +235,6 @@ router.put('/:id_usuario', usuarioController.updateUser);
  *       200:
  *         description: Usuario eliminado correctamente
  */
-router.delete('/:id_usuario', usuarioController.deleteUser);
+router.delete('/:id_usuario', verifyToken, isAdmin, usuarioController.deleteUser);
 
 module.exports = router; // Exportar el router

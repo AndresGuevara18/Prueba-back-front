@@ -1,5 +1,6 @@
 const express = require('express'); // Importa Express
 const cargoController = require('../controllers/cargoController'); // Importa el controlador de Cargo
+const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
 const router = express.Router(); // Crea un enrutador con Express.Router()
 
@@ -42,7 +43,7 @@ router.get('/', cargoController.getAllCargos);
  *       201:
  *         description: Cargo creado correctamente
  */
-router.post('/', cargoController.createCargo);
+router.post('/', verifyToken, isAdmin, cargoController.createCargo);
 
 /**
  * @swagger
@@ -90,7 +91,7 @@ router.get('/:id_cargo', cargoController.getCargoById);
  *       200:
  *         description: Cargo actualizado correctamente
  */
-router.put('/:id_cargo', cargoController.updateCargo);
+router.put('/:id_cargo', verifyToken, isAdmin, cargoController.updateCargo);
 
 /**
  * @swagger
@@ -109,7 +110,7 @@ router.put('/:id_cargo', cargoController.updateCargo);
  *       200:
  *         description: Cargo eliminado correctamente
  */
-router.delete('/:id_cargo', cargoController.deleteCargo);
+router.delete('/:id_cargo', verifyToken, isAdmin, cargoController.deleteCargo);
 
 // Exporta el enrutador para ser usado en otros archivos
 module.exports = router;

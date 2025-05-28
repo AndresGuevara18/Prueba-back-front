@@ -6,6 +6,9 @@ front-colpryst/node_modules/
 bee_express_pruebaback/.env
 front-colpryst/.env
 facial_auth/venv310/
+facial_auth/.env
+facial_auth/__pycache__/
+facial_auth/*.pyc
 
 # Ignorar archivos de configuración local
 bee_express_pruebaback/.vscode/
