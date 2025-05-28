@@ -21,4 +21,31 @@ backend-node/logs/
 frontend-react/logs/
 backend-node/src/config/database.js
 
+# Node backend
+backend-node/node_modules/
+backend-node/.env
+backend-node/.vscode/
+backend-node/dist/
+backend-node/logs/
+backend-node/src/config/database.js
+
+# Python backend
+facial_auth/venv310/
+facial_auth/__pycache__/
+*.pyc
+__pycache__/
+
+# React frontend
+frontend-react/node_modules/
+frontend-react/.env
+frontend-react/.vscode/
+frontend-react/dist/
+frontend-react/build/
+frontend-react/logs/
+frontend-react/.vite/
+
+# Otros
+.DS_Store
+Thumbs.db
+
 .vscode/
