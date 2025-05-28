@@ -3,6 +3,10 @@ import { Shield, Award, CheckCircle, Star } from 'lucide-react';
 import basc from '../assets/img/certificado-basc.png';
 import vigilacia from '../assets/img/certificado-Supervigilancia.png'
 
+
+
+
+
 function Certifications() {
   useEffect(() => {
         document.title = "Certificaciones";
