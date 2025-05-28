@@ -1,4 +1,3 @@
-
 # 📌 Proyecto Visual Scan
 
 Este proyecto tiene como objetivo crear una solución integral para el **registro de asistencia mediante reconocimiento facial**, desarrollado a solicitud de **Colpryst Asesores Ltda**. Está compuesto por un backend en **Node.js (Express)**, un frontend en **React con Vite**, y una API de reconocimiento facial desarrollada en **Python**.
@@ -10,9 +9,9 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 ```
 /root
 │
-├── bee_express_pruebaback/       # Backend Node.js (Express)
-├── front-vite-prueba/            # Frontend React + Vite
-└── facial_auth/                  # Backend de reconocimiento facial (Python)
+├── backend-node/                # Backend Node.js (Express)
+├── frontend-react/              # Frontend React + Vite
+└── facial_auth/                 # Backend de reconocimiento facial (Python)
 ```
 
 ---
@@ -23,7 +22,7 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 
 1. Ir al directorio:
    ```bash
-   cd bee_express_pruebaback
+   cd backend-node
    ```
 
 2. Instalar dependencias:
@@ -42,7 +41,7 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 
 1. Ir al directorio:
    ```bash
-   cd front-vite-prueba
+   cd frontend-react
    ```
 
 2. Instalar dependencias:

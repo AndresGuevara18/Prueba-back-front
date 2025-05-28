@@ -1,24 +1,24 @@
 # Ignorar node_modules en ambas carpetas
-bee_express_pruebaback/node_modules/
-front-colpryst/node_modules/
+backend-node/node_modules/
+frontend-react/node_modules/
 
 # Ignorar archivos de entorno
-bee_express_pruebaback/.env
-front-colpryst/.env
+backend-node/.env
+frontend-react/.env
 facial_auth/venv310/
 
 # Ignorar archivos de configuración local
-bee_express_pruebaback/.vscode/
-front-colpryst/.vscode/
+backend-node/.vscode/
+frontend-react/.vscode/
 
 # Ignorar archivos generados
-bee_express_pruebaback/dist/
-front-colpryst/dist/
-front-colpryst/build/
+backend-node/dist/
+frontend-react/dist/
+frontend-react/build/
 
 # Ignorar archivos de log
-bee_express_pruebaback/logs/
-front-colpryst/logs/
-bee_express_pruebaback/src/config/database.js
+backend-node/logs/
+frontend-react/logs/
+backend-node/src/config/database.js
 
 .vscode/
