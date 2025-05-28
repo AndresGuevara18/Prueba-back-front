@@ -49,6 +49,7 @@ function Carousel() {
     const interval = setInterval(() => {
       setCurrentIndex((current) => (current + 1) % images.length);
     }, 5000);
+    document.title = "Inicio";
     return () => clearInterval(interval);
   }, []);
 

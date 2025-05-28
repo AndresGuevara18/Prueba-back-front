@@ -1,0 +1,7 @@
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+mysql-connector-python==8.0.33
+opencv-python==4.7.0.72
+numpy==1.24.3
+deepface==0.0.79
+python-multipart==0.0.6

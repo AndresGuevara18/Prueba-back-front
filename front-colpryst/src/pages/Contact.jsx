@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -36,10 +36,14 @@ function Contact() {
     });
   };
 
+  useEffect(() => {
+      document.title = "Contacto";
+  }, []);
+
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
-      <div className="relative h-[300px] md:h-[400px] w-full max-w-[1440px] mx-auto">
+      <div className="relative h-[300px] md:h-[400px] w-full">
         <img 
           src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80" 
           alt="Contact Hero"
@@ -102,13 +106,17 @@ function Contact() {
             {/* Map */}
             <div className="h-[300px] bg-gray-200 rounded-lg overflow-hidden">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.39280650613!2d-74.24789182453993!3d4.648625932726095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses-419!2sco!4v1644951788954!5m2!1ses-419!2sco"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.781203899536!2d-74.0788268!3d4.6694566!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9a5a5e5a5a5e%3A0x5b5ef5f5a5e5a5e5!2sCarrera%2064%20%2394a-56%2C%20Bogot%C3%A1!5e0!3m2!1ses!2sco!4v1620000000000!5m2!1ses!2sco"
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
                 allowFullScreen 
                 loading="lazy"
+                title="Ubicación exacta de la empresa"
               ></iframe>
+              <div className="mt-2 text-sm text-gray-600 text-center">
+                <p>Nos encontramos en Carrera 64 #94A-56, Bogotá</p>
+              </div>
             </div>
           </div>
 

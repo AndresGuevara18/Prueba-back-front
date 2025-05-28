@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
 
 const AgregarCargoPage = () => {
-  const [nombreCargo, setNombreCargo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [mensaje, setMensaje] = useState('');
+    //Almacena el valor
+    const [nombreCargo, setNombreCargo] = useState('');//nombre
+    const [descripcion, setDescripcion] = useState('');//descripcion
+    const [mensaje, setMensaje] = useState('');//mensajes de exito o error
   const navigate = useNavigate();
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/cargos`;
+
+  useEffect(() => {
+    document.title = "COLPRYST | Agregar Cargo"; // Cambiar el título de la página
+  }, []);
 
   const agregarCargo = async () => {
     try {
@@ -18,19 +23,21 @@ const AgregarCargoPage = () => {
         return;
       }
 
-      // Hacer la petición POST al backend
+      // petición POST al backend
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre_cargo: nombreCargo, descripcion }),
       });
 
+
+      //error
       if (!response.ok) throw new Error('Error al agregar el cargo');
 
-      const data = await response.json();
-      setMensaje(data.message);
+      const data = await response.json();//parsear respuesta a JSON
+      setMensaje(data.message);//respuesta exitosa
 
-      // Limpiar el formulario
+      // Limpiar
       setNombreCargo('');
       setDescripcion('');
 
@@ -45,12 +52,13 @@ const AgregarCargoPage = () => {
   };
 
   return (
-    <div className="font-sans text-center m-5 ml-64">
+    <div className="font-sans text-center m-5">
       <h1 className="text-3xl font-bold mb-4">Agregar Nuevo Cargo</h1>
       <form className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
         <div className="mb-4">
           <input
             type="text"
+            id="nombreCargo"
             placeholder="Nombre del Cargo"
             value={nombreCargo}
             onChange={(e) => setNombreCargo(e.target.value)}
@@ -60,6 +68,7 @@ const AgregarCargoPage = () => {
         <div className="mb-4">
           <input
             type="text"
+            id="descripcionCargo"
             placeholder="Descripción"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
