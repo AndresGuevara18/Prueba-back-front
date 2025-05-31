@@ -1,3 +1,4 @@
+// src/modules/dashboard/pages/UsuarioAgregar.jsx
 import React, { useState, useRef,useEffect  } from 'react';//{manejar estados, referencia elementos del dom,efecetos secundarios llamado apis}
 import { useNavigate } from 'react-router-dom';//hook para navegacion
 import API_BASE_URL from '../../../config/ConfigURL';//importacion url peticiones al back puerto 3000
@@ -172,32 +173,28 @@ const AgregarUsuarioPage = () => {
 
 
 
-  // capturar la imagen
+  // capturar la imagen (envía la imagen completa, no recortada)
   const captureImage = () => {
-    if (!videoRef.current || !canvasRef.current) return;//si no hay referencias validas  de vido o canvas
-    
+    if (!videoRef.current || !canvasRef.current) return;
     // Obtener dimensiones del video
     const video = videoRef.current;
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
     // Dibujar el frame actual del video en el canvas
-    const ctx = canvas.getContext('2d');//obtiene contexto 2d del canvas
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);//dibuja el frame actual del video
-    
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     // Convertir a Blob
-    canvas.toBlob((blob) => {//Convierte el canvas a imagen JPEG con 95% de calidad
-      if (blob) {//recibe el blob
-        console.log("Imagen capturada como Blob:", blob);
-        setFormData({...formData, fotoBlob: blob});//Guarda el blob en el estado del formulario
+    canvas.toBlob((blob) => {
+      if (blob) {
+        setFormData({ ...formData, fotoBlob: blob });
         alert("Imagen capturada correctamente!");
         closeCamera();
       } else {
-        console.error("Error al convertir a Blob");
+        alert("Error al convertir la imagen a Blob");
         closeCamera();
       }
-    }, 'image/jpeg', 0.95); // Calidad del 95%
+    }, 'image/jpeg', 0.95);
   };
 
   //manejo formulario
@@ -210,23 +207,21 @@ const AgregarUsuarioPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // Mostrar spinner
-  
+    setIsSubmitting(true);
     try {
-      // Crear FormData para enviar datos binarios
       const formDataToSend = new FormData();
-      
-      // Agregar todos los campos del formulario
       Object.entries(formData).forEach(([key, value]) => {
         if (key !== 'fotoBlob' && value !== null) {
           formDataToSend.append(key, value);
         }
       });
-  
       // Agregar la imagen si existe
       if (formData.fotoBlob) {
         formDataToSend.append('foto', formData.fotoBlob, 'foto_usuario.jpg');
       }
+      // Agregar metadatos referenciales
+      formDataToSend.append('timestamp', new Date().toISOString());
+      formDataToSend.append('referencia_documento', formData.numero_documento);
   
       const response = await fetch(API_URL, {
         method: "POST",
