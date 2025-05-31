@@ -14,6 +14,8 @@ export default [
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],
+      'no-unused-vars': 'warn',
+      'no-useless-catch': 'warn',
     },
   },
   {
@@ -30,6 +32,7 @@ export default [
       'no-console': 'off',
       'no-undef': 'off',
       'no-unused-vars': 'warn',
+      'no-useless-catch': 'warn',
     },
   },
 ];
