@@ -43,11 +43,7 @@ function Contact() {
   return (
     <div className="bg-gray-50">
       {/* Hero Section */}
-<<<<<<< HEAD:front-colpryst/src/pages/Contact.jsx
       <div className="relative mx-auto h-[300px] w-full max-w-[1440px] md:h-[400px]">
-=======
-      <div className="relative h-[300px] md:h-[400px] w-full">
->>>>>>> origin/develop:frontend-react/src/pages/Contact.jsx
         <img 
           src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80" 
           alt="Contact Hero"
