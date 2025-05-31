@@ -29,50 +29,50 @@ function NewUserModal({ isOpen, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-[500px] mx-4">
-        <h2 className="text-2xl font-bold mb-6">Nuevo usuario</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="mx-4 w-full max-w-[500px] rounded-lg bg-white p-6">
+        <h2 className="mb-6 text-2xl font-bold">Nuevo usuario</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-700 mb-2">Nombre:</label>
+            <label className="mb-2 block text-gray-700">Nombre:</label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2">Correo electrónico:</label>
+            <label className="mb-2 block text-gray-700">Correo electrónico:</label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2">Teléfono:</label>
+            <label className="mb-2 block text-gray-700">Teléfono:</label>
             <input
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2">Departamento:</label>
+            <label className="mb-2 block text-gray-700">Departamento:</label>
             <select
               value={formData.department}
               onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="ÉL">ÉL</option>
               <option value="RRHH">RRHH</option>
@@ -83,11 +83,11 @@ function NewUserModal({ isOpen, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2">Tipo de documento:</label>
+            <label className="mb-2 block text-gray-700">Tipo de documento:</label>
             <select
               value={formData.documentType}
               onChange={(e) => setFormData({ ...formData, documentType: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="DNI">DNI</option>
               <option value="CE">CE</option>
@@ -96,21 +96,21 @@ function NewUserModal({ isOpen, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2">Número de documento:</label>
+            <label className="mb-2 block text-gray-700">Número de documento:</label>
             <input
               type="text"
               value={formData.documentNumber}
               onChange={(e) => setFormData({ ...formData, documentNumber: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <button
             type="button"
-            className="w-full bg-emerald-500 text-white py-3 rounded-lg hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2 mb-4"
+            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-3 text-white transition-colors hover:bg-emerald-600"
           >
-            <Camera className="w-5 h-5" />
+            <Camera className="h-5 w-5" />
             Iniciar Escaneo Facial
           </button>
 
@@ -118,13 +118,13 @@ function NewUserModal({ isOpen, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="rounded-lg bg-gray-100 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-200"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="rounded-lg bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600"
             >
               Guardar
             </button>
@@ -167,57 +167,57 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-[500px] mx-4 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative mx-4 w-full max-w-[500px] rounded-lg bg-white p-6">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
         >
-          <X className="w-5 h-5" />
+          <X className="h-5 w-5" />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6">Editar usuario</h2>
+        <h2 className="mb-6 text-2xl font-bold">Editar usuario</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre:</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Nombre:</label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico:</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Correo electrónico:</label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono:</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Teléfono:</label>
             <input
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Departamento:</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Departamento:</label>
             <select 
               value={formData.department}
               onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="ÉL">ÉL</option>
               <option value="RRHH">RRHH</option>
@@ -227,17 +227,17 @@ function EditUserModal({ isOpen, onClose, user, onSave }) {
             </select>
           </div>
 
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="rounded-lg bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors"
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
             >
               Guardar
             </button>
@@ -256,17 +256,17 @@ function NovedadesContent() {
       </div>
 
       {/* Barra de búsqueda */}
-      <div className="bg-white rounded-lg shadow-sm mb-8">
-        <div className="flex flex-col md:flex-row items-center p-4 gap-4">
-          <div className="flex items-center w-full md:w-auto flex-1">
-            <Search className="text-gray-400 w-5 h-5" />
+      <div className="mb-8 rounded-lg bg-white shadow-sm">
+        <div className="flex flex-col items-center gap-4 p-4 md:flex-row">
+          <div className="flex w-full flex-1 items-center md:w-auto">
+            <Search className="h-5 w-5 text-gray-400" />
             <input
               type="text"
               placeholder="Buscar por nombre o descripción..."
-              className="flex-1 ml-3 outline-none w-full"
+              className="ml-3 w-full flex-1 outline-none"
             />
           </div>
-          <select className="w-full md:w-auto px-4 py-2 border border-gray-200 rounded-lg text-gray-600">
+          <select className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-600 md:w-auto">
             <option>Hoy</option>
             <option>Ayer</option>
             <option>Esta semana</option>
@@ -276,8 +276,8 @@ function NovedadesContent() {
       </div>
 
       {/* Área de contenido */}
-      <div className="bg-white rounded-lg shadow-sm p-6 min-h-[400px]">
-        <div className="text-center text-gray-500 mt-8">
+      <div className="min-h-[400px] rounded-lg bg-white p-6 shadow-sm">
+        <div className="mt-8 text-center text-gray-500">
           No hay novedades para mostrar
         </div>
       </div>
@@ -386,97 +386,97 @@ function UsersContent() {
       </div>
 
       {/* Barra de búsqueda y filtros */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          <div className="flex-1 relative w-full">
+      <div className="mb-6 rounded-lg bg-white p-4 shadow-sm">
+        <div className="flex flex-col items-center gap-4 md:flex-row">
+          <div className="relative w-full flex-1">
             <input
               type="text"
               placeholder="Buscar por nombre, correo electrónico o documento..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg"
+              className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
           </div>
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-            <select className="w-full md:w-auto px-4 py-2 border border-gray-200 rounded-lg text-gray-600">
+          <div className="flex w-full flex-col gap-4 md:w-auto md:flex-row">
+            <select className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-600 md:w-auto">
               <option>Todas las áreas</option>
             </select>
-            <select className="w-full md:w-auto px-4 py-2 border border-gray-200 rounded-lg text-gray-600">
+            <select className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-600 md:w-auto">
               <option>Todos los documentos</option>
             </select>
             <button 
               onClick={() => setIsNewUserModalOpen(true)}
-              className="w-full md:w-auto bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+              className="w-full rounded-lg bg-blue-500 p-2 text-white transition-colors hover:bg-blue-600 md:w-auto"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="h-5 w-5" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Tabla de usuarios */}
-      <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
+      <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 IDENTIFICACIÓN
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Nombre
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Correo electrónico
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Teléfono
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Departamento
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Documento
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Acciones
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 bg-white">
             {users.map((user) => (
               <tr key={user.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {user.id}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {user.name}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {user.email}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {user.phone}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {user.department}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   {user.document}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setEditingUser(user)}
-                      className="p-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                      className="rounded bg-blue-500 p-1.5 text-white transition-colors hover:bg-blue-600"
                     >
-                      <Pencil className="w-4 h-4" />
+                      <Pencil className="h-4 w-4" />
                     </button>
                     <button 
                       onClick={() => confirmDeleteUser(user)}
-                      className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                      className="rounded bg-red-500 p-1.5 text-white transition-colors hover:bg-red-600"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
@@ -511,10 +511,10 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const currentPath = location.pathname;
 
   const menuItems = [
-    { icon: <Mail className="w-5 h-5" />, label: 'Novedades', path: '/dashboard' },
-    { icon: <Users className="w-5 h-5" />, label: 'Usuarios', path: '/dashboard/users' },
-    { icon: <BarChart2 className="w-5 h-5" />, label: 'Estadísticas', path: '/dashboard/stats' },
-    { icon: <Settings className="w-5 h-5" />, label: 'Configuración', path: '/dashboard/settings' },
+    { icon: <Mail className="h-5 w-5" />, label: 'Novedades', path: '/dashboard' },
+    { icon: <Users className="h-5 w-5" />, label: 'Usuarios', path: '/dashboard/users' },
+    { icon: <BarChart2 className="h-5 w-5" />, label: 'Estadísticas', path: '/dashboard/stats' },
+    { icon: <Settings className="h-5 w-5" />, label: 'Configuración', path: '/dashboard/settings' },
   ];
 
   const handleLogout = () => {
@@ -536,10 +536,10 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   // Versión móvil del sidebar
   const MobileSidebar = () => (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`} onClick={() => setIsMobileMenuOpen(false)}>
+    <div className={`fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`} onClick={() => setIsMobileMenuOpen(false)}>
       <div className="fixed inset-y-0 left-0 w-64 bg-[#2D3748] text-white" onClick={e => e.stopPropagation()}>
-        <div className="p-6 text-center border-b border-gray-700">
-          <div className="w-16 h-16 rounded-full bg-[#3182CE] text-white text-2xl font-semibold flex items-center justify-center mx-auto mb-4">
+        <div className="border-b border-gray-700 p-6 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#3182CE] text-2xl font-semibold text-white">
             AU
           </div>
           <h2 className="text-lg font-semibold">Usuario administrador</h2>
@@ -554,7 +554,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 navigate(item.path);
                 setIsMobileMenuOpen(false);
               }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-2 w-full ${
+              className={`mb-2 flex w-full items-center gap-3 rounded-lg px-4 py-3 ${
                 currentPath === item.path
                   ? 'bg-[#3182CE] text-white' 
                   : 'text-gray-400 hover:bg-gray-700 hover:text-white'
@@ -566,12 +566,12 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-700">
+        <div className="border-t border-gray-700 p-4">
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors w-full px-4 py-3"
+            className="flex w-full items-center gap-3 px-4 py-3 text-gray-400 transition-colors hover:text-white"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="h-5 w-5" />
             Cerrar Sesión
           </button>
         </div>
@@ -581,9 +581,9 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   // Versión desktop del sidebar
   const DesktopSidebar = () => (
-    <div className="hidden md:flex w-64 bg-[#2D3748] text-white min-h-screen flex-col">
-      <div className="p-6 text-center border-b border-gray-700">
-        <div className="w-16 h-16 rounded-full bg-[#3182CE] text-white text-2xl font-semibold flex items-center justify-center mx-auto mb-4">
+    <div className="hidden min-h-screen w-64 flex-col bg-[#2D3748] text-white md:flex">
+      <div className="border-b border-gray-700 p-6 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#3182CE] text-2xl font-semibold text-white">
           AU
         </div>
         <h2 className="text-lg font-semibold">Usuario administrador</h2>
@@ -595,7 +595,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           <button
             key={index}
             onClick={() => navigate(item.path)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-2 w-full ${
+            className={`mb-2 flex w-full items-center gap-3 rounded-lg px-4 py-3 ${
               currentPath === item.path
                 ? 'bg-[#3182CE] text-white' 
                 : 'text-gray-400 hover:bg-gray-700 hover:text-white'
@@ -607,12 +607,12 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-700">
+      <div className="border-t border-gray-700 p-4">
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors w-full px-4 py-3"
+          className="flex w-full items-center gap-3 px-4 py-3 text-gray-400 transition-colors hover:text-white"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="h-5 w-5" />
           Cerrar Sesión
         </button>
       </div>
@@ -650,20 +650,20 @@ function Dashboard() {
       <div className="flex-1">
         {/* Barra superior */}
         <div className="bg-white shadow">
-          <div className="flex justify-between items-center px-4 md:px-8 py-4">
+          <div className="flex items-center justify-between px-4 py-4 md:px-8">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+                className="rounded-md p-2 text-gray-700 hover:bg-gray-100 md:hidden"
               >
                 <Menu className="h-6 w-6" />
               </button>
-              <Link to="/" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
-                <Shield className="w-6 h-6 text-blue-600" />
+              <Link to="/" className="flex items-center gap-2 transition-colors hover:text-blue-700">
+                <Shield className="h-6 w-6 text-blue-600" />
                 <span className="text-xl font-bold">COLPRYST</span>
               </Link>
             </div>
-            <div className="text-gray-700 text-sm md:text-base">
+            <div className="text-sm text-gray-700 md:text-base">
               <span>{capitalizedDate}</span>
             </div>
           </div>

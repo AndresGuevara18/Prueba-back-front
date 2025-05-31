@@ -120,17 +120,17 @@ const UsuariosPage = () => {
   });
 
   if (error) {
-    return <div className="text-red-500 text-center mt-4">Error: {error}</div>;
+    return <div className="mt-4 text-center text-red-500">Error: {error}</div>;
   }
 
   return (
-    <div className="font-sans text-center m-5 ml-46">
-      <h1 className="text-3xl font-bold mb-4">Lista de Usuarios</h1>
+    <div className="ml-46 m-5 text-center font-sans">
+      <h1 className="mb-4 text-3xl font-bold">Lista de Usuarios</h1>
 
-      <div className="flex justify-center space-x-4 mb-4">
+      <div className="mb-4 flex justify-center space-x-4">
         {/* Botón para agregar usuario */}
         <button onClick={() => navigate('/dashboard/agregar-users')} 
-          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           >➕ Agregar Usuario
         </button>
         
@@ -141,18 +141,18 @@ const UsuariosPage = () => {
             placeholder="Ingresar documento"
             value={idUsuarioBuscar}
             onChange={(e) => setIdUsuarioBuscar(e.target.value)}
-            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={buscarUsuario}
-            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="ml-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             🔍 Buscar 
           </button>
         </div>
         
         <button onClick={() => navigate('/dashboard/cargos')} 
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"    
+        className="mb-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"    
         >
           📌 Ver Cargos</button>
       </div>
@@ -161,29 +161,29 @@ const UsuariosPage = () => {
         <table className="w-full bg-white shadow-lg">
           <thead>
             <tr className="bg-gray-200">
-              <th className="p-2 border border-black">ID</th>
-              <th className="p-2 border border-black">Número Documento</th>
-              <th className="p-2 border border-black">Nombre</th>
-              <th className="p-2 border border-black">Teléfono</th>
-              <th className="p-2 border border-black">Email</th>
-              <th className="p-2 border border-black">Usuario</th>
-              <th className="p-2 border border-black">Cargo</th>
-              <th className="p-2 border border-black">Acciones</th>
+              <th className="border border-black p-2">ID</th>
+              <th className="border border-black p-2">Número Documento</th>
+              <th className="border border-black p-2">Nombre</th>
+              <th className="border border-black p-2">Teléfono</th>
+              <th className="border border-black p-2">Email</th>
+              <th className="border border-black p-2">Usuario</th>
+              <th className="border border-black p-2">Cargo</th>
+              <th className="border border-black p-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsuarios.map((usuario, index) => (
               <tr key={usuario.id_usuario} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-100"} border-b`}>
-                <td className="p-2 border border-black">{usuario.id_usuario}</td>
-                <td className="p-2 border border-black">{usuario.numero_documento}</td>
-                <td className="p-2 border border-black">{usuario.nombre_empleado}</td>
-                <td className="p-2 border border-black">{usuario.telefono_empleado}</td>
-                <td className="p-2 border border-black">{usuario.email_empleado}</td>
-                <td className="p-2 border border-black">{usuario.usuarioadmin}</td>
-                <td className="p-2 border border-black">{usuario.nombre_cargo}</td>
-                <td className="p-2 border border-black">
-                  <button className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600">✏️ Editar</button>
-                  <button onClick={() => eliminarUsuario(usuario.id_usuario)} className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">🗑 Eliminar</button>
+                <td className="border border-black p-2">{usuario.id_usuario}</td>
+                <td className="border border-black p-2">{usuario.numero_documento}</td>
+                <td className="border border-black p-2">{usuario.nombre_empleado}</td>
+                <td className="border border-black p-2">{usuario.telefono_empleado}</td>
+                <td className="border border-black p-2">{usuario.email_empleado}</td>
+                <td className="border border-black p-2">{usuario.usuarioadmin}</td>
+                <td className="border border-black p-2">{usuario.nombre_cargo}</td>
+                <td className="border border-black p-2">
+                  <button className="mr-2 rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600">✏️ Editar</button>
+                  <button onClick={() => eliminarUsuario(usuario.id_usuario)} className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600">🗑 Eliminar</button>
                 </td>
               </tr>
             ))}
@@ -194,8 +194,8 @@ const UsuariosPage = () => {
       {/* Modal para mostrar detalles del usuario */}
       {modalAbierto && usuarioEncontrado && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Detalles del Usuario</h2>
+          <div className="rounded bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">Detalles del Usuario</h2>
             <p>
               <strong>ID:</strong> {usuarioEncontrado.id_usuario}
             </p>
@@ -216,7 +216,7 @@ const UsuariosPage = () => {
             </p>
             <button
               onClick={cerrarModal}
-              className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-4 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Cerrar
             </button>

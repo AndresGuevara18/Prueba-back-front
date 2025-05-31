@@ -55,21 +55,21 @@ function Dashboard() {
       <div className="flex-1">
         {/* Top Bar */}
         <div className="bg-white shadow">
-          <div className="flex justify-between items-center px-4 md:px-8 py-4">
+          <div className="flex items-center justify-between px-4 py-4 md:px-8">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+                className="rounded-md p-2 text-gray-700 hover:bg-gray-100 md:hidden"
               >
                 <Menu className="h-6 w-6" />
               </button>
-              <Link to="/" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
+              <Link to="/" className="flex items-center gap-2 transition-colors hover:text-blue-700">
                 {/* <Shield className="w-6 h-6 text-blue-600" /> */}
                 {/* <span className="text-xl font-bold">COLPRYST</span> */}
                 <img src="../../../../public/img/colpryst-icon.png" alt="COLPRYST logo" className="h-8" />
               </Link>
             </div>
-            <div className="text-gray-700 text-sm md:text-base">
+            <div className="text-sm text-gray-700 md:text-base">
               <span>{capitalizedDate}</span>
             </div>
           </div>

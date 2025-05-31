@@ -255,9 +255,9 @@ const AgregarUsuarioPage = () => {
   };
 
   return (
-    <div className="font-sans text-center m-5">
-      <h1 className="text-3xl font-bold mb-4">Agregar Nuevo Usuario</h1>
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="m-5 text-center font-sans">
+      <h1 className="mb-4 text-3xl font-bold">Agregar Nuevo Usuario</h1>
+      <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg">
         <div className="grid grid-cols-2 gap-4">
           {/* Columna Izquierda */}
           <div className="space-y-4">
@@ -268,7 +268,7 @@ const AgregarUsuarioPage = () => {
               </label>
               <select
                 id="tipo_documento"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.tipo_documento}
                 onChange={handleChange}
                 required
@@ -289,7 +289,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="text"
                 id="numero_documento"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.numero_documento}
                 onChange={handleChange}
                 required
@@ -304,7 +304,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="text"
                 id="nombre_empleado"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.nombre_empleado}
                 onChange={handleChange}
                 required
@@ -319,7 +319,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="text"
                 id="direccion_empelado"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.direccion_empelado}
                 onChange={handleChange}
                 required
@@ -334,7 +334,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="text"
                 id="telefono_empleado"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.telefono_empleado}
                 onChange={handleChange}
                 required
@@ -352,7 +352,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="email"
                 id="email_empleado"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.email_empleado}
                 onChange={handleChange}
                 required
@@ -367,7 +367,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="text"
                 id="eps_empleado"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.eps_empleado}
                 onChange={handleChange}
                 required
@@ -382,7 +382,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="text"
                 id="usuarioadmin"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.usuarioadmin}
                 onChange={handleChange}
                 required
@@ -397,7 +397,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="password"
                 id="contrasenia"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.contrasenia}
                 onChange={handleChange}
                 required
@@ -412,7 +412,7 @@ const AgregarUsuarioPage = () => {
               <input
                 type="number"
                 id="id_cargo"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.id_cargo}
                 onChange={handleChange}
                 required
@@ -422,10 +422,10 @@ const AgregarUsuarioPage = () => {
         </div>
 
         {/* Botón de cámara visible pero inactivo */}
-        <div className="flex flex-col items-center mt-6">
+        <div className="mt-6 flex flex-col items-center">
           <button
             type="button"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
+            className="mb-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             //onClick={() => alert("Función de cámara no implementada aún")}
             onClick={openCamera}
           >
@@ -434,13 +434,13 @@ const AgregarUsuarioPage = () => {
         </div>
 
         {/* Botón Registrar */}
-        <button type="submit" className="w-full bg-green-500 text-white px-4 py-2 rounded mt-6 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+        <button type="submit" className="mt-6 w-full rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
           Registrar
         </button>
 
         {/* Mostrar mensaje de éxito */}
         {mensaje && (
-          <div className="mt-4 p-4 rounded bg-green-100 text-green-700">
+          <div className="mt-4 rounded bg-green-100 p-4 text-green-700">
             {mensaje}
           </div>
         )} 
@@ -448,20 +448,20 @@ const AgregarUsuarioPage = () => {
 
       {/* Modal de la cámara */}
       {showCameraModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg max-w-lg w-full">
-            <h2 className="text-xl font-bold mb-2">Cámara</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="w-full max-w-lg rounded-lg bg-white p-4">
+            <h2 className="mb-2 text-xl font-bold">Cámara</h2>
             
             <div className="relative">
               <video 
                 ref={videoRef}
                 autoPlay
                 playsInline
-                className="w-full h-auto border border-gray-300"
+                className="h-auto w-full border border-gray-300"
               />
               <canvas
                 ref={faceCanvasRef}
-                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                className="pointer-events-none absolute left-0 top-0 h-full w-full"
                 style={{ zIndex: 10 }}
               />
             </div>
@@ -469,24 +469,24 @@ const AgregarUsuarioPage = () => {
             <div className="mt-4 flex justify-end space-x-2">
               <button
                 onClick={captureImage}
-                className={`px-4 py-2 rounded ${
+                className={`rounded px-4 py-2 ${
                   isCaptureEnabled
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-gray-400 cursor-not-allowed text-white'
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-gray-400 text-white'
                 }`}
               >
                 Capturar
               </button>
               <button
                 onClick={closeCamera}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
               >
                 Cerrar Cámara
               </button>
             </div>
 
             {showCameraModal && !isCaptureEnabled && (
-              <p className="text-red-600 mt-2 text-center">
+              <p className="mt-2 text-center text-red-600">
                 Debe haber exactamente un solo rostro en pantalla.
               </p>
             )}
