@@ -21,6 +21,14 @@ async def verificar_imagen_logic(file: UploadFile):
             print("❌ No se pudo decodificar la imagen")
             return JSONResponse(status_code=400, content={"message": "No se pudo leer la imagen."})
 
+        # Validar que la imagen tenga al menos un rostro antes de generar el embedding
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        if len(faces) == 0:
+            print("❌ No se detectó ningún rostro en la imagen")
+            return JSONResponse(status_code=400, content={"message": "No se detectó ningún rostro en la imagen."})
+
         print("🧠 Procesando imagen con DeepFace...")
         result = DeepFace.represent(img_path=img, model_name='Facenet', enforce_detection=False)
 
@@ -53,4 +61,3 @@ async def verificar_imagen_logic(file: UploadFile):
     except Exception as e:
         print("❌ Error en el servidor:", str(e))
         return JSONResponse(status_code=500, content={"message": "Error interno", "error": str(e)})
-    

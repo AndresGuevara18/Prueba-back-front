@@ -1,4 +1,3 @@
-
 # 📌 Proyecto Visual Scan
 
 Este proyecto tiene como objetivo crear una solución integral para el **registro de asistencia mediante reconocimiento facial**, desarrollado a solicitud de **Colpryst Asesores Ltda**. Está compuesto por un backend en **Node.js (Express)**, un frontend en **React con Vite**, y una API de reconocimiento facial desarrollada en **Python**.
@@ -10,9 +9,9 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 ```
 /root
 │
-├── bee_express_pruebaback/       # Backend Node.js (Express)
-├── front-vite-prueba/            # Frontend React + Vite
-└── facial_auth/                  # Backend de reconocimiento facial (Python)
+├── backend-node/                # Backend Node.js (Express)
+├── frontend-react/              # Frontend React + Vite
+└── facial_auth/                 # Backend de reconocimiento facial (Python)
 ```
 
 ---
@@ -23,7 +22,7 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 
 1. Ir al directorio:
    ```bash
-   cd bee_express_pruebaback
+   cd backend-node
    ```
 
 2. Instalar dependencias:
@@ -42,7 +41,7 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 
 1. Ir al directorio:
    ```bash
-   cd front-vite-prueba
+   cd frontend-react
    ```
 
 2. Instalar dependencias:
@@ -100,17 +99,16 @@ Los módulos clave del sistema incluyen:
 | RF01    | Registro de usuarios            |
 | RF02    | Asignación de roles             |
 | RF03    | Inicio de sesión                |
-| RF04    | Recuperación de contraseña      |
-| RF05    | Búsqueda de usuarios            |
-| RF06    | Actualización de datos          |
-| RF07    | Eliminación de usuarios         |
-| RT08    | Reconocimiento facial           |
-| RT09    | Registro en tiempo real         |
-| RT10    | Registro de novedades           |
-| RT11    | Registro de ingreso             |
-| RT12    | Registro de salida              |
-| RT13    | Notificación por retardos       |
-| RT14    | Cierre de sesión                |
+| RF04    | Búsqueda de usuarios            |
+| RF05    | Actualización de datos          |
+| RF06    | Eliminación de usuarios         |
+| RT07    | Reconocimiento facial           |
+| RT08    | Registro en tiempo real         |
+| RT09    | Registro de novedades           |
+| RT10    | Registro de ingreso             |
+| RT11    | Registro de salida              |
+| RT12    | Notificación por retardos       |
+| RT13    | Cierre de sesión                |
 
 Ver detalles en: `requisitos_funcionales.md`
 
@@ -166,11 +164,46 @@ Código interno: **PT-ERS-01**
 
 ---
 
+## 👥 Roles Principales del Proyecto
+
+### 1️⃣ Product Owner
+- **Nombre:** Leydi Johana Arevalo  
+  **Responsabilidades:**  
+  - Definir la visión y prioridades del producto  
+  - Gestionar el product backlog  
+  - Validar entregables con stakeholders  
+
+### 2️⃣ Scrum Master  
+- **Nombre:** Ivan Dario Jimenez  
+  **Responsabilidades:**  
+  - Facilitar ceremonias ágiles (dailies, retrospectivas)  
+  - Remover obstáculos del equipo  
+  - Velar por el cumplimiento de Scrum  
+
+### 3️⃣ Tech Lead  
+- **Nombre:** Mauricio Andres Castro Guevara  
+  **Responsabilidades:**  
+  - Arquitectura de la solución (backend y base de datos)  
+  - Revisión de código y estándares técnicos  
+  - Mentoría técnica al equipo    
+
+### 4️⃣ UX/UI Team  
+- **Nombres:**  
+  - Jhon Jairo Moreno Montoya  
+  - Diller Adrian Chaguala Marín  
+  **Responsabilidades:**  
+  - Diseño de interfaces en Figma  
+  - Prototipado y validación con usuarios  
+  - Implementación frontend (React Vite)  
+
+---
+
+
 ## 👥 Autores
 
 - **Nombre:** Mauricio Andres Castro Guevara 
 
-  **Rol:** Desarrollador Backend (Express) y Backend Reconocimiento Facial (Python)
+  **Rol:** Desarrollador Backend (Express), Backend Reconocimiento Facial (Python), Diseñador de Base de Datos
 
 - **Nombre:** Jhon jairo Moreno Montoya 
 
@@ -178,16 +211,16 @@ Código interno: **PT-ERS-01**
 
 - **Nombre:** Diller Adrian Chaguala Marin
 
-  **Rol:** Desarrolladora Frontend (React Vite)
+  **Rol:** Desarrolladora Frontend (React Vite), Documentación
 
 - **Nombre:** Leydi Johana Arevalo
 
-  **Rol:** Documentación y QA
+  **Rol:** Documentación y QA (Pruebas)
 
   
 - **Nombre:** Ivan Dario Jimenez
 
-  **Rol:** Desarrollador Backend (Express)
+  **Rol:** Desarrollador Backend (Express), QA (Pruebas)
 
 ---
 

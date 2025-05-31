@@ -4,7 +4,7 @@ Este proyecto utiliza linters para mantener la calidad y consistencia del códig
 
 ## Dependencias necesarias
 
-### Frontend (`front-colpryst`)
+### Frontend (`frontend-react`)
 - Node.js y npm
 - ESLint
 - eslint-plugin-react-hooks
@@ -12,23 +12,23 @@ Este proyecto utiliza linters para mantener la calidad y consistencia del códig
 - eslint-plugin-tailwindcss
 - Tailwind CSS
 
-Instala las dependencias ejecutando en la carpeta `front-colpryst`:
+Instala las dependencias ejecutando en la carpeta `frontend-react`:
 1. Abre PowerShell y ejecuta:
 ```powershell
-cd .\front-colpryst
+cd .\frontend-react
 npm install
 npm install eslint eslint-plugin-react-hooks eslint-plugin-react-refresh eslint-plugin-tailwindcss --save-dev
 cd ..
 ```
 
-### Backend (`bee_express_pruebaback`)
+### Backend (`backend-node`)
 - Node.js y npm
 - ESLint
 
-Instala las dependencias ejecutando en la carpeta `bee_express_pruebaback`:
+Instala las dependencias ejecutando en la carpeta `backend-node`:
 1. Abre PowerShell y ejecuta:
 ```powershell
-cd .\bee_express_pruebaback
+cd .\backend-node
 npm install
 npm install eslint --save-dev
 cd ..
@@ -63,7 +63,7 @@ cd ..
 
 Desde la carpeta raíz del proyecto, ejecuta el siguiente script en PowerShell:
 ```powershell
-./lint-all.ps1
+.\lint-all.ps1
 ```
 
 Este script:
@@ -80,27 +80,27 @@ Puedes ejecutar los linters de cada módulo individualmente desde la raíz del p
 
 Lint:
 ```powershell
-cd .\front-colpryst
+cd .\frontend-react
 npm run lint
 ```
 
 Auto-fix:
 ```powershell
-cd .\front-colpryst
+cd .\frontend-react
 npm run lint -- --fix
 ```
 
-### Backend (`bee_express_pruebaback`)
+### Backend (`backend-node`)
 
 Lint:
 ```powershell
-cd .\bee_express_pruebaback
+cd .\backend-node
 npm run lint
 ```
 
 Auto-fix:
 ```powershell
-cd .\bee_express_pruebaback
+cd .\backend-node
 npm run lint -- --fix
 ```
 
@@ -126,7 +126,7 @@ python -m pylint src
 
 Desde la raíz del proyecto, puedes intentar auto-arreglar los problemas de backend y frontend con:
 ```powershell
-./fix-all.ps1
+.\fix-all.ps1
 ```
 
 Esto ejecuta ESLint con la opción `--fix` en ambos módulos. Los problemas que no puedan arreglarse automáticamente requerirán intervención manual.

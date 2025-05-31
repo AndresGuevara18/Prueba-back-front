@@ -1,0 +1,220 @@
+-- Crear la base de datos y seleccionarla
+create database colpryst_col3;
+use colpryst_col3;
+
+-- Crear tabla 'cargo'
+create table cargo (
+    id_cargo int auto_increment not null,
+    nombre_cargo varchar(80) not null,
+    descripcion varchar(80),
+    constraint pk_cargo primary key (id_cargo)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- Crear tabla 'usuario'
+create table usuario (
+    id_usuario int auto_increment not null,
+    tipo_documento varchar(20) not null,
+    numero_documento varchar(20) not null unique,
+    nombre_empleado varchar(80) not null,
+    direccion_empleado varchar(80),
+    telefono_empleado varchar(80), 
+    email_empleado varchar(80) not null unique,
+    eps_empleado varchar(80),
+    usuarioadmin varchar(80) unique,
+    contrasenia varchar(100),
+    id_cargo int not null,
+    constraint pk_usuario primary key (id_usuario),
+    constraint fk_usuario_cargo foreign key (id_cargo) references cargo (id_cargo)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- Crear tabla 'reconocimiento_facial'
+CREATE TABLE reconocimiento_facial (
+    id_foto INT AUTO_INCREMENT NOT NULL,
+    embedding LONGTEXT NOT NULL,  -- Aquí se guarda el embedding como texto (ej: "[0.1, -0.2, ...]")
+    id_usuario INT NOT NULL,
+    CONSTRAINT pk_reconocimiento_facial PRIMARY KEY (id_foto),
+    CONSTRAINT fk_reconocimiento_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+/*-- Crear tabla 'reconocimiento_facial' con columna tipo BLOB
+create table reconocimiento_facial (
+    id_foto int auto_increment not null,
+    fotografia_emple LONGBLOB , -- BLOB not null 
+    id_usuario int not null,
+    constraint pk_reconocimiento_facial primary key (id_foto),
+    constraint fk_reconocimiento_usuario foreign key (id_usuario) references usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;*/
+
+
+-- Crear tabla 'registro_entrada'
+create table registro_entrada (
+    id_entrada int auto_increment not null,
+    fecha_hora datetime not null,
+    comentarios varchar(500),
+    id_usuario int not null,
+    constraint pk_registro_entrada primary key (id_entrada),
+    constraint fk_registro_usuario foreign key (id_usuario) references usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- Crear tabla 'notificacion_entrada_tarde'
+create table notificacion_entrada_tarde (
+    id_notificacion int auto_increment not null,
+    id_entrada int not null,
+    id_usuario int not null,
+    estado boolean not null,
+    fecha_hora datetime not null,
+    comentarios varchar(500) not null,
+    constraint pk_notificacion primary key (id_notificacion),
+    constraint fk_notificacion_entrada foreign key (id_entrada) references registro_entrada (id_entrada)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+
+
+/*--------------------------------------------------------------------------------------------------------------
+-------------------------TRIGGER (PARA QUE EMPIECE A FUNCIONAR ANTES DE INSERTAR DATOS)-------------------------*/
+
+-- 	TRIGGER --- PARA LLEGADA TARDE DESPUES DE LAS 7:30
+DELIMITER $$
+
+CREATE TRIGGER notificar_llegada_tarde
+AFTER INSERT ON registro_entrada
+FOR EACH ROW
+BEGIN
+    -- Verifica si la hora de entrada es después de las 07:30 AM
+    IF TIME(NEW.fecha_hora) > '07:15:00' THEN
+        -- Inserta un registro en la tabla notificacion_entrada_tarde
+        INSERT INTO notificacion_entrada_tarde (id_entrada, id_usuario, estado, fecha_hora, comentarios) 
+        VALUES (
+            NEW.id_entrada, 
+            NEW.id_usuario, 
+            FALSE,  -- Estado en false por defecto
+            NEW.fecha_hora, 
+            COALESCE(NEW.comentarios, 'Sin comentarios') -- Si comentarios es NULL, usa "Sin comentarios"
+        );
+    END IF;
+END $$
+
+DELIMITER ;
+
+-- DROP TRIGGER IF EXISTS notificar_llegada_tarde;
+
+-- Crear tabla 'registro_salida'
+create table registro_salida (
+    id_salida int auto_increment not null,
+    fecha_hora datetime not null,
+    comentarios varchar(500),
+    id_usuario int not null,
+    constraint pk_registro_salida primary key (id_salida),
+    constraint fk_salida_usuario foreign key (id_usuario) references usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- Crear tabla 'notificacion_salida_temprana'
+CREATE TABLE notificacion_salida_temprana (
+    id_notificacion INT AUTO_INCREMENT NOT NULL,
+    id_salida INT NOT NULL,
+    id_usuario INT NOT NULL,
+    estado BOOLEAN NOT NULL,
+    fecha_hora DATETIME NOT NULL,
+    comentarios VARCHAR(500) NOT NULL,
+    CONSTRAINT pk_notificacion_salida PRIMARY KEY (id_notificacion),
+    CONSTRAINT fk_notificacion_salida FOREIGN KEY (id_salida) REFERENCES registro_salida (id_salida),
+    CONSTRAINT fk_notificacion_salida_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+
+
+/*--------------------------------------------------------------------------------------------------------------
+-------------------------TRIGGER (PARA QUE EMPIECE A FUNCIONAR ANTES DE INSERTAR DATOS)-------------------------*/
+
+DELIMITER $$
+
+CREATE TRIGGER notificar_salida_temprana
+AFTER INSERT ON registro_salida
+FOR EACH ROW
+BEGIN
+    -- Verifica si la hora de salida es antes de las 16:30 PM
+    IF TIME(NEW.fecha_hora) < '16:30:00' THEN
+        -- Inserta un registro en la tabla notificacion_salida_temprana
+        INSERT INTO notificacion_salida_temprana (
+            id_salida, 
+            id_usuario, 
+            estado, 
+            fecha_hora, 
+            comentarios
+        ) VALUES (
+            NEW.id_salida, 
+            NEW.id_usuario, 
+            FALSE,  -- Estado en false por defecto (no revisado)
+            NEW.fecha_hora, 
+            COALESCE(NEW.comentarios, 'Sin comentarios')
+        );
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+/*--------------------------------------------------------------------------------------------------------------*/
+-- INSERT
+-- Inserción de registros en la tabla Cargo
+INSERT INTO Cargo (nombre_cargo, descripcion) VALUES 
+('Gerente', 'Gerente de operaciones'),
+('Desarrollador', 'Desarrollador de software'),
+('Contador', 'Encargado de finanzas'),
+('Soporte Técnico', 'Soporte de IT'),
+('Marketing', 'Especialista en marketing'),
+('Recursos Humanos', 'Gestión de personal'),
+('Vendedor', 'Venta de productos'),
+('Analista', 'Analista de datos'),
+('Director', 'Director de la empresa'),
+('Administrativo', 'Administración general');
+
+-- Inserción de registros en la tabla Usuario
+INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo
+) VALUES
+-- 📌 1 Gerente (ID Cargo = 1)
+('DNI', '12345678A', 'Carlos Pérez', 'Calle 123, Ciudad A', '3001234567', 'carlos.perez@colpryst.com', 'EPS001', 'carlos.perez', 'admin123', 1),  
+
+-- 📌 1 Administrativo (ID Cargo = 10)
+('DNI', '23456789B', 'Ana Gómez', 'Avenida 456, Ciudad B', '3102345678', 'ana.gomez@colpryst.com', 'EPS002', 'ana.gomez', NULL, 10),  
+
+-- 📌 3 Desarrolladores (ID Cargo = 2)
+('DNI', '34567890C', 'Luis Martínez', 'Carrera 789, Ciudad C', '3203456789', 'luis.martinez@colpryst.com', 'EPS003', 'luis.martinez', 'subadmin789', 2),  
+('DNI', '45678901D', 'Marta Rodríguez', 'Calle 101, Ciudad D', '3304567890', 'marta.rodriguez@colpryst.com', 'EPS004', 'marta.rodriguez', NULL, 2),  
+('DNI', '56789012E', 'Jorge Fernández', 'Avenida 112, Ciudad E', '3405678901', 'jorge.fernandez@colpryst.com', 'EPS005', 'jorge.fernandez', NULL, 2),  
+
+-- 📌 2 Contadores (ID Cargo = 3)
+('DNI', '67890123F', 'Lucía Díaz', 'Carrera 131, Ciudad F', '3506789012', 'lucia.diaz@colpryst.com', 'EPS006', 'lucia.diaz', NULL, 3),  
+('DNI', '78901234G', 'Juan López', 'Calle 415, Ciudad G', '3607890123', 'juan.lopez@colpryst.com', 'EPS007', 'juan.lopez', NULL, 3),  
+
+-- 📌 5 Soporte Técnico (ID Cargo = 4)
+('DNI', '89012345H', 'Elena Sánchez', 'Avenida 161, Ciudad H', '3708901234', 'elena.sanchez@colpryst.com', 'EPS008', 'elena.sanchez', NULL, 4),  
+('DNI', '90123456I', 'Pedro Gutiérrez', 'Carrera 718, Ciudad I', '3809012345', 'pedro.gutierrez@colpryst.com', 'EPS009', 'pedro.gutierrez', NULL, 4),  
+('DNI', '01234567J', 'Sara Ruiz', 'Calle 192, Ciudad J', '3900123456', 'sara.ruiz@colpryst.com', 'EPS010', 'sara.ruiz', NULL, 4),  
+('DNI', '11111111K', 'Andrés Torres', 'Avenida 221, Ciudad K', '3011234567', 'andres.torres@colpryst.com', 'EPS011', 'andres.torres', NULL, 4),  
+('DNI', '22222222L', 'Gabriel Núñez', 'Carrera 324, Ciudad L', '3022345678', 'gabriel.nunez@colpryst.com', 'EPS012', 'gabriel.nunez', NULL, 4),  
+
+-- 📌 3 Marketing (ID Cargo = 5)
+('DNI', '33333333M', 'Natalia Herrera', 'Calle 456, Ciudad M', '3033456789', 'natalia.herrera@colpryst.com', 'EPS013', 'natalia.herrera', NULL, 5),  
+('DNI', '44444444N', 'Emilio Castro', 'Avenida 789, Ciudad N', '3044567890', 'emilio.castro@colpryst.com', 'EPS014', 'emilio.castro', NULL, 5),  
+('DNI', '55555555O', 'Marta Blanco', 'Carrera 101, Ciudad O', '3055678901', 'marta.blanco@colpryst.com', 'EPS015', 'marta.blanco', NULL, 5),  
+
+-- 📌 2 Recursos Humanos (ID Cargo = 6)
+('DNI', '66666666P', 'Esteban Suárez', 'Calle 112, Ciudad P', '3066789012', 'esteban.suarez@colpryst.com', 'EPS016', 'esteban.suarez', NULL, 6),  
+('DNI', '77777777Q', 'Rosa Delgado', 'Avenida 131, Ciudad Q', '3077890123', 'rosa.delgado@colpryst.com', 'EPS017', 'rosa.delgado', NULL, 6),  
+
+-- 📌 5 Vendedores (ID Cargo = 7)
+('DNI', '88888888R', 'Tomás Gil', 'Carrera 415, Ciudad R', '3088901234', 'tomas.gil@colpryst.com', 'EPS018', 'tomas.gil', NULL, 7),  
+('DNI', '99999999S', 'Valeria Rojas', 'Calle 161, Ciudad S', '3099012345', 'valeria.rojas@colpryst.com', 'EPS019', 'valeria.rojas', NULL, 7),  
+('DNI', '10101010T', 'Carla Vega', 'Avenida 718, Ciudad T', '3100123456', 'carla.vega@colpryst.com', 'EPS020', 'carla.vega', NULL, 7),  
+('DNI', '11122233U', 'Ricardo Flores', 'Carrera 192, Ciudad U', '3111234567', 'ricardo.flores@colpryst.com', 'EPS021', 'ricardo.flores', NULL, 7),  
+('DNI', '22233344V', 'Alejandro Ortiz', 'Calle 221, Ciudad V', '3122345678', 'alejandro.ortiz@colpryst.com', 'EPS022', 'alejandro.ortiz', NULL, 7),  
+
+-- 📌 3 Analistas (ID Cargo = 8)
+('DNI', '33344455W', 'Raquel Sánchez', 'Avenida 324, Ciudad W', '3133456789', 'raquel.sanchez@colpryst.com', 'EPS023', 'raquel.sanchez', NULL, 8),  
+('DNI', '44455566X', 'Pablo Díaz', 'Carrera 456, Ciudad X', '3144567890', 'pablo.diaz@colpryst.com', 'EPS024', 'pablo.diaz', NULL, 8),  
+('DNI', '55566677Y', 'Martín Herrera', 'Calle 789, Ciudad Y', '3155678901', 'martin.herrera@colpryst.com', 'EPS025', 'martin.herrera', NULL, 8),  
+
+-- 📌 1 Director (ID Cargo = 9)
+('DNI', '66677788Z', 'Laura Castillo', 'Avenida 101, Ciudad Z', '3166789012', 'laura.castillo@colpryst.com', 'EPS026', 'laura.castillo', 'director2024', 9);
+

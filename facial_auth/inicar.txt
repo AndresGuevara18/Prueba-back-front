@@ -1,12 +1,10 @@
 ENTORNO VENV V10
 py -3.10 -m venv venv310
 .\venv310\Scripts\Activate.ps1
-
 venv\Scripts\activate  
-python main.py
-uvicorn main:app --reload 
 
 pip install -r requirements.txt
-
-
 pip install tensorflow==2.12.0 deepface==0.0.79
+
+python main.py
+uvicorn main:app --reload 

@@ -49,20 +49,7 @@ Dado el formulario de inicio, cuando se ingresen credenciales válidas, entonces
 
 ---
 
-## HU4 - Recuperar Contraseña
-
-**Como** usuario  
-**Quiero** recuperar mi contraseña  
-**Para** poder acceder nuevamente  
-
-**Criterio de Aceptación:**  
-Dado un formulario de recuperación, cuando se ingrese correo e identificación, entonces el sistema enviará una solicitud al administrador para autorización.
-
-**Prioridad:** Media  
-
----
-
-## HU5 - Buscar Usuario
+## HU4 - Buscar Usuario
 
 **Como** administrador general  
 **Quiero** buscar usuarios  
@@ -75,7 +62,7 @@ Dado un campo de búsqueda, cuando se ingrese ID o correo, entonces se mostrará
 
 ---
 
-## HU6 - Actualizar Datos De Usuario
+## HU5 - Actualizar Datos De Usuario
 
 **Como** administrador o usuario  
 **Quiero** actualizar mis datos  
@@ -88,7 +75,7 @@ Dado un formulario, cuando se editen los datos, entonces se validarán y guardar
 
 ---
 
-## HU7 - Eliminar Datos De Usuario
+## HU6 - Eliminar Datos De Usuario
 
 **Como** administrador general  
 **Quiero** eliminar usuarios  
@@ -101,7 +88,7 @@ Dado un listado, cuando se seleccione y confirme la eliminación, entonces el si
 
 ---
 
-## HU8 - Reconocimiento Facial
+## HU7 - Reconocimiento Facial
 
 **Como** usuario  
 **Quiero** usar reconocimiento facial  
@@ -114,7 +101,7 @@ Dado un sistema de cámara, cuando el usuario se ubique frente a ella, entonces 
 
 ---
 
-## HU9 - Registro En Tiempo Real
+## HU8 - Registro En Tiempo Real
 
 **Como** usuario  
 **Quiero** registrar mis horarios  
@@ -127,7 +114,7 @@ Dado el sistema de eventos, cuando se registre el ingreso o salida, entonces se 
 
 ---
 
-## HU10 - Registrar Novedad
+## HU9 - Registrar Novedad
 
 **Como** administrador  
 **Quiero** registrar novedades  
@@ -140,7 +127,7 @@ Dado el sistema de novedades, cuando un usuario tenga repetidos retardos, entonc
 
 ---
 
-## HU11 - Registrar Ingreso
+## HU10 - Registrar Ingreso
 
 **Como** usuario  
 **Quiero** registrar mi ingreso  
@@ -153,7 +140,7 @@ Dado el sistema de ingreso, cuando el usuario se registre, entonces se almacenar
 
 ---
 
-## HU12 - Registrar Salida
+## HU11 - Registrar Salida
 
 **Como** usuario  
 **Quiero** registrar mi salida  
@@ -166,7 +153,7 @@ Dado el sistema, cuando se realice el reconocimiento facial, entonces se almacen
 
 ---
 
-## HU13 - Notificar 3 Retardos
+## HU12 - Notificar 3 Retardos
 
 **Como** administrador  
 **Quiero** que el sistema notifique acumulación de 3 retardos  
@@ -179,7 +166,7 @@ Dado el sistema de control, cuando un usuario acumule 3 retardos, entonces se en
 
 ---
 
-## HU14 - Cerrar Sesión
+## HU13 - Cerrar Sesión
 
 **Como** usuario o administrador  
 **Quiero** cerrar sesión  

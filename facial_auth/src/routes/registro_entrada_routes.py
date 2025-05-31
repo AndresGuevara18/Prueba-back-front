@@ -7,4 +7,5 @@ router = APIRouter()
 
 @router.post("/registro-entrada")
 async def verificar_documento(numero_documento: str = Form(...)):
+    print("----> Route registro entrada")
     return await verificar_documento_logic(numero_documento)
