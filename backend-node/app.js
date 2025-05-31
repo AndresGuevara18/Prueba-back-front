@@ -15,30 +15,30 @@ app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000'], // Permitir peticiones desde el frontend (Vite) y Swagger UI
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
-  credentials: true // Permitir cookies o autenticación si es necesario
+  credentials: true, // Permitir cookies o autenticación si es necesario
 }));
 
 // Configuración de Swagger
 const swaggerOptions = {
   definition: {
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     info: {
-      title: "API de Usuarios y Cargos",
-      version: "1.0.0",
-      description: "Documentación de la API con Swagger",
+      title: 'API de Usuarios y Cargos',
+      version: '1.0.0',
+      description: 'Documentación de la API con Swagger',
     },
     servers: [
       {
-        url: "http://localhost:3000", // URL del servidor backend
-        description: "Servidor local",
+        url: 'http://localhost:3000', // URL del servidor backend
+        description: 'Servidor local',
       },
     ],
   },
-  apis: ["./src/routes/*.js"], // Especifica dónde están las rutas documentadas
+  apis: ['./src/routes/*.js'], // Especifica dónde están las rutas documentadas
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);//documentacion basada en cometarios y rutas
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita interfaz de la documentación de Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita interfaz de la documentación de Swagger
 
 //parseo del body
 app.use((req, res, next) => {
@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
 
 // Manejo de rutas no encontradas (Error 404)
 app.use((req, res) => {
-  res.status(404).json({ error: "Ruta no encontrada" });
+  res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
 // Iniciar el servidor
