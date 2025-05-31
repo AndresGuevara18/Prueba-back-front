@@ -12,7 +12,13 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.27.1",
+    "@eslint/js": "^9.28.0",
     "autoprefixer": "^10.4.20",
+    "eslint": "^9.28.0",
     "postcss": "^8.5.3"
+  },
+  "scripts": {
+    "lint": "eslint ."
   }
 }
