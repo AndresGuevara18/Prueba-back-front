@@ -8,7 +8,11 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
+<<<<<<< HEAD
 set VIRTUAL_ENV=C:\Users\57320\OneDrive\Escritorio\Proyecto\Prueba-back-front\facial_auth\venv
+=======
+set VIRTUAL_ENV=C:\Users\57320\OneDrive\Escritorio\Colprist\Prueba-back-front\facial_auth\venv
+>>>>>>> a08be60 (LintersV6)
 
 if not defined PROMPT set PROMPT=$P$G
 

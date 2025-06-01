@@ -38,7 +38,11 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
+<<<<<<< HEAD
 VIRTUAL_ENV="C:\Users\57320\OneDrive\Escritorio\Proyecto\Prueba-back-front\facial_auth\venv"
+=======
+VIRTUAL_ENV="C:\Users\57320\OneDrive\Escritorio\Colprist\Prueba-back-front\facial_auth\venv"
+>>>>>>> a08be60 (LintersV6)
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

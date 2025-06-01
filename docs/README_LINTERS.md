@@ -17,7 +17,7 @@ Este proyecto utiliza linters para mantener la calidad y consistencia del códig
 - globals
 - Tailwind CSS
 
-Instala las dependencias ejecutando en la carpeta `frontend-react`:
+Instala todas las dependencias necesarias ejecutando en la carpeta `frontend-react`:
 1. Abre PowerShell y ejecuta:
 ```powershell
 cd .\frontend-react
@@ -107,12 +107,14 @@ Puedes ejecutar los linters de cada módulo individualmente desde la raíz del p
 ### Frontend (`frontend-react`)
 
 Lint:
+> Ejecuta este comando dentro de la carpeta `frontend-react` (no en la raíz del proyecto):
 ```powershell
 cd .\frontend-react
 npm run lint
 ```
 
 Auto-fix:
+> Ejecuta este comando dentro de la carpeta `frontend-react` (no en la raíz del proyecto):
 ```powershell
 cd .\frontend-react
 npm run lint -- --fix
@@ -153,9 +155,14 @@ python -m pylint src
 
 ## Cómo auto-arreglar todos los módulos
 
-Desde la raíz del proyecto, puedes intentar auto-arreglar los problemas de backend y frontend con:
+Para intentar auto-arreglar los problemas de estilo y lint en todos los módulos del proyecto, puedes usar el siguiente script desde la raíz del proyecto:
+
 ```powershell
 ./fix-all.ps1
 ```
 
-Esto ejecuta ESLint con la opción `--fix` en ambos módulos. Los problemas que no puedan arreglarse automáticamente requerirán intervención manual.
+Este script realiza lo siguiente:
+- Ejecuta ESLint con la opción `--fix` en el backend (`backend-node`) y el frontend (`frontend-react`), corrigiendo automáticamente los problemas que ESLint pueda solucionar.
+- **No ejecuta pylint en el módulo de Python (`facial_auth`)**, ya que pylint no tiene opción de auto-fix automático. Si quieres revisar los problemas de lint en facial_auth, debes hacerlo manualmente con los comandos indicados en la sección correspondiente.
+
+> **Nota:** Los problemas que no puedan arreglarse automáticamente requerirán intervención manual. Además, si quieres incluir la revisión de facial_auth en el script, deberás modificar `fix-all.ps1` para agregar la ejecución de pylint, pero recuerda que solo reportará problemas, no los corregirá automáticamente.
