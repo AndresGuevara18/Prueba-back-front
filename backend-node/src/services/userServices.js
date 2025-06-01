@@ -9,7 +9,7 @@ const usuarioService = {
         const query = 'SELECT * FROM usuario';
         try {
             //console.log("Ejecutando consulta SQL:", query);
-            const [results] = await db.promise().query(query);
+            const [results] = await db.query(query);
             //console.log("Resultados de la consulta:", results);
 
             const usuarios = results.map(row => 
@@ -37,12 +37,12 @@ const usuarioService = {
 
         try {
             // Ejecutar consulta de usuario
-            const [userResult] = await db.promise().execute(queryUser, [numero_documento]);
+            const [userResult] = await db.execute(queryUser, [numero_documento]);
 
             if (userResult.length === 0) return null; // Si el usuario no existe
 
             // Ejecutar consulta de cargo
-            const [cargoResult] = await db.promise().execute(queryCargo, [numero_documento]);
+            const [cargoResult] = await db.execute(queryCargo, [numero_documento]);
 
             // Verificar si se encontró un cargo
             const cargoUser = cargoResult.length > 0 ? cargoResult[0].cargo_user : null;
@@ -80,7 +80,7 @@ const usuarioService = {
             });
     
             // 1. Validar número de documento
-            const [existingDocumento] = await db.promise().query(
+            const [existingDocumento] = await db.query(
                 'SELECT id_usuario FROM usuario WHERE numero_documento = ?',
                 [usuarioData.numero_documento]
             );
@@ -90,7 +90,7 @@ const usuarioService = {
             }
     
             // 2. Validar email
-            const [existingEmail] = await db.promise().query(
+            const [existingEmail] = await db.query(
                 'SELECT id_usuario FROM usuario WHERE email_empleado = ?',
                 [usuarioData.email_empleado]
             );
@@ -101,7 +101,7 @@ const usuarioService = {
     
             // 3. Validar usuario admin (si aplica)
             if (usuarioData.usuarioadmin) {
-                const [existingUsuario] = await db.promise().query(
+                const [existingUsuario] = await db.query(
                     'SELECT id_usuario FROM usuario WHERE usuarioadmin = ?',
                     [usuarioData.usuarioadmin]
                 );
@@ -123,7 +123,7 @@ const usuarioService = {
                     eps_empleado, usuarioadmin, contrasenia, id_cargo
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
-            const [result] = await db.promise().query(insertQuery, [
+            const [result] = await db.query(insertQuery, [
                 usuarioData.tipo_documento,
                 usuarioData.numero_documento,
                 usuarioData.nombre_empleado,
@@ -160,7 +160,7 @@ const usuarioService = {
 
     validarDatosUnicos: async (usuarioData) => {
       // Validar número de documento
-      const [existingDocumento] = await db.promise().query(
+      const [existingDocumento] = await db.query(
         'SELECT id_usuario FROM usuario WHERE numero_documento = ?',
         [usuarioData.numero_documento]
       );
@@ -169,7 +169,7 @@ const usuarioService = {
       }
   
       // Validar email
-      const [existingEmail] = await db.promise().query(
+      const [existingEmail] = await db.query(
         'SELECT id_usuario FROM usuario WHERE email_empleado = ?',
         [usuarioData.email_empleado]
       );
@@ -179,7 +179,7 @@ const usuarioService = {
   
       // Validar nombre de usuario si existe
       if (usuarioData.usuarioadmin) {
-        const [existingUsuario] = await db.promise().query(
+        const [existingUsuario] = await db.query(
           'SELECT id_usuario FROM usuario WHERE usuarioadmin = ?',
           [usuarioData.usuarioadmin]
         );
@@ -194,7 +194,7 @@ const usuarioService = {
         try {
             const userExists = "SELECT id_usuario FROM usuario WHERE id_usuario = ?";
             // 1. Verificar si el usuario existe
-            const [checkUserExists] = await db.promise().execute(userExists, [id_usuario]);
+            const [checkUserExists] = await db.execute(userExists, [id_usuario]);
             
             if (checkUserExists.length === 0) {
                 throw new Error("USER_NOT_FOUND");
@@ -206,7 +206,7 @@ const usuarioService = {
             if (userData.numero_documento) {
                 const checkDocumentoQuery = `SELECT id_usuario FROM usuario     
                                             WHERE numero_documento = ? AND id_usuario != ?`;
-                const [existingDocumento] = await db.promise().query(checkDocumentoQuery, 
+                const [existingDocumento] = await db.query(checkDocumentoQuery, 
                                 [userData.numero_documento, id_usuario]);
                 
                 if (existingDocumento.length > 0) {
@@ -218,7 +218,7 @@ const usuarioService = {
             if (userData.email_empleado) {
                 const checkEmailQuery = `SELECT id_usuario FROM usuario 
                                         WHERE email_empleado = ? AND id_usuario != ?`;
-                const [existingEmail] = await db.promise().query(checkEmailQuery, 
+                const [existingEmail] = await db.query(checkEmailQuery, 
                                 [userData.email_empleado, id_usuario]);
                 
                 if (existingEmail.length > 0) {
@@ -229,7 +229,7 @@ const usuarioService = {
             // Verificar si el nombre de usuario ya existe en otro usuario (si se proporciona)
             if (userData.usuarioadmin) {
                 const checkUsuarioQuery = 'SELECT id_usuario FROM usuario WHERE usuarioadmin = ? AND id_usuario != ?';
-                const [existingUsuario] = await db.promise().query(checkUsuarioQuery, 
+                const [existingUsuario] = await db.query(checkUsuarioQuery, 
                                 [userData.usuarioadmin, id_usuario]);
                 
                 if (existingUsuario.length > 0) {
@@ -245,7 +245,7 @@ const usuarioService = {
                 hashedPassword = await bcrypt.hash(userData.contrasenia, 10);
             } else {
                 // Si NO se proporcionó contraseña: Obtener la actual
-                const [rows] = await db.promise().execute(
+                const [rows] = await db.execute(
                     "SELECT contrasenia FROM usuario WHERE id_usuario = ?", 
                     [id_usuario]
                 );
@@ -267,7 +267,7 @@ const usuarioService = {
                 WHERE id_usuario = ?`;
 
             // 5. Ejecutar la actualización
-            const [result] = await db.promise().execute(query, [
+            const [result] = await db.execute(query, [
                 userData.tipo_documento,
                 userData.numero_documento,
                 userData.nombre_empleado,
@@ -298,24 +298,24 @@ const usuarioService = {
         
         try {
             // Verificar si el usuario existe
-            const [userResult] = await db.promise().query(queryCheckUser, [parseInt(id_usuario)]);
+            const [userResult] = await db.query(queryCheckUser, [parseInt(id_usuario)]);
             if (userResult.length === 0) {
                 console.log(`❌ Usuario con ID ${id_usuario} no encontrado.`);
                 return { exists: false };
             }
         
             // Verificar si hay registros de entrada asociados
-            const [registroResult] = await db.promise().query(queryCheckRegistro, [parseInt(id_usuario)]);
+            const [registroResult] = await db.query(queryCheckRegistro, [parseInt(id_usuario)]);
             if (registroResult[0].total > 0) {
                 console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${registroResult[0].total} registros de entrada asociados.`);
                 return { exists: true, hasRegistros: true };
             }
         
             // Eliminar reconocimiento facial primero (si no hay registros de entrada)
-            await db.promise().query(queryReco, [parseInt(id_usuario)]);
+            await db.query(queryReco, [parseInt(id_usuario)]);
         
             // Eliminar el usuario
-            const [deleteResult] = await db.promise().query(queryUser, [parseInt(id_usuario)]);
+            const [deleteResult] = await db.query(queryUser, [parseInt(id_usuario)]);
         
             if (deleteResult.affectedRows > 0) {
                 console.log(`✅ Usuario con ID ${id_usuario} eliminado correctamente.`);

@@ -1,4 +1,4 @@
-const reconocimientoService = require('../services/recognitionServices'); // Importamos el servicio
+const reconocimientoService = require('../services/reconocimientoServices'); // Corregido: recognitionServices -> reconocimientoServices
 
 const reconocimientoController = {
     // Guardar imagen de reconocimiento facial asociada a un usuario

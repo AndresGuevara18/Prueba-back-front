@@ -3,8 +3,10 @@ const cors = require('cors'); // Importa CORS
 const path = require('path'); // Manejo de rutas de archivos
 const usuarioRoutes = require('./src/routes/userRoutes'); // Importa rutas de usuario
 const cargoRoutes = require('./src/routes/cargoRoutes'); // Importa las rutas de cargo
+const routes = require('./src/routes'); // Importa el enrutador principal
 const swaggerUi = require('swagger-ui-express'); // Importa Swagger UI
 const swaggerJsdoc = require('swagger-jsdoc'); // Importa Swagger JSDoc
+const novedadesRoutes = require('./src/routes/novedadesRoutes'); // Importación de novedades
 
 const app = express(); // Instancia de Express
 const PORT = 3000; // Define el puerto
@@ -40,29 +42,12 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);//documentacion basada en cometarios y rutas
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita interfaz de la documentación de Swagger
 
-//parseo del body
-app.use((req, res, next) => {
-  if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {//verificar ruta y metodo
-    //No aplica el middleware express.json()
-    next();
-  } else {
-    ////para demas rutas y metodos
-    express.json()(req, res, next);//Aplica el middleware estándar para parsear JSON
-  }
-});
-
-// Middleware para analizar application/x-www-form-urlencoded
-app.use((req, res, next) => {
-  if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {
-    next();//Solo aplica el bypass a POST Formularios con archivos (multipart/form-data)
-  } else {
-    express.urlencoded({ extended: true })(req, res, next);
-  }
-});
+app.use(express.json()); // Middleware para parsear JSON para todas las rutas
+app.use(express.urlencoded({ extended: true })); // Middleware para parsear URL-encoded para todas las rutas
 
 // Rutas de API
-app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/cargos', cargoRoutes);
+app.use('/api', routes); // Usar el enrutador principal con prefijo /api
+app.use("/api/novedades", novedadesRoutes); // Ruta original de novedades
 
 // ruta principal al frontend (Vite)
 app.get('/', (req, res) => {
