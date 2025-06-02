@@ -1,51 +1,49 @@
-# Ignorar node_modules en ambas carpetas
-backend-node/node_modules/
-frontend-react/node_modules/
-
-# Ignorar archivos de entorno
-backend-node/.env
-frontend-react/.env
+# ================
+# Python
+# ================
+# Entornos virtuales
 facial_auth/venv310/
 
-# Ignorar archivos de configuración local
-backend-node/.vscode/
-frontend-react/.vscode/
-
-# Ignorar archivos generados
-backend-node/dist/
-frontend-react/dist/
-frontend-react/build/
-
-# Ignorar archivos de log
-backend-node/logs/
-frontend-react/logs/
-backend-node/src/config/database.js
-
-# Node backend
-backend-node/node_modules/
-backend-node/.env
-backend-node/.vscode/
-backend-node/dist/
-backend-node/logs/
-backend-node/src/config/database.js
-
-# Python backend
-facial_auth/venv310/
-facial_auth/__pycache__/
-*.pyc
+# Archivos temporales de Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 
-# React frontend
+# ================
+# Node.js/React
+# ================
+# node_modules en ambas carpetas
+backend-node/node_modules/
 frontend-react/node_modules/
+
+# Archivos de entorno
+backend-node/.env
 frontend-react/.env
+
+# Configuración de editor
+backend-node/.vscode/
 frontend-react/.vscode/
+.vscode/
+
+# Archivos generados (revisar si subirlas)
+backend-node/dist/
 frontend-react/dist/
 frontend-react/build/
+
+# Logs
+backend-node/logs/
 frontend-react/logs/
+
+# Configuración específica
+
+# Vite
 frontend-react/.vite/
 
-# Otros
+# ================
+# Sistema
+# ================
 .DS_Store
 Thumbs.db
-
-.vscode/
+node_modules/
