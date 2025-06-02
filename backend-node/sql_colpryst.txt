@@ -335,7 +335,7 @@ INSERT INTO registro_salida (fecha_hora, comentarios, id_usuario) VALUES
 
 
 /*--------------------------------------------------------------------------------------------------------------
--------------------------PROCEDIMIENTO INASISTENCIA-------------------------*/
+-------------------------PROCEDIMIENTO INASISTENCIA -------------------------*/
 DELIMITER $$
 
 CREATE PROCEDURE registrar_inasistencias_por_fecha(IN fecha_in DATE)
