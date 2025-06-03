@@ -178,8 +178,8 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
         
         frame_anterior = frame.copy()
         
-        # Mostrar imagen en Tkinter
-        display_frame = frame.copy()
+        # Mostrar imagen en Tkinter (modo espejo)
+        display_frame = cv2.flip(frame.copy(), 1)  # Modo espejo
         
         # Dibujar cuadro según estado
         if last_face_region and not movimiento_detectado:
