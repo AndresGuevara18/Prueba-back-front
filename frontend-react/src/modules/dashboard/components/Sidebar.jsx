@@ -1,3 +1,4 @@
+//src/modules/dashboard/components/Sidebar.jsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
@@ -12,6 +13,7 @@ import {
   Menu
 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { logout } from '../../../components/ProtectedRoute';
 
 function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        logout(); // Borra el token
         navigate('/');
       }
     });
