@@ -181,9 +181,13 @@ const AgregarUsuarioPage = () => {
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    // Dibujar el frame actual del video en el canvas
+    // Efecto espejo: voltear horizontalmente el canvas antes de dibujar
     const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
     // Convertir a Blob
     canvas.toBlob((blob) => {
       if (blob) {
@@ -280,7 +284,7 @@ const AgregarUsuarioPage = () => {
                 <option value="CC">Cédula de Ciudadanía</option>
                 <option value="TI">Tarjeta de Identidad</option>
                 <option value="CE">Cédula de Extranjería</option>
-                <option value="NIT">NIT</option>
+        
               </select>
             </div>
 
@@ -462,6 +466,7 @@ const AgregarUsuarioPage = () => {
                 autoPlay
                 playsInline
                 className="w-full h-auto border border-gray-300"
+                style={{ transform: 'scaleX(-1)' }} // Efecto espejo en la vista previa
               />
               <canvas
                 ref={faceCanvasRef}
