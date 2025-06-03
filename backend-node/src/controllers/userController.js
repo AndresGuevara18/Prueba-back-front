@@ -75,6 +75,14 @@ const usuarioController = {
         }
         console.log('✔ Cargo válido encontrado:', cargo);
 
+        // 3.1.1 Validar si ya existen usuarios con cargos 1, 2 o 3
+        const cargosExistentes = await usuarioService.existenUsuariosConCargos();
+        console.log('🔎 Usuarios existentes por cargo (1,2,3):', cargosExistentes);
+        // Solo se permite un usuario por cargo 1, 2 o 3
+        if (["1","2","3",1,2,3].includes(usuarioData.id_cargo) && cargosExistentes[usuarioData.id_cargo] > 0) {
+          throw new Error("SOLO_UNO_POR_CARGO");
+        }
+
         // 3.2 Validar datos únicos ANTES de procesar imagen
         console.log('🔍 Validando datos únicos (documento, email, usuarioadmin)');
         await usuarioService.validarDatosUnicos(usuarioData); // <- EXTRAER ESTO como función aparte
@@ -188,6 +196,10 @@ const usuarioController = {
           case "CARGO_NOT_FOUND":
             statusCode = 400;
             message = "El cargo especificado no existe.";
+            break;
+          case "SOLO_UNO_POR_CARGO":
+            statusCode = 400;
+            message = "Solo se permite un usuario por este cargo.";
             break;
           case "DOCUMENTO_EXISTS":
             statusCode = 400;
@@ -314,7 +326,12 @@ const usuarioController = {
             if (resultado.hasRegistros) {
                 return res.status(400).json({ error: "⚠️ No se puede eliminar porque el usuario tiene registros de entrada asociados." });
             }
-          
+            if (resultado.hasRegistrosSalida) {
+                return res.status(400).json({ error: "⚠️ No se puede eliminar porque el usuario tiene registros de salida asociados." });
+            }
+            if (resultado.hasNotificacionesSalida) {
+                return res.status(400).json({ error: "⚠️ No se puede eliminar porque el usuario tiene notificaciones de salida temprana asociadas." });
+            }
             if (resultado.deleted) {
                 return res.status(200).json({ message: "✅ Usuario eliminado correctamente." });
             }
@@ -324,27 +341,42 @@ const usuarioController = {
             console.error("❌ Error en deleteUser (Controller):", error);
             res.status(500).json({ error: "❌ Error interno al eliminar el usuario." });
         }
-    }
-    /*deleteUser: async (req, res) => {
+    },
+
+    // Autenticación de usuario (login)
+    login: async (req, res) => {
         try {
-            // Extraer el ID del usuario desde la URL
-            const { id_usuario } = req.params;
-
-            // Llamar al servicio para eliminar el usuario
-            const resultado = await usuarioService.deleteUser(id_usuario);
-
-            // Verificar si el usuario fue eliminado correctamente
-            if (!resultado) {
-                return res.status(404).json({ error: "Usuario no encontrado" });
+            const { usuarioadmin, contrasenia } = req.body;
+            console.log('[DEBUG] login - usuarioadmin:', usuarioadmin, '| contrasenia:', contrasenia);
+            if (!usuarioadmin || !contrasenia) {
+                return res.status(400).json({ success: false, message: "Usuario y contraseña son requeridos." });
             }
-
-            // Enviar una respuesta exitosa al frontend
-            res.json({ message: "✅ Usuario eliminado correctamente" });
+            // Buscar usuario por nombre de usuario
+            const user = await usuarioService.getUserByUsername(usuarioadmin);
+            console.log('[DEBUG] login - user encontrado:', user);
+            if (!user) {
+                return res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos." });
+            }
+            // Validar que el usuario tenga id_cargo 1, 2 o 3
+            if (!usuarioService.isCargoAutorizado(user.id_cargo)) {
+                return res.status(403).json({ success: false, message: "Acceso denegado: solo usuarios con cargo autorizado pueden ingresar." });
+            }
+            // Validar contraseña
+            const bcrypt = require('bcrypt');
+            const passwordMatch = await bcrypt.compare(contrasenia, user.contrasenia);
+            console.log('[DEBUG] login - passwordMatch:', passwordMatch);
+            if (!passwordMatch) {
+                return res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos." });
+            }
+            // Generar JWT
+            const jwt = require('jsonwebtoken');
+            const token = jwt.sign({ id_usuario: user.id_usuario, usuarioadmin: user.usuarioadmin, id_cargo: user.id_cargo }, process.env.JWT_SECRET || 'secreto', { expiresIn: '8h' });
+            res.json({ success: true, message: "Login exitoso", token, user: { id_usuario: user.id_usuario, usuarioadmin: user.usuarioadmin, id_cargo: user.id_cargo, nombre_empleado: user.nombre_empleado } });
         } catch (error) {
-            console.error("❌ Error en deleteUser (Controller):", error);
-            res.status(500).json({ error: "❌ Error al eliminar el usuario" }); // Manejo de errores
+            console.error("❌ Error en login (Controller):", error);
+            res.status(500).json({ success: false, message: "Error interno en login." });
         }
-    }*/
+    }
 };
 
 module.exports = usuarioController; // Exportar el controlador

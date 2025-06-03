@@ -178,12 +178,13 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
         
         frame_anterior = frame.copy()
         
-        # Mostrar imagen en Tkinter
-        display_frame = frame.copy()
-        
-        # Dibujar cuadro según estado
+        # Mostrar imagen en Tkinter (modo espejo)
+        display_frame = cv2.flip(frame.copy(), 1)  # Modo espejo
+        # Ajustar el cuadro al modo espejo
         if last_face_region and not movimiento_detectado:
             x, y, w, h = last_face_region
+            # Invertir la coordenada x para el modo espejo
+            x_mirror = display_frame.shape[1] - (x + w)
             if estado_reconocimiento == "reconocido":
                 color = (0, 255, 0)  # Verde
                 texto = "RECONOCIDO"
@@ -193,9 +194,8 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
             else:  # analizando
                 color = (0, 255, 255)  # Amarillo
                 texto = "ANALIZANDO..."
-            
-            cv2.rectangle(display_frame, (x, y), (x+w, y+h), color, 2)
-            cv2.putText(display_frame, texto, (x, y-10), 
+            cv2.rectangle(display_frame, (x_mirror, y), (x_mirror + w, y + h), color, 2)
+            cv2.putText(display_frame, texto, (x_mirror, y-10), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         elif movimiento_detectado:
             cv2.putText(display_frame, "MOVIMIENTO DETECTADO", (10, 30), 

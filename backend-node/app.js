@@ -3,8 +3,11 @@ const cors = require('cors'); // Importa CORS
 const path = require('path'); // Manejo de rutas de archivos
 const usuarioRoutes = require('./src/routes/userRoutes'); // Importa rutas de usuario
 const cargoRoutes = require('./src/routes/cargoRoutes'); // Importa las rutas de cargo
-const swaggerUi = require('swagger-ui-express'); // Importa Swagger UI
-const swaggerJsdoc = require('swagger-jsdoc'); // Importa Swagger JSDoc
+const novedadRoutes = require('./src/routes/novedadRoutes'); // Importa las rutas de novedades
+const reporteRoutes = require('./src/routes/reporteRoutes'); // Importa las rutas de reportes
+// const swaggerUi = require('swagger-ui-express'); // Importa Swagger UI
+// const swaggerJsdoc = require('swagger-jsdoc'); // Importa Swagger JSDoc
+const swaggerDocs = require('./swaggerConfig'); // Importa la configuración de Swagger
 
 const app = express(); // Instancia de Express
 const PORT = 3000; // Define el puerto
@@ -18,27 +21,28 @@ app.use(cors({
   credentials: true // Permitir cookies o autenticación si es necesario
 }));
 
-// Configuración de Swagger
-const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "API de Usuarios y Cargos",
-      version: "1.0.0",
-      description: "Documentación de la API con Swagger",
-    },
-    servers: [
-      {
-        url: "http://localhost:3000", // URL del servidor backend
-        description: "Servidor local",
-      },
-    ],
-  },
-  apis: ["./src/routes/*.js"], // Especifica dónde están las rutas documentadas
-};
+// Configuración de Swagger (movida a swaggerConfig.js)
+// const swaggerOptions = {
+//   definition: {
+//     openapi: "3.0.0",
+//     info: {
+//       title: "API de Usuarios y Cargos",
+//       version: "1.0.0",
+//       description: "Documentación de la API con Swagger",
+//     },
+//     servers: [
+//       {
+//         url: "http://localhost:3000", // URL del servidor backend
+//         description: "Servidor local",
+//       },
+//     ],
+//   },
+//   apis: ["./src/routes/*.js"], // Especifica dónde están las rutas documentadas
+// };
 
-const swaggerDocs = swaggerJsdoc(swaggerOptions);//documentacion basada en cometarios y rutas
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Habilita interfaz de la documentación de Swagger
+// const swaggerSpec = swaggerJsdoc(swaggerOptions); // Movido a swaggerConfig.js
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // Movido a swaggerConfig.js
+swaggerDocs(app); // Llama a la función de configuración de Swagger
 
 //parseo del body
 app.use((req, res, next) => {
@@ -63,6 +67,8 @@ app.use((req, res, next) => {
 // Rutas de API
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cargos', cargoRoutes);
+app.use('/api/novedades', novedadRoutes);
+app.use('/api/reportes', reporteRoutes);
 
 // ruta principal al frontend (Vite)
 app.get('/', (req, res) => {
@@ -77,5 +83,5 @@ app.use((req, res) => {
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📄 Swagger Docs disponibles en http://localhost:${PORT}/api-docs`);
+  console.log("📄 Documentación de Swagger disponible en http://localhost:3000/api-docs");
 });

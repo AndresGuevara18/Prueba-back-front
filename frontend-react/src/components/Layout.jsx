@@ -14,9 +14,15 @@ function Layout() {
   });
   const navigate = useNavigate();
 
-  const handleLogin = (email, password) => {
+  const handleLogin = (user, token) => {
     setIsLoggedIn(true);
+    setUserData({
+      name: user.nombre_empleado || user.usuarioadmin || 'Usuario',
+      role: user.id_cargo === 1 ? 'Administrador' : user.id_cargo === 2 ? 'Supervisor' : 'Empleado',
+      email: user.email_empleado || ''
+    });
     setIsLoginModalOpen(false);
+    // El token ya se guarda en localStorage en LoginModal
     navigate('/dashboard');
   };
 

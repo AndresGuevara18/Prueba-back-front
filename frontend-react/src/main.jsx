@@ -8,6 +8,7 @@ import Clients from './pages/Clients';
 import Certifications from './pages/Certifications';
 import Contact from './pages/Contact';
 import Dashboard from './modules/dashboard/pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
@@ -21,7 +22,11 @@ createRoot(document.getElementById('root')).render(
           <Route path="certificaciones" element={<Certifications />} />
           <Route path="contacto" element={<Contact />} />
         </Route>
-        <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/dashboard/*" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   </StrictMode>

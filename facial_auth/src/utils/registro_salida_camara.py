@@ -141,7 +141,10 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
         if not ret:
             lmain.after(30, update_frame)
             return
-            
+        
+        # Modo espejo para mejor experiencia de usuario
+        frame = cv2.flip(frame, 1)
+        
         movimiento_detectado = False
         if frame_anterior is not None:
             diferencia = cv2.absdiff(frame, frame_anterior)
@@ -154,9 +157,10 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
         
         frame_anterior = frame.copy()
         display_frame = frame.copy()
-        
+        # Ajustar el cuadro al modo espejo
         if last_face_region and not movimiento_detectado:
             x, y, w, h = last_face_region
+            x_mirror = display_frame.shape[1] - (x + w)
             if estado_reconocimiento == "reconocido":
                 color = (0, 255, 0)
                 texto = "RECONOCIDO"
@@ -166,9 +170,8 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
             else:
                 color = (0, 255, 255)
                 texto = "ANALIZANDO..."
-            
-            cv2.rectangle(display_frame, (x, y), (x+w, y+h), color, 2)
-            cv2.putText(display_frame, texto, (x, y-10), 
+            cv2.rectangle(display_frame, (x_mirror, y), (x_mirror + w, y + h), color, 2)
+            cv2.putText(display_frame, texto, (x_mirror, y-10), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         elif movimiento_detectado:
             cv2.putText(display_frame, "MOVIMIENTO DETECTADO", (10, 30), 

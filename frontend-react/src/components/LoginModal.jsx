@@ -1,21 +1,47 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config/ConfigURL';
 
 function LoginModal({ isOpen, onClose, onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   if (!isOpen) return null;
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === 'admin' && password === 'admin123') {
-      navigate('/dashboard');
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/usuarios/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuarioadmin: email, contrasenia: password })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Credenciales incorrectas');
+        setLoading(false);
+        return;
+      }
+      // Guardar token en localStorage
+      localStorage.setItem('token', data.token);
+      // Pasar datos al padre (Layout)
+      if (onLogin) {
+        onLogin(data.user, data.token);
+      }
+      setLoading(false);
+      setEmail('');
+      setPassword('');
       onClose();
-    } else {
-      alert('Credenciales incorrectas. Usuario: admin, Contraseña: admin123');
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Error de red o servidor');
+      setLoading(false);
     }
   };
 
@@ -64,11 +90,16 @@ function LoginModal({ isOpen, onClose, onLogin }) {
               />
             </div>
 
+            {error && (
+              <div className="text-red-600 text-sm text-center">{error}</div>
+            )}
+
             <button 
               type="submit"
-              className="w-full bg-[#3182CE] text-white py-3 rounded-md hover:bg-[#2B6CB0] transition-colors"
+              className="w-full bg-[#3182CE] text-white py-3 rounded-md hover:bg-[#2B6CB0] transition-colors disabled:opacity-60"
+              disabled={loading}
             >
-              Ingresar
+              {loading ? 'Ingresando...' : 'Ingresar'}
             </button>
           </form>
         </div>

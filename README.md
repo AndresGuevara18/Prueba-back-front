@@ -76,6 +76,7 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
 4. Instalar dependencias:
    ```bash
    pip install -r requirements.txt
+   pip install tensorflow==2.12.0 deepface==0.0.79
    ```
 
 5. Verificar instalación:
@@ -87,7 +88,10 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
    ```bash
    deactivate
    ```
-
+7. iniciar archivo facial:
+    ```bash
+   uvicorn main:app --reload 
+   ```
 ---
 
 ## ✅ Requisitos Funcionales
