@@ -41,7 +41,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        logout(); // Borra el token
+        logout(); // Borra el token y cierra sesión correctamente
         navigate('/');
       }
     });
