@@ -1,3 +1,5 @@
+.vscode/node_modules
+
 # Ignorar node_modules en ambas carpetas
 backend-node/node_modules/
 frontend-react/node_modules/
