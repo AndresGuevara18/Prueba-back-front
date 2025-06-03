@@ -284,7 +284,7 @@ const AgregarUsuarioPage = () => {
                 <option value="CC">Cédula de Ciudadanía</option>
                 <option value="TI">Tarjeta de Identidad</option>
                 <option value="CE">Cédula de Extranjería</option>
-                <option value="NIT">NIT</option>
+        
               </select>
             </div>
 
