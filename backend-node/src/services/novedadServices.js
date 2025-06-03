@@ -1,8 +1,10 @@
 // backend-node\src\services\novedadServices.js
 const connection = require('../config/database'); // Conexión a MySQL desde database.js
 
+const moment = require('moment'); // Importar moment para manejo de fechas
+
 class NovedadService {
-    static async getAllNovedades() {
+    static async getAllNovedades(filtro) {
         const query = `
             SELECT
                 u.id_usuario,
@@ -57,11 +59,50 @@ class NovedadService {
             FROM no_asistencia ia -- Corregido de 'inasistencia' a 'no_asistencia'
             JOIN usuario u ON ia.id_usuario = u.id_usuario
 
-            ORDER BY fecha_hora DESC;
-        `;
+        `; // Se quita el ORDER BY y el punto y coma de la query base para poder anidarla
+
+        let queryConFiltro = query;
+        const params = [];
+
+        if (filtro) {
+            const now = moment();
+            let startDate, endDate;
+
+            if (filtro === 'hoy') {
+                startDate = now.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+                endDate = now.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            } else if (filtro === 'ayer') {
+                startDate = now.subtract(1, 'days').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+                endDate = now.endOf('day').format('YYYY-MM-DD HH:mm:ss'); // El endOf('day') de ayer ya pasó, así que es el mismo que el de hoy al inicio del día anterior.
+            } else if (filtro === 'esta_semana') {
+                startDate = now.startOf('isoWeek').format('YYYY-MM-DD HH:mm:ss');
+                endDate = now.endOf('isoWeek').format('YYYY-MM-DD HH:mm:ss');
+            } else if (filtro === 'este_mes') {
+                startDate = now.startOf('month').format('YYYY-MM-DD HH:mm:ss');
+                endDate = now.endOf('month').format('YYYY-MM-DD HH:mm:ss');
+            }
+
+            if (startDate && endDate) {
+                // Modificamos la query para incluir el filtro de fecha. 
+                // Esto requiere que cada subconsulta tenga un alias y que el filtro se aplique al campo fecha_hora del resultado final.
+                // Una forma más robusta sería aplicar el filtro dentro de cada UNION ALL, pero esto es más complejo de construir dinámicamente aquí.
+                // Por simplicidad, vamos a envolver la query original y aplicar el WHERE al resultado.
+                queryConFiltro = `SELECT * FROM (${query}) AS novedades_consolidadas WHERE fecha_hora >= ? AND fecha_hora <= ?`;
+                params.push(startDate, endDate);
+            } else {
+                 // Si el filtro no es uno de los esperados, no se aplica ningún filtro de fecha adicional a la query original.
+                queryConFiltro = query; // Se usa la query base sin filtro de fecha
+            }
+        } else {
+            // Si no hay filtro, se usa la query original
+            queryConFiltro = query;
+        }
+
+        // Añadir ORDER BY al final, después de aplicar o no los filtros
+        queryConFiltro += ` ORDER BY fecha_hora DESC`;
 
         try {
-            const [rows, fields] = await connection.promise().query(query);
+            const [rows, fields] = await connection.promise().query(queryConFiltro, params);
             return rows;
         } catch (error) {
             console.error('Error al obtener novedades:', error);

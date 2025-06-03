@@ -3,11 +3,10 @@ const NovedadService = require('../services/novedadServices');
 
 class NovedadController {
     static async getAllNovedades(req, res) {
+        const { filtro } = req.query; // Capturar el parámetro de filtro de la query
         try {
-            const novedades = await NovedadService.getAllNovedades();
-            if (novedades.length === 0) {
-                return res.status(404).json({ message: 'No se encontraron novedades.' });
-            }
+            const novedades = await NovedadService.getAllNovedades(filtro);
+            // Siempre devolver 200, incluso si no hay novedades
             res.status(200).json(novedades);
         } catch (error) {
             console.error('Error en NovedadController.getAllNovedades:', error);
