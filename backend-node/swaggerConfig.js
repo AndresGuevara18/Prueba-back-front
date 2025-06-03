@@ -23,8 +23,10 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 const swaggerDocs = (app) => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log('📄 Documentación de Swagger disponible en http://localhost:3000/api-docs');
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // El mensaje se mostrará desde app.js después de iniciar el servidor
+
 };
 
 module.exports = swaggerDocs;

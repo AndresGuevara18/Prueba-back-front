@@ -141,7 +141,10 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
         if not ret:
             lmain.after(30, update_frame)
             return
-            
+        
+        # Modo espejo para mejor experiencia de usuario
+        frame = cv2.flip(frame, 1)
+        
         movimiento_detectado = False
         if frame_anterior is not None:
             diferencia = cv2.absdiff(frame, frame_anterior)

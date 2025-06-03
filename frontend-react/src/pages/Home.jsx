@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import poligrafia from '../assets/img/poligrafia-corrucel.jpeg';
+import analisis from '../assets/img/analisis-carrucel.jpeg';
+import auditorias from '../assets/img/auditoria-inicio.jpg';
+import capacitacion from '../assets/img/capacitaciones-inicio.jpg';
+import estudio from '../assets/img/estudio-inicio.jpg';
+import etica from '../assets/img/etica-inicio.jpg';
+import final from '../assets/img/final-inicio.avif';
+import investigacion from '../assets/img/investigacion-inicio.jpg';
+import poligrafiaV2 from '../assets/img/poligrafia-inicio.webp';
 
 function ServiceCard({ title, description, image, link }) {
   return (
@@ -32,17 +41,14 @@ function Carousel() {
 
   const images = [
     {
-      url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80",
+      url: poligrafia,
       title: "POLIGRAFÍA & VSA"
     },
     {
-      url: "https://images.unsplash.com/photo-1590650153855-d9e808231d41?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80",
+      url: analisis,
       title: "DETECCIÓN DE VERDAD"
     },
-    {
-      url: "https://images.unsplash.com/photo-1576089073624-b5751a8f4de4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80",
-      title: "ANÁLISIS PROFESIONAL"
-    }
+   
   ];
 
   useEffect(() => {
@@ -87,7 +93,9 @@ function Carousel() {
   };
 
   return (
-    <div className="relative h-[300px] w-full bg-gradient-to-r from-blue-600 to-blue-800 md:h-[400px] lg:h-[534px]">
+
+    <div className="relative h-[300px] md:h-[400px] lg:h-[534px] w-full">
+        
       {/* Image and Overlay */}
       <div 
         className="relative h-full overflow-hidden"
@@ -105,7 +113,9 @@ function Carousel() {
             <img 
               src={image.url}
               alt={image.title}
-              className="h-full w-full object-cover opacity-20"
+
+              className="w-full h-full object-cover"
+               
             />
             <div className="absolute inset-0 flex items-center justify-center px-4">
               <h1 className="text-center text-2xl font-bold text-white md:text-4xl lg:text-6xl">
@@ -149,39 +159,39 @@ function Carousel() {
 function Home() {
   const services = [
     {
-      title: "POLIGRAFÍA Y VSA",
+      title: "CAPACITACIONES",
       description: "Nuestras capacitaciones están dirigidas y desarrolladas en las capacidades a todos los niveles de la compañía en la prevención de riesgos. Nuestra...",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      image: capacitacion,
       link: "#"
     },
     {
       title: "LÍNEA ÉTICA",
       description: "La ética es la disciplina argumentativa que busca fundamentar racionalmente lo que debemos hacer para lograr el perfeccionamiento de...",
-      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      image: etica,
       link: "#"
     },
     {
       title: "OPERACIONES Y AUDITORÍAS",
       description: "AUDITORIAS Y PROCESOS A través de metodologías en gestión de riesgo, desarrollamos el diagnóstico y evaluación de los procesos transversales de...",
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      image: auditorias,
       link: "#"
     },
     {
       title: "POLIGRAFÍA & VSA",
       description: "La prueba de polígrafo(detector físico o polígrafo) es una herramienta de control de riesgo que permite complementar y validar...",
-      image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      image: poligrafiaV2,
       link: "#"
     },
     {
-      title: "ESTUDIOS Y CONTABILIDAD",
+      title: "ESTUDIOS DE COMPATIBILIDAD",
       description: "Antecedentes: Ofrecemos la consulta de sobrecuos en línea a través de nuestro CIC (Centro de Información del Colpryst) Son...",
-      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      image: estudio,
       link: "#"
     },
     {
       title: "INVESTIGACIONES",
       description: "Soportamos a las empresas cuando descubren que algo está pasando en su organización y necesitan evidencia aportada, clara y...",
-      image: "https://images.unsplash.com/photo-1576428252160-68707f5d1d0e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      image: investigacion,
       link: "#"
     }
   ];
@@ -208,7 +218,7 @@ function Home() {
       {/* Banner Section */}
       <div className="relative mb-8 mt-8 h-[300px] w-full md:mb-16 md:mt-16 md:h-[400px] lg:h-[534px]">
         <img 
-          src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1440&q=80" 
+          src= {final}
           alt="Business Meeting"
           className="h-full w-full object-cover"
         />
