@@ -4,6 +4,7 @@ const path = require('path'); // Manejo de rutas de archivos
 const usuarioRoutes = require('./src/routes/userRoutes'); // Importa rutas de usuario
 const cargoRoutes = require('./src/routes/cargoRoutes'); // Importa las rutas de cargo
 const novedadRoutes = require('./src/routes/novedadRoutes'); // Importa las rutas de novedades
+const reporteRoutes = require('./src/routes/reporteRoutes');
 const swaggerUi = require('swagger-ui-express'); // Importa Swagger UI
 const swaggerJsdoc = require('swagger-jsdoc'); // Importa Swagger JSDoc
 
@@ -65,6 +66,7 @@ app.use((req, res, next) => {
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cargos', cargoRoutes);
 app.use('/api/novedades', novedadRoutes);
+app.use('/api/reportes', reporteRoutes);
 
 // ruta principal al frontend (Vite)
 app.get('/', (req, res) => {
