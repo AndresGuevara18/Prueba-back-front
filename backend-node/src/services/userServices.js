@@ -1,3 +1,4 @@
+//src/services/userServices.js
 const db = require('../config/database'); // base de datos
 const Usuario = require('../models/userModel'); // modelo de usuario
 const reconocimientoService = require('./reconocimientoServices'); // servicio de reconocimiento
@@ -293,6 +294,8 @@ const usuarioService = {
     deleteUser: async (id_usuario) => {
         const queryCheckUser = 'SELECT id_usuario FROM usuario WHERE id_usuario = ?';
         const queryCheckRegistro = 'SELECT COUNT(*) AS total FROM registro_entrada WHERE id_usuario = ?';
+        const queryCheckRegistroSalida = 'SELECT COUNT(*) AS total FROM registro_salida WHERE id_usuario = ?';
+        const queryCheckNotificacionSalida = 'SELECT COUNT(*) AS total FROM notificacion_salida_temprana WHERE id_usuario = ?';
         const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
         const queryUser = 'DELETE FROM usuario WHERE id_usuario = ?';
         
@@ -309,6 +312,18 @@ const usuarioService = {
             if (registroResult[0].total > 0) {
                 console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${registroResult[0].total} registros de entrada asociados.`);
                 return { exists: true, hasRegistros: true };
+            }
+            // Verificar si hay registros de salida asociados
+            const [registroSalidaResult] = await db.promise().query(queryCheckRegistroSalida, [parseInt(id_usuario)]);
+            if (registroSalidaResult[0].total > 0) {
+                console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${registroSalidaResult[0].total} registros de salida asociados.`);
+                return { exists: true, hasRegistrosSalida: true };
+            }
+            // Verificar si hay notificaciones de salida temprana asociadas
+            const [notificacionSalidaResult] = await db.promise().query(queryCheckNotificacionSalida, [parseInt(id_usuario)]);
+            if (notificacionSalidaResult[0].total > 0) {
+                console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${notificacionSalidaResult[0].total} notificaciones de salida temprana asociadas.`);
+                return { exists: true, hasNotificacionesSalida: true };
             }
         
             // Eliminar reconocimiento facial primero (si no hay registros de entrada)
@@ -328,28 +343,38 @@ const usuarioService = {
             console.error("❌ Error en deleteUser (Service):", err);
             throw err;
         }
-    }
-    /*deleteUser: async (id_usuario) => {
-        const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
-        const queryUser = 'DELETE FROM usuario WHERE id_usuario = ?';
+    },
 
+    // Verificar si existen usuarios con id_cargo 1, 2 o 3
+    existenUsuariosConCargos: async () => {
+        const query = `SELECT id_cargo, COUNT(*) as cantidad FROM usuario WHERE id_cargo IN (1,2,3) GROUP BY id_cargo`;
         try {
-            // Eliminar reconocimiento facial
-            await db.promise().query(queryReco, [id_usuario]);
-
-            // Eliminar el usuario
-            const [result] = await db.promise().execute(queryUser, [id_usuario]);
-
-            if (result.affectedRows === 0) {
-                throw new Error("⚠️ No se encontró el usuario para eliminar.");
-            }
-
-            return { message: '✅ Usuario eliminado correctamente' };
+            const [results] = await db.promise().query(query);
+            // Retorna un objeto con la cantidad por cada cargo
+            const cargos = { 1: 0, 2: 0, 3: 0 };
+            results.forEach(row => {
+                cargos[row.id_cargo] = row.cantidad;
+            });
+            return cargos;
         } catch (err) {
-            console.error("❌ Error en deleteUser (Service):", err);
-            throw new Error("Error al eliminar el usuario: " + err.message);
+            console.error("❌ Error en existenUsuariosConCargos (Service):", err);
+            throw new Error("Error al verificar usuarios con cargos 1, 2 o 3.");
         }
-    }*/
+    },
+
+    // Buscar usuario por nombre de usuario (usuarioadmin)
+    getUserByUsername: async (usuarioadmin) => {
+        const query = 'SELECT * FROM usuario WHERE usuarioadmin = ?';
+        try {
+            const [results] = await db.promise().query(query, [usuarioadmin]);
+            console.log('[DEBUG] getUserByUsername - usuarioadmin:', usuarioadmin, '| Resultados:', results);
+            if (results.length === 0) return null;
+            return results[0];
+        } catch (err) {
+            console.error("❌ Error en getUserByUsername (Service):", err);
+            throw new Error("Error al buscar usuario por nombre de usuario.");
+        }
+    }
 };
 
 module.exports = usuarioService; // Exportamos el servicio
