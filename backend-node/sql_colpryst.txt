@@ -177,10 +177,14 @@ INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccio
 VALUES
 ('DNI', '66677788Z', 'Laura Castillo', 'Avenida 101, Ciudad Z', '3166789012', 'laura.castillo@colpryst.com', 'EPS026', 'laura.castillo', 'director2024', 2);
 
--- 📌 Administrativo (ID Cargo = 3)
-INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo)
-VALUES
-('DNI', '23456789B', 'Ana Gómez', 'Avenida 456, Ciudad B', '3102345678', 'ana.gomez@colpryst.com', 'EPS002', 'ana.gomez', NULL, 3);
+-- 📌 Administrativo (ID Cargo = 3) (PRIMER INSERT)
+INSERT INTO usuario (
+  tipo_documento, numero_documento, nombre_empleado, direccion_empleado,
+  telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo
+) VALUES (
+  'Cedula', '123456', 'Ana Gómez', 'Avenida 456, Ciudad B', '3102345678',
+  'ana.gomez@colpryst.com', 'EPS002', 'ana.gomez', '$2b$10$U8BMZ3nkrPaj8ACH904iweDt6DxyDVziEktgu0klDfH.8lh8iZAv.', 3
+);
 
 -- 📌 Desarrolladores (ID Cargo = 4)
 INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo)

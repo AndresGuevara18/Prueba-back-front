@@ -357,6 +357,10 @@ const usuarioController = {
             if (!user) {
                 return res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos." });
             }
+            // Validar que el usuario tenga id_cargo 1, 2 o 3
+            if (!usuarioService.isCargoAutorizado(user.id_cargo)) {
+                return res.status(403).json({ success: false, message: "Acceso denegado: solo usuarios con cargo autorizado pueden ingresar." });
+            }
             // Validar contraseña
             const bcrypt = require('bcrypt');
             const passwordMatch = await bcrypt.compare(contrasenia, user.contrasenia);

@@ -362,6 +362,11 @@ const usuarioService = {
         }
     },
 
+    // Validar si el usuario tiene un cargo autorizado para login
+    isCargoAutorizado: (id_cargo) => {
+        return [1, 2, 3, '1', '2', '3'].includes(id_cargo);
+    },
+
     // Buscar usuario por nombre de usuario (usuarioadmin)
     getUserByUsername: async (usuarioadmin) => {
         const query = 'SELECT * FROM usuario WHERE usuarioadmin = ?';
