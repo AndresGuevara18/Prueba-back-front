@@ -1,0 +1,58 @@
+name: Lint and Style Check
+
+on:
+  push:
+    branches: [ develop, Diller, ]
+  pull_request:
+    branches: [develop, Diller,]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install backend dependencies
+        run: |
+          cd backend-node
+          npm ci
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend-react
+          npm ci
+
+      - name: Lint backend
+        run: |
+          cd backend-node
+          npx eslint . --ext .js
+
+      - name: Lint frontend
+        run: |
+          cd frontend-react
+          npx eslint src --ext .js,.jsx
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python dependencies
+        run: |
+          cd facial_auth
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint Python (facial_auth)
+        run: |
+          cd facial_auth
+          pylint src || exit 0
