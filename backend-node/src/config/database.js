@@ -4,7 +4,7 @@ const connection = mysql.createConnection({
   host: 'localhost',  // Cambia según tu configuración
   user: 'root',       // Tu usuario de MySQL
   // password: '',       // Tu contraseña de MySQL (dejar comentada si tienes contraseña)
-  password: 'admin123',  // Si tienes contraseña, escríbela aquí y comenta la línea anterior
+  password: 'Ximenez96',  // Si tienes contraseña, escríbela aquí y comenta la línea anterior
   database: 'colpryst_col3',  // Nombre de tu base de datos
 });
 
