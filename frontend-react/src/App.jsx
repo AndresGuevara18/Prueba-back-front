@@ -7,25 +7,25 @@ import { Stethoscope, Users, FileSearch, BookOpen, Shield, Building2, ChevronLef
 function ServiceCard({ title, description, image, link }) {
   return (
     // Contenedor principal de la tarjeta con diseño responsivo
-    <div className="w-[328px] bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="w-[328px] overflow-hidden rounded-lg bg-white shadow-md">
       {/* Sección de la imagen con overlay */}
       <div className="relative h-[200px]">
         {/* Imagen del servicio */}
-        <img src={image} alt={title} className="w-full h-full object-cover" />
+        <img src={image} alt={title} className="h-full w-full object-cover" />
         {/* Overlay oscuro con el título */}
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-          <h3 className="text-white text-2xl font-bold text-center">{title}</h3>
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+          <h3 className="text-center text-2xl font-bold text-white">{title}</h3>
         </div>
       </div>
       {/* Contenido de la tarjeta */}
       <div className="p-6">
         {/* Descripción del servicio */}
-        <p className="text-sm text-gray-700 mb-4 h-[80px]">{description}</p>
+        <p className="mb-4 h-[80px] text-sm text-gray-700">{description}</p>
         {/* Botón de acción */}
         <div className="flex justify-center">
           <a 
             href={link} 
-            className="inline-flex items-center px-6 py-2 bg-[#10374E] text-white rounded hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center rounded bg-[#10374E] px-6 py-2 text-white transition-colors hover:bg-blue-700"
           >
             VER MÁS
           </a>
@@ -76,7 +76,7 @@ function Carousel() {
 
   return (
     // Contenedor principal del carrusel
-    <div className="relative h-[534px] w-[1440px] mx-auto bg-gradient-to-r from-blue-600 to-blue-800">
+    <div className="relative mx-auto h-[534px] w-[1440px] bg-gradient-to-r from-blue-600 to-blue-800">
       {/* Contenedor de imágenes y overlay */}
       <div className="relative h-full overflow-hidden">
         {images.map((image, index) => (
@@ -90,11 +90,11 @@ function Carousel() {
             <img 
               src={image.url}
               alt={image.title}
-              className="w-full h-[534px] object-cover opacity-20"
+              className="h-[534px] w-full object-cover opacity-20"
             />
             {/* Título centrado */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-4xl md:text-6xl font-bold text-white text-center">
+              <h1 className="text-center text-4xl font-bold text-white md:text-6xl">
                 {image.title}
               </h1>
             </div>
@@ -105,24 +105,24 @@ function Carousel() {
       {/* Botones de navegación */}
       <button 
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 p-2 rounded-full hover:bg-white/50 transition-colors"
+        className="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white/30 p-2 transition-colors hover:bg-white/50"
       >
-        <ChevronLeft className="w-6 h-6 text-white" />
+        <ChevronLeft className="h-6 w-6 text-white" />
       </button>
       <button 
         onClick={goToNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 p-2 rounded-full hover:bg-white/50 transition-colors"
+        className="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white/30 p-2 transition-colors hover:bg-white/50"
       >
-        <ChevronRight className="w-6 h-6 text-white" />
+        <ChevronRight className="h-6 w-6 text-white" />
       </button>
 
       {/* Indicadores de posición (dots) */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
         {images.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
+            className={`h-2 w-2 rounded-full transition-colors ${
               index === currentIndex ? 'bg-white' : 'bg-white/50'
             }`}
           />
@@ -147,14 +147,14 @@ function App() {
 
   return (
     // Contenedor principal de la aplicación
-    <div className="min-h-screen w-[1440px] mx-auto bg-gray-50">
+    <div className="mx-auto min-h-screen w-[1440px] bg-gray-50">
       {/* Barra superior */}
-      <div className="bg-[#10374E] text-white w-[1440px]">
+      <div className="w-[1440px] bg-[#10374E] text-white">
         {/* ... (contenido de la barra superior) */}
       </div>
 
       {/* Encabezado de navegación */}
-      <nav className="bg-white shadow-md w-[1440px]">
+      <nav className="w-[1440px] bg-white shadow-md">
         {/* ... (contenido de la navegación) */}
       </nav>
 
@@ -162,17 +162,17 @@ function App() {
       <Carousel />
 
       {/* Sección de servicios */}
-      <div className="w-[1440px] mx-auto px-4 py-16">
+      <div className="mx-auto w-[1440px] px-4 py-16">
         {/* ... (contenido de servicios) */}
       </div>
 
       {/* Sección del banner */}
-      <div className="relative h-[534px] w-[1440px] mx-auto mt-16 mb-16">
+      <div className="relative mx-auto mb-16 mt-16 h-[534px] w-[1440px]">
         {/* ... (contenido del banner) */}
       </div>
 
       {/* Pie de página */}
-      <footer className="bg-[#424242] text-white w-[1440px] mx-auto font-ledger">
+      <footer className="mx-auto w-[1440px] bg-[#424242] font-ledger text-white">
         {/* ... (contenido del pie de página) */}
       </footer>
     </div>
