@@ -8,16 +8,16 @@ const NoAsistencia = require('../models/noAsistenciaModel');
 const db = require('../config/database'); // Importa la conexión a la base de datos
 
 class ReporteService {
-    /**
+  /**
      * Genera un reporte de asistencia.
      * @param {Date} fechaInicio - Fecha de inicio del rango del reporte.
      * @param {Date} fechaFin - Fecha de fin del rango del reporte.
      * @returns {Promise<Array>} - Un arreglo con los datos del reporte de asistencia.
      */
-    static async generarReporteAsistencia(fechaInicio, fechaFin) {
-        try {
-            // Consulta para obtener registros de entrada y salida, uniéndolos con la tabla de usuarios
-            const query = `
+  static async generarReporteAsistencia(fechaInicio, fechaFin) {
+    try {
+      // Consulta para obtener registros de entrada y salida, uniéndolos con la tabla de usuarios
+      const query = `
                 SELECT 
                     u.id_usuario, 
                     u.nombre_empleado, 
@@ -31,40 +31,40 @@ class ReporteService {
                 ORDER BY u.id_usuario, re.fecha_hora;
             `;
             
-            const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
+      const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
 
-            // Procesar los resultados para agrupar por usuario y fecha si es necesario,
-            // y calcular la asistencia. Esta es una simplificación.
-            // Podrías necesitar una lógica más compleja para emparejar entradas y salidas correctamente.
-            const reporte = results.map(row => {
-                return {
-                    id_usuario: row.id_usuario,
-                    nombre_completo: row.nombre_empleado,
-                    fecha_hora_entrada: row.fecha_hora_entrada,
-                    fecha_hora_salida: row.fecha_hora_salida,
-                    comentarios_entrada: row.comentarios_entrada,
-                    comentarios_salida: row.comentarios_salida,
-                    // Aquí podrías calcular la duración, estado (Presente, Ausente si no hay entrada/salida), etc.
-                };
-            });
+      // Procesar los resultados para agrupar por usuario y fecha si es necesario,
+      // y calcular la asistencia. Esta es una simplificación.
+      // Podrías necesitar una lógica más compleja para emparejar entradas y salidas correctamente.
+      const reporte = results.map(row => {
+        return {
+          id_usuario: row.id_usuario,
+          nombre_completo: row.nombre_empleado,
+          fecha_hora_entrada: row.fecha_hora_entrada,
+          fecha_hora_salida: row.fecha_hora_salida,
+          comentarios_entrada: row.comentarios_entrada,
+          comentarios_salida: row.comentarios_salida,
+          // Aquí podrías calcular la duración, estado (Presente, Ausente si no hay entrada/salida), etc.
+        };
+      });
 
-            console.log(`Generando reporte de asistencia desde ${fechaInicio} hasta ${fechaFin}`);
-            return reporte; 
-        } catch (err) {
-            console.error("Error en generarReporteAsistencia (Service):", err);
-            throw err;
-        } 
-    }
+      console.log(`Generando reporte de asistencia desde ${fechaInicio} hasta ${fechaFin}`);
+      return reporte; 
+    } catch (err) {
+      console.error('Error en generarReporteAsistencia (Service):', err);
+      throw err;
+    } 
+  }
 
-    /**
+  /**
      * Genera un reporte de llegadas tarde.
      * @param {Date} fechaInicio - Fecha de inicio del rango del reporte.
      * @param {Date} fechaFin - Fecha de fin del rango del reporte.
      * @returns {Promise<Array>} - Un arreglo con los datos del reporte de llegadas tarde.
      */
-    static async generarReporteLlegadasTarde(fechaInicio, fechaFin) {
-        try {
-            const query = `
+  static async generarReporteLlegadasTarde(fechaInicio, fechaFin) {
+    try {
+      const query = `
                 SELECT 
                     net.id_notificacion,
                     u.id_usuario,
@@ -78,34 +78,34 @@ class ReporteService {
                 WHERE DATE(net.fecha_hora) BETWEEN ? AND ?
                 ORDER BY net.fecha_hora;
             `;
-            const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
+      const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
             
-            const reporte = results.map(row => ({
-                id_notificacion: row.id_notificacion,
-                id_usuario: row.id_usuario,
-                nombre_completo: row.nombre_empleado,
-                fecha_hora_entrada_registrada: row.fecha_hora_entrada_registrada,
-                fecha_hora_notificacion: row.fecha_hora_notificacion,
-                comentarios: row.comentarios
-            }));
+      const reporte = results.map(row => ({
+        id_notificacion: row.id_notificacion,
+        id_usuario: row.id_usuario,
+        nombre_completo: row.nombre_empleado,
+        fecha_hora_entrada_registrada: row.fecha_hora_entrada_registrada,
+        fecha_hora_notificacion: row.fecha_hora_notificacion,
+        comentarios: row.comentarios,
+      }));
 
-            console.log(`Generando reporte de llegadas tarde desde ${fechaInicio} hasta ${fechaFin}`);
-            return reporte;
-        } catch (err) {
-            console.error("Error en generarReporteLlegadasTarde (Service):", err);
-            throw err;
-        }
+      console.log(`Generando reporte de llegadas tarde desde ${fechaInicio} hasta ${fechaFin}`);
+      return reporte;
+    } catch (err) {
+      console.error('Error en generarReporteLlegadasTarde (Service):', err);
+      throw err;
     }
+  }
 
-    /**
+  /**
      * Genera un reporte de salidas temprano.
      * @param {Date} fechaInicio - Fecha de inicio del rango del reporte.
      * @param {Date} fechaFin - Fecha de fin del rango del reporte.
      * @returns {Promise<Array>} - Un arreglo con los datos del reporte de salidas temprano.
      */
-    static async generarReporteSalidasTemprano(fechaInicio, fechaFin) {
-        try {
-            const query = `
+  static async generarReporteSalidasTemprano(fechaInicio, fechaFin) {
+    try {
+      const query = `
                 SELECT 
                     nst.id_notificacion,
                     u.id_usuario,
@@ -119,34 +119,34 @@ class ReporteService {
                 WHERE DATE(nst.fecha_hora) BETWEEN ? AND ?
                 ORDER BY nst.fecha_hora;
             `;
-            const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
+      const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
 
-            const reporte = results.map(row => ({
-                id_notificacion: row.id_notificacion,
-                id_usuario: row.id_usuario,
-                nombre_completo: row.nombre_empleado,
-                fecha_hora_salida_registrada: row.fecha_hora_salida_registrada,
-                fecha_hora_notificacion: row.fecha_hora_notificacion,
-                comentarios: row.comentarios
-            }));
+      const reporte = results.map(row => ({
+        id_notificacion: row.id_notificacion,
+        id_usuario: row.id_usuario,
+        nombre_completo: row.nombre_empleado,
+        fecha_hora_salida_registrada: row.fecha_hora_salida_registrada,
+        fecha_hora_notificacion: row.fecha_hora_notificacion,
+        comentarios: row.comentarios,
+      }));
 
-            console.log(`Generando reporte de salidas temprano desde ${fechaInicio} hasta ${fechaFin}`);
-            return reporte;
-        } catch (err) {
-            console.error("Error en generarReporteSalidasTemprano (Service):", err);
-            throw err;
-        }
+      console.log(`Generando reporte de salidas temprano desde ${fechaInicio} hasta ${fechaFin}`);
+      return reporte;
+    } catch (err) {
+      console.error('Error en generarReporteSalidasTemprano (Service):', err);
+      throw err;
     }
+  }
 
-    /**
+  /**
      * Genera un reporte de ausencias.
      * @param {Date} fechaInicio - Fecha de inicio del rango del reporte.
      * @param {Date} fechaFin - Fecha de fin del rango del reporte.
      * @returns {Promise<Array>} - Un arreglo con los datos del reporte de ausencias.
      */
-    static async generarReporteAusencias(fechaInicio, fechaFin) {
-        try {
-            const query = `
+  static async generarReporteAusencias(fechaInicio, fechaFin) {
+    try {
+      const query = `
                 SELECT 
                     na.id_inasistencia,
                     u.id_usuario,
@@ -158,23 +158,23 @@ class ReporteService {
                 WHERE na.fecha BETWEEN ? AND ?
                 ORDER BY na.fecha;
             `;
-            const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
+      const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
             
-            const reporte = results.map(row => ({
-                id_inasistencia: row.id_inasistencia,
-                id_usuario: row.id_usuario,
-                nombre_completo: row.nombre_empleado,
-                fecha: row.fecha,
-                motivo: row.motivo
-            }));
+      const reporte = results.map(row => ({
+        id_inasistencia: row.id_inasistencia,
+        id_usuario: row.id_usuario,
+        nombre_completo: row.nombre_empleado,
+        fecha: row.fecha,
+        motivo: row.motivo,
+      }));
 
-            console.log(`Generando reporte de ausencias desde ${fechaInicio} hasta ${fechaFin}`);
-            return reporte;
-        } catch (err) {
-            console.error("Error en generarReporteAusencias (Service):", err);
-            throw err;
-        }
+      console.log(`Generando reporte de ausencias desde ${fechaInicio} hasta ${fechaFin}`);
+      return reporte;
+    } catch (err) {
+      console.error('Error en generarReporteAusencias (Service):', err);
+      throw err;
     }
+  }
 }
 
 module.exports = ReporteService;
