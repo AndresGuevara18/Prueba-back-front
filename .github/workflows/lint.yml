@@ -2,9 +2,9 @@ name: Lint and Style Check
 
 on:
   push:
-    branches: [andres, ivan, develop, Diller, hu3sit0s]
+    branches: [ develop, Diller, ]
   pull_request:
-    branches: [andres, ivan, develop, Diller, hu3sit0s]
+    branches: [develop, Diller,]
 
 jobs:
   lint:
