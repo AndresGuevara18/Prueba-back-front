@@ -17,14 +17,19 @@ Este proyecto utiliza linters para mantener la calidad y consistencia del códig
 - globals
 - Tailwind CSS
 
+
 Instala todas las dependencias necesarias ejecutando en la carpeta `frontend-react`:
 1. Abre PowerShell y ejecuta:
 ```powershell
 cd .\frontend-react
 npm install
+# Instala las dependencias de desarrollo para linting y estilos
 npm install eslint @babel/core @babel/preset-env @babel/preset-react @babel/eslint-parser eslint-plugin-react-hooks eslint-plugin-react-refresh eslint-plugin-tailwindcss globals --save-dev
 cd ..
 ```
+
+> **Nota:** Si usas la sintaxis `import`/`export` en tu configuración de ESLint, asegúrate de que el archivo de configuración sea `eslint.config.mjs` o que tu `package.json` tenga el campo `"type": "module"`.
+
 
 ### Backend (`backend-node`)
 - Node.js y npm
@@ -40,6 +45,9 @@ npm install eslint @eslint/js --save-dev
 cd ..
 ```
 
+> **Importante:** Si tu archivo de configuración de ESLint usa la sintaxis `import`/`export`, renómbralo a `eslint.config.mjs` para evitar errores de módulos. No es necesario cambiar el `package.json` a `type: module` si solo quieres módulos ES en la configuración de ESLint.
+
+
 ### facial_auth (Python)
 - Python 3.x
 - pylint
@@ -53,6 +61,11 @@ cd .\facial_auth
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install pylint
+```
+
+Para desactivar el entorno virtual en PowerShell:
+```powershell
+deactivate
 ```
 
 #### Git Bash (Windows):
@@ -89,20 +102,23 @@ python -m pylint src
 
 ## Cómo ejecutar los linters
 
+
 Desde la carpeta raíz del proyecto, ejecuta el siguiente script en PowerShell:
 ```powershell
 ./lint-all.ps1
 ```
 
+
 Este script:
 - Lintéa el backend y frontend usando los scripts configurados en cada package.json.
-- Lintéa facial_auth usando pylint dentro del entorno virtual.
+- Lintéa facial_auth usando pylint dentro del entorno virtual (asegúrate de tener el entorno virtual creado y activado antes de usar pylint).
 
 Si alguna dependencia falta, sigue las instrucciones de arriba para instalarla.
 
 ## Cómo ejecutar los linters por separado
 
 Puedes ejecutar los linters de cada módulo individualmente desde la raíz del proyecto o entrando a cada carpeta. Asegúrate de tener las dependencias instaladas.
+
 
 ### Frontend (`frontend-react`)
 
@@ -120,6 +136,7 @@ cd .\frontend-react
 npm run lint -- --fix
 ```
 
+
 ### Backend (`backend-node`)
 
 Lint:
@@ -134,14 +151,19 @@ cd .\backend-node
 npm run lint -- --fix
 ```
 
+
 ### facial_auth (Python)
 
 Lint (PowerShell):
 ```powershell
 cd .\facial_auth
 .\venv\Scripts\Activate.ps1
-pip install pylint 
 python -m pylint src
+```
+
+Para desactivar el entorno virtual:
+```powershell
+deactivate
 ```
 
 Lint (Git Bash):
@@ -149,6 +171,8 @@ Lint (Git Bash):
 cd facial_auth
 source venv/Scripts/activate
 python -m pylint src
+deactivate
+cd ..
 ```
 
 > **Nota:** pylint no tiene auto-fix automático, pero puedes corregir los problemas que reporte manualmente.
