@@ -60,7 +60,7 @@ function Profile() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Mi Perfil</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Mi Perfil!</h1>
       </div>
 
       <div className="rounded-lg bg-white p-6 shadow-sm">
