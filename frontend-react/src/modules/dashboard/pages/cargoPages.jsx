@@ -1,3 +1,4 @@
+//src/moodules/dashboard/pages/cargoPages.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
@@ -7,6 +8,9 @@ const CargoPage = () => {
   const [idCargoBuscar, setIdCargoBuscar] = useState(""); // Estado para almacenar el ID del cargo a buscar
   const [cargoEncontrado, setCargoEncontrado] = useState(null); // Estado para almacenar el cargo encontrado
   const [modalAbierto, setModalAbierto] = useState(false); // Estado para controlar la visibilidad del modal
+  const [modalEditarAbierto, setModalEditarAbierto] = useState(false); // Estado para controlar el modal de edición
+  const [cargoAEditar, setCargoAEditar] = useState(null); // Estado para el cargo a editar
+  const [formEdit, setFormEdit] = useState({ nombre_cargo: "", descripcion: "", id_horario: "" }); // Estado para el formulario de edición
   const navigate = useNavigate();
 
   // URL del backend
@@ -82,33 +86,46 @@ const CargoPage = () => {
     }
   };
 
-  // Función para editar un cargo
-  const editarCargo = async (id) => {
+  // Función para abrir el modal de edición
+  const abrirModalEditar = (cargo) => {
+    setCargoAEditar(cargo);
+    setFormEdit({
+      nombre_cargo: cargo.nombre_cargo,
+      descripcion: cargo.descripcion,
+      id_horario: cargo.id_horario || ""
+    });
+    setModalEditarAbierto(true);
+  };
+
+  // Función para manejar cambios en el formulario de edición
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setFormEdit((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Función para actualizar el cargo
+  const actualizarCargo = async () => {
+    if (!formEdit.nombre_cargo || !formEdit.descripcion || !formEdit.id_horario) {
+      alert("⚠️ Todos los campos son obligatorios.");
+      return;
+    }
     try {
-      const cargo = cargos.find((cargo) => cargo.id_cargo === id);
-      if (!cargo) throw new Error("Cargo no encontrado");
-
-      const nuevoNombre = prompt("Nuevo nombre del cargo:", cargo.nombre_cargo);
-      const nuevaDescripcion = prompt("Nueva descripción del cargo:", cargo.descripcion || "");
-
-      if (!nuevoNombre || !nuevaDescripcion) {
-        alert("⚠️ Debes ingresar todos los datos.");
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${API_URL}/${cargoAEditar.id_cargo}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre_cargo: nuevoNombre,
-          descripcion: nuevaDescripcion,
-        }),
+        body: JSON.stringify(formEdit),
       });
-
-      if (!response.ok) throw new Error("Error al actualizar el cargo");
-
+      const data = await response.json();
+      if (!response.ok) {
+        if (data.alert) {
+          alert(data.error);
+          return; // Evita lanzar el error y mostrar doble alert
+        }
+        throw new Error(data.error || "Error al actualizar el cargo");
+      }
       alert("✅ Cargo actualizado correctamente.");
-      cargarTodosLosCargos(); // Recargar la lista actualizada
+      setModalEditarAbierto(false);
+      cargarTodosLosCargos();
     } catch (error) {
       console.error("Error editando cargo:", error);
       alert("❌ " + error.message);
@@ -116,15 +133,15 @@ const CargoPage = () => {
   };
 
   return (
-    <div className="ml-46 m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Lista de Cargos</h1>
+    <div className="font-sans text-center m-5 ml-46">
+      <h1 className="text-3xl font-bold mb-4">Lista de Cargos</h1>
 
       {/* 🔹 Contenedor para los botones */}
-      <div className="mb-4 flex justify-center space-x-4">
+      <div className="flex justify-center space-x-4 mb-4">
         {/* Botón para agregar cargo */}
         <button
           onClick={() => navigate("/dashboard/agregar-cargo")} // Redirige a la página de agregar cargo
-          className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           Agregar Cargo
         </button>
@@ -136,11 +153,11 @@ const CargoPage = () => {
             placeholder="Buscar cargo por ID"
             value={idCargoBuscar}
             onChange={(e) => setIdCargoBuscar(e.target.value)}
-            className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={buscarCargo}
-            className="ml-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             🔍 Buscar Cargo
           </button>
@@ -152,10 +169,11 @@ const CargoPage = () => {
         <table className="w-full bg-white shadow-lg">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-black p-2">ID</th>
-              <th className="border border-black p-2">Nombre</th>
-              <th className="border border-black p-2">Descripción</th>
-              <th className="border border-black p-2">Acciones</th>
+              <th className="p-2 border border-black">ID</th>
+              <th className="p-2 border border-black">Nombre</th>
+              <th className="p-2 border border-black">Descripción</th>
+              <th className="p-2 border border-black">ID Horario</th>
+              <th className="p-2 border border-black">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -166,19 +184,20 @@ const CargoPage = () => {
                   index % 2 === 0 ? "bg-white" : "bg-gray-100"
                 } border-b`}
               >
-                <td className="border border-black p-2">{cargo.id_cargo}</td>
-                <td className="border border-black p-2">{cargo.nombre_cargo}</td>
-                <td className="border border-black p-2">{cargo.descripcion || "N/A"}</td>
-                <td className="border border-black p-2">
+                <td className="p-2 border border-black">{cargo.id_cargo}</td>
+                <td className="p-2 border border-black">{cargo.nombre_cargo}</td>
+                <td className="p-2 border border-black">{cargo.descripcion || "N/A"}</td>
+                <td className="p-2 border border-black">{cargo.id_horario || "N/A"}</td>
+                <td className="p-2 border border-black">
                   <button
-                    onClick={() => editarCargo(cargo.id_cargo)}
-                    className="mr-2 rounded bg-yellow-500 p-1 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    onClick={() => abrirModalEditar(cargo.id_cargo ? cargo : cargos.find(c => c.id_cargo === cargo.id_cargo))}
+                    className="bg-yellow-500 text-white p-1 rounded mr-2 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   >
                     ✏️ Editar
                   </button>
                   <button
                     onClick={() => eliminarCargo(cargo.id_cargo)}
-                    className="rounded bg-red-500 p-1 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="bg-red-500 text-white p-1 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                   >
                     🗑 Eliminar
                   </button>
@@ -192,8 +211,8 @@ const CargoPage = () => {
       {/* Modal para mostrar detalles del cargo */}
       {modalAbierto && cargoEncontrado && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="rounded bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-xl font-bold">Detalles del Cargo</h2>
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Detalles del Cargo</h2>
             <p>
               <strong>ID:</strong> {cargoEncontrado.id_cargo}
             </p>
@@ -209,10 +228,65 @@ const CargoPage = () => {
             </p>
             <button
               onClick={cerrarModal}
-              className="mt-4 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Cerrar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para editar cargo */}
+      {modalEditarAbierto && cargoAEditar && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">Editar Cargo</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-left mb-1">Nombre del Cargo:</label>
+                <input
+                  type="text"
+                  name="nombre_cargo"
+                  value={formEdit.nombre_cargo}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-left mb-1">Descripción:</label>
+                <input
+                  type="text"
+                  name="descripcion"
+                  value={formEdit.descripcion}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-left mb-1">ID Horario:</label>
+                <input
+                  type="number"
+                  name="id_horario"
+                  value={formEdit.id_horario}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end space-x-2">
+              <button
+                onClick={() => setModalEditarAbierto(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarCargo}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Guardar Cambios
+              </button>
+            </div>
           </div>
         </div>
       )}
