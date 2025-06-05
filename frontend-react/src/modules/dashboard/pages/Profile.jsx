@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Building } from 'lucide-react';
 import Swal from 'sweetalert2';
 import API_BASE_URL from '../../../config/ConfigURL';
+import { useUser } from '../components/UserContext';
 
 
 async function getProfileData() {
@@ -26,24 +27,27 @@ function Profile() {
     department: '',
     role: ''
   });
+  const { updateUser } = useUser();
 
   useEffect(() => {
     async function fetchProfile() {
       try {
         const data = await getProfileData();
-        setUserData({
+        const profile = {
           name: data.nombre_empleado || data.usuarioadmin || '',
           email: data.email_empleado || '',
           phone: data.telefono_empleado || '',
           department: data.cargo_user || '',
-          role: data.id_cargo === 1 ? 'Administrador' : data.id_cargo === 2 ? 'Supervisor' : 'Empleado'
-        });
+          role: data.id_cargo === 1 ? 'Administrador' : data.id_cargo === 2 ? 'Supervisor' : 'Empleado',
+        };
+        setUserData(profile);
+        updateUser(profile); // Guardar en contexto y localStorage
       } catch (err) {
         Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cargar el perfil' });
       }
     }
     fetchProfile();
-  }, []);
+  }, [updateUser]);
 
   const handleSave = (e) => {
     e.preventDefault();

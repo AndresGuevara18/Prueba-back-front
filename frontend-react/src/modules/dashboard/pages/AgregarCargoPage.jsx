@@ -61,9 +61,9 @@ const AgregarCargoPage = () => {
   };
 
   return (
-    <div className="font-sans text-center m-5">
-      <h1 className="text-3xl font-bold mb-4">Agregar Nuevo Cargo</h1>
-      <form className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="m-5 text-center font-sans">
+      <h1 className="mb-4 text-3xl font-bold">Agregar Nuevo Cargo</h1>
+      <form className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
         <div className="mb-4">
           <input
             type="text"
@@ -71,7 +71,7 @@ const AgregarCargoPage = () => {
             placeholder="Nombre del Cargo"
             value={nombreCargo}
             onChange={(e) => setNombreCargo(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div className="mb-4">
@@ -81,7 +81,7 @@ const AgregarCargoPage = () => {
             placeholder="Descripción"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div className="mb-4">
@@ -97,7 +97,7 @@ const AgregarCargoPage = () => {
         <button
           type="button"
           onClick={agregarCargo}
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Agregar Cargo
         </button>

@@ -6,11 +6,11 @@ const auth = require('../middleware/auth');
 
 // Configura multer para manejar multipart/form-data
 const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: 5 * 1024 * 1024 // 5MB
-    }
-  });
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
+});
 
 
 //OBTENER TODOS LOS USUARIOS
@@ -142,10 +142,10 @@ router.get('/:numero_documento', usuarioController.getUserByDocument);
  *         description: Error interno del servidor
  */
 router.post('/', upload.single('foto'), (req, res, next) => {
-    console.log('Body recibido:', req.body);
-    console.log('Archivo recibido:', req.file);
-    next();
-  }, usuarioController.createUser);// Ruta POST específica con multer
+  console.log('Body recibido:', req.body);
+  console.log('Archivo recibido:', req.file);
+  next();
+}, usuarioController.createUser);// Ruta POST específica con multer
 //router.post('/', usuarioController.createUser);
 
 /**
