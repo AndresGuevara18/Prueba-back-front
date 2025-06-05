@@ -1,3 +1,4 @@
+//src/services/cargoServices.js
 const db = require('../config/database'); // Importa la conexión a la base de datos
 const Cargo = require('../models/cargoModel'); // Importa el modelo Cargo
 
@@ -8,7 +9,7 @@ const cargoService = {
         try {
             const [results] = await db.promise().query(query); // Ejecutar la consulta con promesas
             // Converti cada fila del resultado en una instancia de Cargo
-            return results.map(row => new Cargo(row.id_cargo, row.nombre_cargo, row.descripcion)); 
+            return results.map(row => new Cargo(row.id_cargo, row.nombre_cargo, row.descripcion, row.id_horario)); 
         } catch (err) {
             throw err; // error,lo maneje el controlador
         }
@@ -31,6 +32,7 @@ const cargoService = {
                 id_cargo: cargoResults[0].id_cargo,
                 nombre_cargo: cargoResults[0].nombre_cargo,
                 descripcion: cargoResults[0].descripcion,
+                id_horario: cargoResults[0].id_horario,
                 total_usuarios: totalUsuarios
             };
         } catch (err) {
@@ -40,12 +42,12 @@ const cargoService = {
 
    // Crear 
    createCargo: async (cargoData) => {
-    const query = 'INSERT INTO cargo (nombre_cargo, descripcion) VALUES (?, ?)'; 
+    const query = 'INSERT INTO cargo (nombre_cargo, descripcion, id_horario) VALUES (?, ?, ?)'; 
     try {
         // Insertar valores usando los getters
-        const [result] = await db.promise().query(query, [cargoData.getNombreCargo(), cargoData.getDescripcion()]);
+        const [result] = await db.promise().query(query, [cargoData.getNombreCargo(), cargoData.getDescripcion(), cargoData.getIdHorario()]);
         // Crea un nuevo objeto con el ID generado
-        return new Cargo(result.insertId, cargoData.getNombreCargo(), cargoData.getDescripcion());
+        return new Cargo(result.insertId, cargoData.getNombreCargo(), cargoData.getDescripcion(), cargoData.getIdHorario());
   
     } catch (err) {
         console.error("❌ Error en createCargo (Service):", err);
@@ -54,11 +56,17 @@ const cargoService = {
     },
 
     //actualizar
-    updateCargo: async (id_cargo, nombre_cargo, descripcion) => {
-        const query = `UPDATE cargo SET nombre_cargo = ?, descripcion = ? WHERE id_cargo = ?`;
+    updateCargo: async (id_cargo, nombre_cargo, descripcion, id_horario) => {
+        // Validar existencia del horario antes de actualizar
+        const horarioExiste = await cargoService.horarioExists(id_horario);
+        if (!horarioExiste) {
+            // Retornar un objeto especial para que el controlador lo maneje
+            return { error: '❌ El horario proporcionado no existe', alert: true };
+        }
+        const query = `UPDATE cargo SET nombre_cargo = ?, descripcion = ?, id_horario = ? WHERE id_cargo = ?`;
        
         try {
-            const [result] = await db.promise().query(query, [nombre_cargo, descripcion, id_cargo]);
+            const [result] = await db.promise().query(query, [nombre_cargo, descripcion, id_horario, id_cargo]);
             return result; // Retorna el resultado de la consulta
         } catch (err) {
             console.error("❌ Error en updateCargo (Service):", err);
@@ -98,6 +106,18 @@ const cargoService = {
             }
         } catch (err) {
             console.error("❌ Error en deleteCargo (Service):", err);
+            throw err;
+        }
+    },
+
+    // Verificar si existe un horario laboral por id
+    horarioExists: async (id_horario) => {
+        const query = 'SELECT COUNT(*) AS count FROM horario_laboral WHERE id_horario = ?';
+        try {
+            const [results] = await db.promise().query(query, [id_horario]);
+            return results[0].count > 0;
+        } catch (err) {
+            console.error('❌ Error en horarioExists (Service):', err);
             throw err;
         }
     }

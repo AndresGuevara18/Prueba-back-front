@@ -2,6 +2,7 @@ const express = require('express'); // Importar Express
 const router = express.Router(); // 🚀 Definir el router antes de usarlo
 const multer = require('multer'); // multer para manejo del blob //npm install multer
 const usuarioController = require('../controllers/userController');
+const auth = require('../middleware/auth');
 
 // Configura multer para manejar multipart/form-data
 const upload = multer({
@@ -31,6 +32,24 @@ const upload = multer({
  *         description: Lista de usuarios obtenida correctamente
  */
 router.get('/', usuarioController.getAllUsers);
+
+/**
+ * @swagger
+ * /api/usuarios/profile:
+ *   get:
+ *     summary: Obtiene el perfil del usuario autenticado
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil del usuario obtenido correctamente
+ *       401:
+ *         description: No autorizado (token faltante o inválido)
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/profile', auth, usuarioController.getProfile);
 
 /**
  * @swagger
@@ -288,5 +307,7 @@ router.delete('/:id_usuario', usuarioController.deleteUser);
  *         description: Error interno en login
  */
 router.post('/login', usuarioController.login);
+
+
 
 module.exports = router; // Exportar el router

@@ -46,6 +46,7 @@ swaggerDocs(app); // Llama a la función de configuración de Swagger
 
 //parseo del body
 app.use((req, res, next) => {
+  console.log(`🔗 Ruta solicitada: ${req.method} ${req.originalUrl}`); // Log de la ruta solicitada
   if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {//verificar ruta y metodo
     //No aplica el middleware express.json()
     next();
