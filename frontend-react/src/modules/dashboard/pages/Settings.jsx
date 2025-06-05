@@ -8,7 +8,7 @@ function TabButton({ active, children, onClick }) {
       onClick={onClick}
       className={`px-4 py-2 text-sm font-medium transition-colors ${
         active
-          ? 'text-blue-500 border-b-2 border-blue-500'
+          ? 'border-b-2 border-blue-500 text-blue-500'
           : 'text-gray-500 hover:text-gray-700'
       }`}
     >
@@ -52,13 +52,13 @@ function TimeInput({ label, value, onChange }) {
 
   return (
     <div className="relative">
-      <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
       <div className="relative" onClick={handleTimeClick}>
         <input
           type="text"
           value={value}
           readOnly
-          className="w-full px-2 py-1 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-center"
+          className="w-full cursor-pointer rounded-md border border-gray-200 px-2 py-1 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
     </div>
@@ -67,15 +67,15 @@ function TimeInput({ label, value, onChange }) {
 
 function DaySchedule({ day, schedule, onUpdate }) {
   return (
-    <div className="bg-white rounded-lg p-3 border border-gray-200">
-      <div className="flex items-center justify-between mb-2">
-        <span className="font-medium text-sm text-gray-700">{day}</span>
+    <div className="rounded-lg border border-gray-200 bg-white p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-700">{day}</span>
         <label className="flex items-center">
           <input
             type="checkbox"
             checked={schedule.isWorkDay}
             onChange={(e) => onUpdate(day, 'isWorkDay', e.target.checked)}
-            className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+            className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
           />
           <span className="ml-2 text-xs text-gray-600">Día laboral</span>
         </label>
@@ -83,7 +83,7 @@ function DaySchedule({ day, schedule, onUpdate }) {
 
       {schedule.isWorkDay && (
         <>
-          <div className="grid grid-cols-2 gap-2 mb-2">
+          <div className="mb-2 grid grid-cols-2 gap-2">
             <TimeInput
               label="Entrada"
               value={schedule.entryTime}
@@ -96,13 +96,13 @@ function DaySchedule({ day, schedule, onUpdate }) {
             />
           </div>
 
-          <div className="flex items-center mb-2">
+          <div className="mb-2 flex items-center">
             <label className="flex items-center">
               <input
                 type="checkbox"
                 checked={schedule.hasLunch}
                 onChange={(e) => onUpdate(day, 'hasLunch', e.target.checked)}
-                className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
               />
               <span className="ml-2 text-xs text-gray-600">Almuerzo</span>
             </label>
@@ -254,7 +254,7 @@ function Settings() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="mb-6 border-b border-gray-200">
         <div className="flex space-x-8">
           <TabButton
             active={activeTab === 'schedules'}
@@ -284,10 +284,10 @@ function Settings() {
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         {activeTab === 'schedules' && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {Object.entries(settings.schedules).map(([day, schedule]) => (
                 <DaySchedule
                   key={day}
@@ -301,13 +301,13 @@ function Settings() {
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => handleApplyToAll('Lunes')}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                className="px-4 py-2 text-sm text-gray-600 transition-colors hover:text-gray-800"
               >
                 Aplicar Lunes a todos
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="rounded-lg bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600"
               >
                 Guardar cambios
               </button>
@@ -316,19 +316,19 @@ function Settings() {
         )}
 
         {activeTab === 'permissions' && (
-          <div className="text-center text-gray-500 py-8">
+          <div className="py-8 text-center text-gray-500">
             Configuración de permisos (En desarrollo)
           </div>
         )}
 
         {activeTab === 'lateArrivals' && (
-          <div className="text-center text-gray-500 py-8">
+          <div className="py-8 text-center text-gray-500">
             Configuración de llegadas tarde (En desarrollo)
           </div>
         )}
 
         {activeTab === 'earlyDepartures' && (
-          <div className="text-center text-gray-500 py-8">
+          <div className="py-8 text-center text-gray-500">
             Configuración de salidas temprano (En desarrollo)
           </div>
         )}

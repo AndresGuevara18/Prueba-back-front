@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.7",
     "axios": "^1.9.0",
@@ -14,7 +17,9 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.28.0",
     "autoprefixer": "^10.4.20",
+    "eslint": "^9.28.0",
     "postcss": "^8.5.3"
   }
 }
