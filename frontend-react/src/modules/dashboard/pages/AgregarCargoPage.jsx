@@ -91,7 +91,7 @@ const AgregarCargoPage = () => {
             placeholder="ID Horario"
             value={idHorario}
             onChange={(e) => setIdHorario(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <button

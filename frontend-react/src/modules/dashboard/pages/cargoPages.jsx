@@ -133,15 +133,15 @@ const CargoPage = () => {
   };
 
   return (
-    <div className="font-sans text-center m-5 ml-46">
-      <h1 className="text-3xl font-bold mb-4">Lista de Cargos</h1>
+    <div className="ml-46 m-5 text-center font-sans">
+      <h1 className="mb-4 text-3xl font-bold">Lista de Cargos</h1>
 
       {/* 🔹 Contenedor para los botones */}
-      <div className="flex justify-center space-x-4 mb-4">
+      <div className="mb-4 flex justify-center space-x-4">
         {/* Botón para agregar cargo */}
         <button
           onClick={() => navigate("/dashboard/agregar-cargo")} // Redirige a la página de agregar cargo
-          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           Agregar Cargo
         </button>
@@ -153,11 +153,11 @@ const CargoPage = () => {
             placeholder="Buscar cargo por ID"
             value={idCargoBuscar}
             onChange={(e) => setIdCargoBuscar(e.target.value)}
-            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={buscarCargo}
-            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="ml-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             🔍 Buscar Cargo
           </button>
@@ -169,11 +169,11 @@ const CargoPage = () => {
         <table className="w-full bg-white shadow-lg">
           <thead>
             <tr className="bg-gray-200">
-              <th className="p-2 border border-black">ID</th>
-              <th className="p-2 border border-black">Nombre</th>
-              <th className="p-2 border border-black">Descripción</th>
-              <th className="p-2 border border-black">ID Horario</th>
-              <th className="p-2 border border-black">Acciones</th>
+              <th className="border border-black p-2">ID</th>
+              <th className="border border-black p-2">Nombre</th>
+              <th className="border border-black p-2">Descripción</th>
+              <th className="border border-black p-2">ID Horario</th>
+              <th className="border border-black p-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -184,20 +184,20 @@ const CargoPage = () => {
                   index % 2 === 0 ? "bg-white" : "bg-gray-100"
                 } border-b`}
               >
-                <td className="p-2 border border-black">{cargo.id_cargo}</td>
-                <td className="p-2 border border-black">{cargo.nombre_cargo}</td>
-                <td className="p-2 border border-black">{cargo.descripcion || "N/A"}</td>
-                <td className="p-2 border border-black">{cargo.id_horario || "N/A"}</td>
-                <td className="p-2 border border-black">
+                <td className="border border-black p-2">{cargo.id_cargo}</td>
+                <td className="border border-black p-2">{cargo.nombre_cargo}</td>
+                <td className="border border-black p-2">{cargo.descripcion || "N/A"}</td>
+                <td className="border border-black p-2">{cargo.id_horario || "N/A"}</td>
+                <td className="border border-black p-2">
                   <button
                     onClick={() => abrirModalEditar(cargo.id_cargo ? cargo : cargos.find(c => c.id_cargo === cargo.id_cargo))}
-                    className="bg-yellow-500 text-white p-1 rounded mr-2 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    className="mr-2 rounded bg-yellow-500 p-1 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   >
                     ✏️ Editar
                   </button>
                   <button
                     onClick={() => eliminarCargo(cargo.id_cargo)}
-                    className="bg-red-500 text-white p-1 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="rounded bg-red-500 p-1 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                   >
                     🗑 Eliminar
                   </button>
@@ -211,8 +211,8 @@ const CargoPage = () => {
       {/* Modal para mostrar detalles del cargo */}
       {modalAbierto && cargoEncontrado && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Detalles del Cargo</h2>
+          <div className="rounded bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">Detalles del Cargo</h2>
             <p>
               <strong>ID:</strong> {cargoEncontrado.id_cargo}
             </p>
@@ -228,7 +228,7 @@ const CargoPage = () => {
             </p>
             <button
               onClick={cerrarModal}
-              className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-4 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Cerrar
             </button>
@@ -239,50 +239,50 @@ const CargoPage = () => {
       {/* Modal para editar cargo */}
       {modalEditarAbierto && cargoAEditar && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Editar Cargo</h2>
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">Editar Cargo</h2>
             <div className="space-y-3">
               <div>
-                <label className="block text-left mb-1">Nombre del Cargo:</label>
+                <label className="mb-1 block text-left">Nombre del Cargo:</label>
                 <input
                   type="text"
                   name="nombre_cargo"
                   value={formEdit.nombre_cargo}
                   onChange={handleEditChange}
-                  className="w-full p-2 border rounded"
+                  className="w-full rounded border p-2"
                 />
               </div>
               <div>
-                <label className="block text-left mb-1">Descripción:</label>
+                <label className="mb-1 block text-left">Descripción:</label>
                 <input
                   type="text"
                   name="descripcion"
                   value={formEdit.descripcion}
                   onChange={handleEditChange}
-                  className="w-full p-2 border rounded"
+                  className="w-full rounded border p-2"
                 />
               </div>
               <div>
-                <label className="block text-left mb-1">ID Horario:</label>
+                <label className="mb-1 block text-left">ID Horario:</label>
                 <input
                   type="number"
                   name="id_horario"
                   value={formEdit.id_horario}
                   onChange={handleEditChange}
-                  className="w-full p-2 border rounded"
+                  className="w-full rounded border p-2"
                 />
               </div>
             </div>
             <div className="mt-6 flex justify-end space-x-2">
               <button
                 onClick={() => setModalEditarAbierto(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
               >
                 Cancelar
               </button>
               <button
                 onClick={actualizarCargo}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
               >
                 Guardar Cambios
               </button>
