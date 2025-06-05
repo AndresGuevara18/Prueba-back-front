@@ -18,7 +18,7 @@ app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000'], // Permitir peticiones desde el frontend (Vite) y Swagger UI
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
-  credentials: true, // Permitir cookies o autenticación si es necesario
+  credentials: true // Permitir cookies o autenticación si es necesario
 }));
 
 // Configuración de Swagger (movida a swaggerConfig.js)
@@ -46,7 +46,6 @@ swaggerDocs(app); // Llama a la función de configuración de Swagger
 
 //parseo del body
 app.use((req, res, next) => {
-  console.log(`🔗 Ruta solicitada: ${req.method} ${req.originalUrl}`); // Log de la ruta solicitada
   if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {//verificar ruta y metodo
     //No aplica el middleware express.json()
     next();
@@ -78,11 +77,11 @@ app.get('/', (req, res) => {
 
 // Manejo de rutas no encontradas (Error 404)
 app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' });
+  res.status(404).json({ error: "Ruta no encontrada" });
 });
 
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-  console.log('📄 Documentación de Swagger disponible en http://localhost:3000/api-docs');
+  console.log("📄 Documentación de Swagger disponible en http://localhost:3000/api-docs");
 });

@@ -12,19 +12,19 @@ import poligrafiaV2 from '../assets/img/poligrafia-inicio.webp';
 
 function ServiceCard({ title, description, image, link }) {
   return (
-    <div className="w-full max-w-[328px] overflow-hidden rounded-lg bg-white shadow-md">
+    <div className="w-full max-w-[328px] bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative h-[200px]">
-        <img src={image} alt={title} className="h-full w-full object-cover" />
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
-          <h3 className="px-4 text-center text-xl font-bold text-white md:text-2xl">{title}</h3>
+        <img src={image} alt={title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <h3 className="text-white text-xl md:text-2xl font-bold text-center px-4">{title}</h3>
         </div>
       </div>
       <div className="p-4 md:p-6">
-        <p className="mb-4 line-clamp-4 h-[80px] text-sm text-gray-700">{description}</p>
+        <p className="text-sm text-gray-700 mb-4 h-[80px] line-clamp-4">{description}</p>
         <div className="flex justify-center">
           <a 
             href={link} 
-            className="inline-flex items-center rounded bg-[#10374E] px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700 md:px-6 md:text-base"
+            className="inline-flex items-center px-4 md:px-6 py-2 bg-[#10374E] text-white rounded hover:bg-blue-700 transition-colors text-sm md:text-base"
           >
             VER MÁS
           </a>
@@ -93,7 +93,7 @@ function Carousel() {
   };
 
   return (
-    <div className="relative h-[300px] w-full md:h-[400px] lg:h-[534px]">
+    <div className="relative h-[300px] md:h-[400px] lg:h-[534px] w-full">
       {/* Image and Overlay */}
       <div 
         className="relative h-full overflow-hidden"
@@ -111,10 +111,10 @@ function Carousel() {
             <img 
               src={image.url}
               alt={image.title}
-              className="h-full w-full object-cover"
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 flex items-center justify-center px-4">
-              <h1 className="text-center text-2xl font-bold text-white md:text-4xl lg:text-6xl">
+              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-white text-center">
                 {image.title}
               </h1>
             </div>
@@ -125,24 +125,24 @@ function Carousel() {
       {/* Navigation Buttons */}
       <button 
         onClick={goToPrevious}
-        className="absolute left-2 top-1/2 -translate-y-1/2 transform rounded-full bg-white/30 p-2 transition-colors hover:bg-white/50 md:left-4"
+        className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white/30 p-2 rounded-full hover:bg-white/50 transition-colors"
       >
-        <ChevronLeft className="h-4 w-4 text-white md:h-6 md:w-6" />
+        <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 text-white" />
       </button>
       <button 
         onClick={goToNext}
-        className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded-full bg-white/30 p-2 transition-colors hover:bg-white/50 md:right-4"
+        className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white/30 p-2 rounded-full hover:bg-white/50 transition-colors"
       >
-        <ChevronRight className="h-4 w-4 text-white md:h-6 md:w-6" />
+        <ChevronRight className="w-4 h-4 md:w-6 md:h-6 text-white" />
       </button>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {images.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`h-2 w-2 rounded-full transition-colors ${
+            className={`w-2 h-2 rounded-full transition-colors ${
               index === currentIndex ? 'bg-white' : 'bg-white/50'
             }`}
           />
@@ -198,13 +198,13 @@ function Home() {
       <Carousel />
 
       {/* Services Section */}
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 md:py-16">
-        <div className="mb-8 flex items-center justify-center md:mb-12">
-          <div className="mr-4 h-0.5 w-16 bg-[#10374E] md:w-[231px]"></div>
-          <h2 className="text-center text-2xl font-bold md:text-3xl">SERVICIOS</h2>
-          <div className="ml-4 h-0.5 w-16 bg-[#10374E] md:w-[231px]"></div>
+      <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-16">
+        <div className="flex items-center justify-center mb-8 md:mb-12">
+          <div className="w-16 md:w-[231px] h-0.5 bg-[#10374E] mr-4"></div>
+          <h2 className="text-2xl md:text-3xl font-bold text-center">SERVICIOS</h2>
+          <div className="w-16 md:w-[231px] h-0.5 bg-[#10374E] ml-4"></div>
         </div>
-        <div className="grid grid-cols-1 place-items-center gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 place-items-center">
           {services.map((service, index) => (
             <ServiceCard key={index} {...service} />
           ))}
@@ -212,22 +212,22 @@ function Home() {
       </div>
 
       {/* Banner Section */}
-      <div className="relative mb-8 mt-8 h-[300px] w-full md:mb-16 md:mt-16 md:h-[400px] lg:h-[534px]">
+      <div className="relative h-[300px] md:h-[400px] lg:h-[534px] w-full mt-8 md:mt-16 mb-8 md:mb-16">
         <img 
           src= {final}
           alt="Business Meeting"
-          className="h-full w-full object-cover"
+          className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex w-full flex-col items-start space-y-4 px-4 md:px-8">
-            <div className="-skew-x-12 transform bg-[#4CAF50] px-4 py-2 md:px-8">
-              <span className="inline-block skew-x-12 transform text-xl font-bold text-white md:text-3xl">AUDITORÍAS</span>
+          <div className="flex flex-col items-start space-y-4 w-full px-4 md:px-8">
+            <div className="bg-[#4CAF50] py-2 px-4 md:px-8 transform -skew-x-12">
+              <span className="text-xl md:text-3xl font-bold text-white transform skew-x-12 inline-block">AUDITORÍAS</span>
             </div>
-            <div className="-skew-x-12 transform bg-[#00BCD4] px-4 py-2 md:px-8">
-              <span className="inline-block skew-x-12 transform text-xl font-bold text-white md:text-3xl">CAPACITACIONES</span>
+            <div className="bg-[#00BCD4] py-2 px-4 md:px-8 transform -skew-x-12">
+              <span className="text-xl md:text-3xl font-bold text-white transform skew-x-12 inline-block">CAPACITACIONES</span>
             </div>
-            <div className="-skew-x-12 transform bg-[#2C387E] px-4 py-2 md:px-8">
-              <span className="inline-block skew-x-12 transform text-xl font-bold text-white md:text-3xl">INVESTIGACIONES</span>
+            <div className="bg-[#2C387E] py-2 px-4 md:px-8 transform -skew-x-12">
+              <span className="text-xl md:text-3xl font-bold text-white transform skew-x-12 inline-block">INVESTIGACIONES</span>
             </div>
           </div>
         </div>

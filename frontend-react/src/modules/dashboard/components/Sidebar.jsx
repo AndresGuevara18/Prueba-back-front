@@ -21,12 +21,12 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const currentPath = location.pathname;
 
   const menuItems = [
-    { icon: <Bell className="h-5 w-5" />, label: 'Novedades', path: '/dashboard' },
-    { icon: <Users className="h-5 w-5" />, label: 'Usuarios', path: '/dashboard/users' },
-    { icon: <FileText className="h-5 w-5" />, label: 'Reportes', path: '/dashboard/reports' },
-    { icon: <BarChart2 className="h-5 w-5" />, label: 'Estadísticas', path: '/dashboard/stats' },
-    { icon: <Camera className="h-5 w-5" />, label: 'Scanner Facial', path: '/dashboard/facial-scan' },
-    { icon: <Settings className="h-5 w-5" />, label: 'Configuración', path: '/dashboard/settings' },
+    { icon: <Bell className="w-5 h-5" />, label: 'Novedades', path: '/dashboard' },
+    { icon: <Users className="w-5 h-5" />, label: 'Usuarios', path: '/dashboard/users' },
+    { icon: <FileText className="w-5 h-5" />, label: 'Reportes', path: '/dashboard/reports' },
+    { icon: <BarChart2 className="w-5 h-5" />, label: 'Estadísticas', path: '/dashboard/stats' },
+    { icon: <Camera className="w-5 h-5" />, label: 'Scanner Facial', path: '/dashboard/facial-scan' },
+    { icon: <Settings className="w-5 h-5" />, label: 'Configuración', path: '/dashboard/settings' },
   ];
 
   const handleLogout = () => {
@@ -48,7 +48,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   };
 
   const MobileSidebar = () => (
-    <div className={`fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`} onClick={() => setIsMobileMenuOpen(false)}>
+    <div className={`fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`} onClick={() => setIsMobileMenuOpen(false)}>
       <div className="fixed inset-y-0 left-0 w-64 bg-[#2D3748] text-white" onClick={e => e.stopPropagation()}>
         <SidebarContent />
       </div>
@@ -56,15 +56,15 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   );
 
   const DesktopSidebar = () => (
-    <div className="hidden min-h-screen w-64 flex-col bg-[#2D3748] text-white md:flex">
+    <div className="hidden md:flex w-64 bg-[#2D3748] text-white min-h-screen flex-col">
       <SidebarContent />
     </div>
   );
 
   const SidebarContent = () => (
     <>
-      <div className="border-b border-gray-700 p-6 text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#3182CE] text-2xl font-semibold text-white">
+      <div className="p-6 text-center border-b border-gray-700">
+        <div className="w-16 h-16 rounded-full bg-[#3182CE] text-white text-2xl font-semibold flex items-center justify-center mx-auto mb-4">
           AU
         </div>
         <h2 className="text-lg font-semibold">Usuario administrador</h2>
@@ -79,7 +79,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               navigate(item.path);
               setIsMobileMenuOpen(false);
             }}
-            className={`mb-2 flex w-full items-center gap-3 rounded-lg px-4 py-3 ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-2 w-full ${
               currentPath === item.path
                 ? 'bg-[#3182CE] text-white' 
                 : 'text-gray-400 hover:bg-gray-700 hover:text-white'
@@ -91,19 +91,19 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         ))}
       </nav>
 
-      <div className="border-t border-gray-700 p-4">
+      <div className="p-4 border-t border-gray-700">
         <button 
           onClick={() => navigate('/dashboard/profile')}
-          className="mb-2 flex w-full items-center gap-3 px-4 py-3 text-gray-400 transition-colors hover:text-white"
+          className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors w-full px-4 py-3 mb-2"
         >
-          <User className="h-5 w-5" />
+          <User className="w-5 h-5" />
           Mi Perfil
         </button>
         <button 
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 px-4 py-3 text-gray-400 transition-colors hover:text-white"
+          className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors w-full px-4 py-3"
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="w-5 h-5" />
           Cerrar Sesión
         </button>
       </div>

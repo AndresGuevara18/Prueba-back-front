@@ -1,4 +1,3 @@
-//src/modules/dashboard/components/pages/AgregarCargoPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
@@ -8,7 +7,6 @@ const AgregarCargoPage = () => {
     const [nombreCargo, setNombreCargo] = useState('');//nombre
     const [descripcion, setDescripcion] = useState('');//descripcion
     const [mensaje, setMensaje] = useState('');//mensajes de exito o error
-    const [idHorario, setIdHorario] = useState(''); // Nuevo estado para el id_horario
   const navigate = useNavigate();
   // URL del backend
   const API_URL = `${API_BASE_URL}/api/cargos`;
@@ -20,7 +18,7 @@ const AgregarCargoPage = () => {
   const agregarCargo = async () => {
     try {
       // Validar campos
-      if (!nombreCargo.trim() || !descripcion.trim() || !idHorario) {
+      if (!nombreCargo.trim() || !descripcion.trim()) {
         setMensaje('⚠️ Todos los campos son obligatorios.');
         return;
       }
@@ -29,26 +27,19 @@ const AgregarCargoPage = () => {
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre_cargo: nombreCargo, descripcion, id_horario: idHorario }),
+        body: JSON.stringify({ nombre_cargo: nombreCargo, descripcion }),
       });
 
-      const data = await response.json(); // parsear respuesta a JSON
 
-      if (!response.ok) {
-        // Si el backend envía un error y alerta, mostrarlo como alerta
-        if (data.alert) {
-          alert(data.error);
-        }
-        setMensaje(data.error || '❌ Error al agregar el cargo.');
-        return;
-      }
+      //error
+      if (!response.ok) throw new Error('Error al agregar el cargo');
 
-      setMensaje(data.message); // respuesta exitosa
+      const data = await response.json();//parsear respuesta a JSON
+      setMensaje(data.message);//respuesta exitosa
 
       // Limpiar
       setNombreCargo('');
       setDescripcion('');
-      setIdHorario('');
 
       // Redirigir a la lista de cargos después de 1 segundo
       setTimeout(() => {
@@ -61,9 +52,9 @@ const AgregarCargoPage = () => {
   };
 
   return (
-    <div className="m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Agregar Nuevo Cargo</h1>
-      <form className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
+    <div className="font-sans text-center m-5">
+      <h1 className="text-3xl font-bold mb-4">Agregar Nuevo Cargo</h1>
+      <form className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
         <div className="mb-4">
           <input
             type="text"
@@ -71,7 +62,7 @@ const AgregarCargoPage = () => {
             placeholder="Nombre del Cargo"
             value={nombreCargo}
             onChange={(e) => setNombreCargo(e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div className="mb-4">
@@ -81,23 +72,13 @@ const AgregarCargoPage = () => {
             placeholder="Descripción"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <input
-            type="number"
-            id="idHorario"
-            placeholder="ID Horario"
-            value={idHorario}
-            onChange={(e) => setIdHorario(e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <button
           type="button"
           onClick={agregarCargo}
-          className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Agregar Cargo
         </button>
