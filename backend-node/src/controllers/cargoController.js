@@ -46,7 +46,7 @@ const cargoController = {
             // Validar existencia del horario laboral
             const horarioExiste = await cargoService.horarioExists(id_horario);
             if (!horarioExiste) {
-                return res.status(400).json({ error: "❌ El horario no existe", alert: true });
+                return res.status(400).json({ error: "❌El horario no existe", alert: true });
             }
             const nuevoCargo = new Cargo(null, nombre_cargo, descripcion, id_horario); // Creamos una instancia de Cargo con los datos
 

@@ -1,15 +1,49 @@
-import React, { useState } from 'react';
-import { User, Mail, Phone, Building, Camera } from 'lucide-react';
+//src/modules/dashboard/pages/Profile.jsx
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Phone, Building } from 'lucide-react';
 import Swal from 'sweetalert2';
+import API_BASE_URL from '../../../config/ConfigURL';
+
+
+async function getProfileData() {
+  console.log("en getProfileData");
+  console.log("API_BASE_URL:", API_BASE_URL);
+  console.log("token:", localStorage.getItem('token'));
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No autenticado');
+  const response = await fetch(`${API_BASE_URL}/api/usuarios/profile`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('No se pudo obtener el perfil');
+  return await response.json();
+}
 
 function Profile() {
   const [userData, setUserData] = useState({
-    name: 'Usuario Administrador',
-    email: 'admin@colpryst.com',
-    phone: '+57 300 123 4567',
-    department: 'Administración',
-    role: 'Administrador'
+    name: '',
+    email: '',
+    phone: '',
+    department: '',
+    role: ''
   });
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const data = await getProfileData();
+        setUserData({
+          name: data.nombre_empleado || data.usuarioadmin || '',
+          email: data.email_empleado || '',
+          phone: data.telefono_empleado || '',
+          department: data.cargo_user || '',
+          role: data.id_cargo === 1 ? 'Administrador' : data.id_cargo === 2 ? 'Supervisor' : 'Empleado'
+        });
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cargar el perfil' });
+      }
+    }
+    fetchProfile();
+  }, []);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -31,19 +65,7 @@ function Profile() {
 
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/3">
-            <div className="flex flex-col items-center">
-              <div className="w-32 h-32 rounded-full bg-[#3182CE] text-white text-4xl font-semibold flex items-center justify-center mb-4">
-                AU
-              </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                <Camera className="w-5 h-5" />
-                Cambiar foto
-              </button>
-            </div>
-          </div>
-
-          <div className="w-full md:w-2/3">
+          <div className="w-full">
             <form onSubmit={handleSave} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
