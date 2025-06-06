@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { Shield, User, Search, Facebook, Instagram, Youtube, Menu, X } from 'lucide-react';
 import LoginModal from './LoginModal';
+import logoColpryst from '../assets/img/colpryst-icon.png';
 
 function Layout() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -63,7 +64,7 @@ function Layout() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2 transition-colors hover:text-blue-700">
-                <img src="../../public/img/colpryst-icon.png" alt="COLPRYST" className="h-10" />
+                <img src={logoColpryst} alt="COLPRYST" className="h-10" />
               </Link>
             </div>
 

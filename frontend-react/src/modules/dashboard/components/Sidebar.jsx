@@ -14,11 +14,37 @@ import {
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { logout } from '../../../components/ProtectedRoute';
+import API_BASE_URL from '../../../config/ConfigURL';
 
 function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+
+  // Lógica de perfil de usuario (antes en useUserProfile)
+  const [profile, setProfile] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No autenticado');
+        const response = await fetch(`${API_BASE_URL}/api/usuarios/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('No se pudo obtener el perfil');
+        const data = await response.json();
+        setProfile(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProfile();
+  }, []);
 
   const menuItems = [
     { icon: <Bell className="h-5 w-5" />, label: 'Novedades', path: '/dashboard' },
@@ -65,10 +91,17 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     <>
       <div className="border-b border-gray-700 p-6 text-center">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#3182CE] text-2xl font-semibold text-white">
-          AU
+          {profile && profile.nombre_empleado ? profile.nombre_empleado[0] : 'U'}
         </div>
-        <h2 className="text-lg font-semibold">Usuario administrador</h2>
-        <p className="text-sm text-gray-400">admin@colpryst.com</p>
+        <h2 className="text-lg font-semibold">
+          {loading ? 'Cargando...' : (profile ? profile.nombre_empleado : 'Usuario')}
+        </h2>
+        <p className="text-sm text-gray-400">
+          {loading ? 'Cargando...' : (profile ? profile.email_empleado : 'correo@colpryst.com')}
+        </p>
+        <p className="mt-1 text-xs text-gray-400">
+          {loading ? '' : (profile ? (profile.cargo_user || 'Sin rol') : '')}
+        </p>
       </div>
 
       <nav className="flex-1 p-4">

@@ -12,6 +12,7 @@ import Stats from './Stats';
 import FacialScan from './FacialScan';
 import Settings from './Settings';
 import Profile from './Profile';
+import logoColpryst from '../../../assets/img/colpryst-icon.png'; // Asegúrate de tener esta imagen en la ruta correcta
 
 function Dashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -66,7 +67,7 @@ function Dashboard() {
               <Link to="/" className="flex items-center gap-2 transition-colors hover:text-blue-700">
                 {/* <Shield className="w-6 h-6 text-blue-600" /> */}
                 {/* <span className="text-xl font-bold">COLPRYST</span> */}
-                <img src="../../../../public/img/colpryst-icon.png" alt="COLPRYST logo" className="h-8" />
+                <img src={logoColpryst} alt="COLPRYST Logo" className="h-8" />
               </Link>
             </div>
             <div className="text-sm text-gray-700 md:text-base">
