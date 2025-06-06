@@ -304,7 +304,7 @@ function Settings() {
             active={activeTab === 'lateArrivals'}
             onClick={() => setActiveTab('lateArrivals')}
           >
-            Llegadas Tarde
+            Llegada Tarde
           </TabButton>
           <TabButton
             active={activeTab === 'earlyDepartures'}
@@ -320,7 +320,7 @@ function Settings() {
         {activeTab === 'schedules' && (
           <div className="space-y-6">
             {/* Tabla de horarios */}
-            <div className="overflow-x-auto mb-8">
+            <div className="mb-8 overflow-x-auto">
               <table className="min-w-full border text-center text-sm">
                 <thead className="bg-gray-100">
                   <tr>

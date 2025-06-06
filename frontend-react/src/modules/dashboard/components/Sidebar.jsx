@@ -99,7 +99,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         <p className="text-sm text-gray-400">
           {loading ? 'Cargando...' : (profile ? profile.email_empleado : 'correo@colpryst.com')}
         </p>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="mt-1 text-xs text-gray-400">
           {loading ? '' : (profile ? (profile.cargo_user || 'Sin rol') : '')}
         </p>
       </div>
