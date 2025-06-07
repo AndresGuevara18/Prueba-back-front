@@ -34,16 +34,23 @@ def verificar_embedding(nuevo_embedding):
                 print("⚠️ Error al comparar embedding:", err)
 
         # Estrategia: umbral + diferencia significativa
-        if mejor_distancia < UMBRAL_SIMILITUD and (segundo_mejor - mejor_distancia) > GAP_MINIMO:
-            print(f"✅ Coincidencia detectada con usuario {mejor_id}")
-            return {
-                "match": True,
-                "id_usuario": mejor_id,
-                "distancia": mejor_distancia
-            }
+        # if mejor_distancia < UMBRAL_SIMILITUD and (segundo_mejor - mejor_distancia) > GAP_MINIMO:
+        #     print(f"✅ Coincidencia detectada con usuario {mejor_id}")
+        #     return {
+        #         "match": True,
+        #         "id_usuario": mejor_id,
+        #         "distancia": mejor_distancia
+        #     }
+        # print("✅ No se encontró coincidencia.")
+        # return {"match": False}
 
-        print("✅ No se encontró coincidencia.")
-        return {"match": False}
+        # --- SIN VALIDACIÓN: SIEMPRE PASA ---
+        print(f"⚠️ Validación de umbral desactivada. Siempre retorna match con usuario {mejor_id}")
+        return {
+            "match": True,
+            "id_usuario": mejor_id,
+            "distancia": mejor_distancia
+        }
 
     except Exception as e:
         print("❌ Error al verificar embedding:", str(e))
