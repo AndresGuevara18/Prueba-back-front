@@ -119,29 +119,29 @@ function FacialScan() {
 
   return (
     <div className="flex flex-col items-center p-10">
-      <h1 className="mb-10 text-3xl font-bold text-gray-800">Scanner Facial</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-10">Scanner Facial</h1>
 
       <div className="flex gap-16">
         {/* Botón Registro Entrada */}
         <button
           onClick={handleEntrada}
-          className="flex h-[20rem] w-[20rem] flex-col items-center justify-center rounded-2xl bg-green-500 text-white shadow-xl transition duration-300 hover:bg-green-600"
+          className="flex flex-col items-center justify-center w-[20rem] h-[20rem] bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-xl transition duration-300"
         >
-          <Camera className="mb-8 h-32 w-32" />
+          <Camera className="w-32 h-32 mb-8" />
           <span className="text-2xl font-bold">Registro Entrada</span>
         </button>
 
         {/* Botón Registro Salida */}
         <button
           onClick={handleSalida}
-          className="flex h-[20rem] w-[20rem] flex-col items-center justify-center rounded-2xl bg-blue-500 text-white shadow-xl transition duration-300 hover:bg-blue-600"
+          className="flex flex-col items-center justify-center w-[20rem] h-[20rem] bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-xl transition duration-300"
         >
-          <Camera className="mb-8 h-32 w-32" />
+          <Camera className="w-32 h-32 mb-8" />
           <span className="text-2xl font-bold">Registro Salida</span>
         </button>
       </div>
 
-      <div className="mt-10 text-center text-base text-gray-600">
+      <div className="text-center text-base text-gray-600 mt-10">
         <p>Al hacer clic en una opción, se activará la cámara desde el servidor.</p>
         <p>Mantén tu rostro visible, centrado y con buena iluminación.</p>
       </div>

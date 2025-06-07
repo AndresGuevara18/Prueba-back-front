@@ -1,34 +1,29 @@
-//src/models/cargoModel.js
 class Cargo {
-  constructor(id_cargo, nombre_cargo, descripcion, id_horario) {
-    this.id_cargo = id_cargo;
-    this.nombre_cargo = nombre_cargo;
-    this.descripcion = descripcion;
-    this.id_horario = id_horario;
-  }
+    constructor(id_cargo, nombre_cargo, descripcion) {
+        this.id_cargo = id_cargo;
+        this.nombre_cargo = nombre_cargo;
+        this.descripcion = descripcion;
+    }
 
-  // Constructor vacío
-  static nuevoCargo() {
-    return new Cargo(null, '', '', null);
-  }
+    // Constructor vacío
+    static nuevoCargo() {
+        return new Cargo(null, "", "");
+    }
 
-  // Getters y Setters
-  getIdCargo() { return this.id_cargo; }
-  setIdCargo(id) { this.id_cargo = id; }
+    // Getters y Setters
+    getIdCargo() { return this.id_cargo; }
+    setIdCargo(id) { this.id_cargo = id; }
 
-  getNombreCargo() { return this.nombre_cargo; }
-  setNombreCargo(nombre) { this.nombre_cargo = nombre; }
+    getNombreCargo() { return this.nombre_cargo; }
+    setNombreCargo(nombre) { this.nombre_cargo = nombre; }
 
-  getDescripcion() { return this.descripcion; }
-  setDescripcion(desc) { this.descripcion = desc; }
+    getDescripcion() { return this.descripcion; }
+    setDescripcion(desc) { this.descripcion = desc; }
 
-  getIdHorario() { return this.id_horario; }
-  setIdHorario(id_horario) { this.id_horario = id_horario; }
-
-  // Método toString
-  toString() {
-    return `Cargo [ID: ${this.id_cargo}, Nombre: ${this.nombre_cargo}, Descripción: ${this.descripcion}, ID Horario: ${this.id_horario}]`;
-  }
+    // Método toString
+    toString() {
+        return `Cargo [ID: ${this.id_cargo}, Nombre: ${this.nombre_cargo}, Descripción: ${this.descripcion}]`;
+    }
 }
 
 module.exports = Cargo;

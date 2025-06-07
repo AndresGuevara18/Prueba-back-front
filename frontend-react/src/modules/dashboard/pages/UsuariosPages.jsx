@@ -163,14 +163,14 @@ const UsuariosPage = () => {
   }, []);
 
   return (
-    <div className="ml-46 m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Lista de Usuarios</h1>
+    <div className="font-sans text-center m-5 ml-46">
+      <h1 className="text-3xl font-bold mb-4">Lista de Usuarios</h1>
 
-      <div className="mb-4 flex justify-center space-x-4">
+      <div className="flex justify-center space-x-4 mb-4">
         {/* Botón para agregar usuario */}
         <button
           onClick={() => navigate("/dashboard/agregar-users")}
-          className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           ➕ Agregar Usuario
         </button>
@@ -182,11 +182,11 @@ const UsuariosPage = () => {
             placeholder="Ingresar documento"
             value={idUsuarioBuscar}
             onChange={(e) => setIdUsuarioBuscar(e.target.value)}
-            className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={buscarUsuario}
-            className="ml-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="ml-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             🔍 Buscar 
           </button>
@@ -194,7 +194,7 @@ const UsuariosPage = () => {
 
         <button
           onClick={() => navigate("/dashboard/cargos")}
-          className="mb-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           📌 Ver Cargos
         </button>
@@ -204,34 +204,34 @@ const UsuariosPage = () => {
         <table className="w-full bg-white shadow-lg">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-black p-2">ID</th>
-              <th className="border border-black p-2">Número Documento</th>
-              <th className="border border-black p-2">Nombre</th>
-              <th className="border border-black p-2">Teléfono</th>
-              <th className="border border-black p-2">Email</th>
-              <th className="border border-black p-2">Usuario</th>
-              <th className="border border-black p-2">Cargo</th>
-              <th className="border border-black p-2">Acciones</th>
+              <th className="p-2 border border-black">ID</th>
+              <th className="p-2 border border-black">Número Documento</th>
+              <th className="p-2 border border-black">Nombre</th>
+              <th className="p-2 border border-black">Teléfono</th>
+              <th className="p-2 border border-black">Email</th>
+              <th className="p-2 border border-black">Usuario</th>
+              <th className="p-2 border border-black">Cargo</th>
+              <th className="p-2 border border-black">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {usuarios.map((usuario) => (
               <tr key={usuario.id_usuario}>
-                <td className="border border-black p-2">{usuario.id_usuario}</td>
-                <td className="border border-black p-2">{usuario.numero_documento}</td>
-                <td className="border border-black p-2">{usuario.nombre_empleado}</td>
-                <td className="border border-black p-2">{usuario.telefono_empleado}</td>
-                <td className="border border-black p-2">{usuario.email_empleado}</td>
-                <td className="border border-black p-2">{usuario.usuarioadmin}</td>
-                <td className="border border-black p-2">{usuario.id_cargo}</td>
-                <td className="whitespace-nowrap border border-black p-2">
+                <td className="p-2 border border-black">{usuario.id_usuario}</td>
+                <td className="p-2 border border-black">{usuario.numero_documento}</td>
+                <td className="p-2 border border-black">{usuario.nombre_empleado}</td>
+                <td className="p-2 border border-black">{usuario.telefono_empleado}</td>
+                <td className="p-2 border border-black">{usuario.email_empleado}</td>
+                <td className="p-2 border border-black">{usuario.usuarioadmin}</td>
+                <td className="p-2 border border-black">{usuario.id_cargo}</td>
+                <td className="p-2 border border-black whitespace-nowrap">
                   <div className="flex space-x-2">
-                    <button className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
+                    <button className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
                       onClick={() => abrirModalEditar(usuario)}
                     >
                       ✏️ Editar
                     </button>
-                    <button className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
+                    <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                       onClick={() => eliminarUsuario(usuario.id_usuario)}
                     >
                       🗑 Eliminar
@@ -247,10 +247,10 @@ const UsuariosPage = () => {
       {/* Modal para mostrar detalles del usuario */}
       {modalAbierto && usuarioEncontrado && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-full max-w-md rounded bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-xl font-bold">Detalles del Usuario</h2>
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Detalles del Usuario</h2>
             
-            <div className="mb-4 space-y-2 text-left">
+            <div className="space-y-2 text-left mb-4">
               <p><strong>ID:</strong> {usuarioEncontrado.id_usuario}</p>
               <p><strong>Número Documento:</strong> {usuarioEncontrado.numero_documento}</p>
               <p><strong>Nombre:</strong> {usuarioEncontrado.nombre_empleado}</p>
@@ -263,7 +263,7 @@ const UsuariosPage = () => {
             <div className="flex justify-end space-x-2">
               {/* Botón de editar (sin funcionalidad) onClick={() => alert("Función de editar no implementada aún")}*/}
               <button 
-                className="rounded bg-yellow-500 px-3 py-1 text-white hover:bg-yellow-600"
+                className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                 onClick={() => {
                   setModalAbierto(false);
                   abrirModalEditar(usuarioEncontrado);
@@ -274,7 +274,7 @@ const UsuariosPage = () => {
               
               {/* Botón de eliminar (funcional) */}
               <button 
-                className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                 onClick={() => {
                   eliminarUsuario(usuarioEncontrado.id_usuario);
                   cerrarModal();
@@ -286,7 +286,7 @@ const UsuariosPage = () => {
               {/* Botón de cerrar */}
               <button
                 onClick={cerrarModal}
-                className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
               >
                 Cerrar
               </button>
@@ -299,18 +299,18 @@ const UsuariosPage = () => {
       {/* Modal para editar usuario */}
       {modalEditarAbierto && usuarioAEditar && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-xl font-bold">Editar Usuario</h2>
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">Editar Usuario</h2>
 
             <div className="space-y-3">
               {/* Tipo de Documento */}
               <div>
-                <label className="mb-1 block text-left">Tipo Documento:</label>
+                <label className="block text-left mb-1">Tipo Documento:</label>
                 <select
                   name="tipo_documento"
                   value={formData.tipo_documento}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 >
                   <option value="CC">Cédula de Ciudadanía</option>
                   <option value="CE">Cédula de Extranjería</option>
@@ -321,109 +321,109 @@ const UsuariosPage = () => {
 
               {/* Número de Documento */}
               <div>
-                <label className="mb-1 block text-left">Número Documento:</label>
+                <label className="block text-left mb-1">Número Documento:</label>
                 <input
                   type="text"
                   name="numero_documento"
                   value={formData.numero_documento}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* Nombre Completo */}
               <div>
-                <label className="mb-1 block text-left">Nombre Completo:</label>
+                <label className="block text-left mb-1">Nombre Completo:</label>
                 <input
                   type="text"
                   name="nombre_empleado"
                   value={formData.nombre_empleado}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* Dirección */}
               <div>
-                <label className="mb-1 block text-left">Dirección:</label>
+                <label className="block text-left mb-1">Dirección:</label>
                 <input
                   type="text"
                   name="direccion_empleado"
                   value={formData.direccion_empleado}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* Teléfono */}
               <div>
-                <label className="mb-1 block text-left">Teléfono:</label>
+                <label className="block text-left mb-1">Teléfono:</label>
                 <input
                   type="text"
                   name="telefono_empleado"
                   value={formData.telefono_empleado}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="mb-1 block text-left">Email:</label>
+                <label className="block text-left mb-1">Email:</label>
                 <input
                   type="email"
                   name="email_empleado"
                   value={formData.email_empleado}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* EPS */}
               <div>
-                <label className="mb-1 block text-left">EPS:</label>
+                <label className="block text-left mb-1">EPS:</label>
                 <input
                   type="text"
                   name="eps_empleado"
                   value={formData.eps_empleado}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* Nombre de Usuario */}
               <div>
-                <label className="mb-1 block text-left">Usuario Admin:</label>
+                <label className="block text-left mb-1">Usuario Admin:</label>
                 <input
                   type="text"
                   name="usuarioadmin"
                   value={formData.usuarioadmin}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* ID Cargo */}
               <div>
-                <label className="mb-1 block text-left">ID Cargo:</label>
+                <label className="block text-left mb-1">ID Cargo:</label>
                 <input
                   type="number"
                   name="id_cargo"
                   value={formData.id_cargo}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                 />
               </div>
 
               {/* Contraseña */}
               <div>
-                <label className="mb-1 block text-left">Contraseña (dejar vacío para no cambiar):</label>
+                <label className="block text-left mb-1">Contraseña (dejar vacío para no cambiar):</label>
                 <input
                   type="password"
                   name="contrasenia"
                   value={formData.contrasenia}
                   onChange={handleChange}
-                  className="w-full rounded border p-2"
+                  className="w-full p-2 border rounded"
                   placeholder="Nueva contraseña"
                 />
               </div>
@@ -432,13 +432,13 @@ const UsuariosPage = () => {
             <div className="mt-6 flex justify-end space-x-2">
               <button
                 onClick={() => setModalEditarAbierto(false)}
-                className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
               >
                 Cancelar
               </button>
               <button
                 onClick={actualizarUsuario}
-                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
                 Guardar Cambios
               </button>

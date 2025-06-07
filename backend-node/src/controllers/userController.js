@@ -372,7 +372,6 @@ const usuarioController = {
       // Generar JWT
       const jwt = require('jsonwebtoken');
       const token = jwt.sign({ id_usuario: user.id_usuario, usuarioadmin: user.usuarioadmin, id_cargo: user.id_cargo }, process.env.JWT_SECRET || 'secreto', { expiresIn: '8h' });
-      console.log('[DEBUG] login - token generado:', token);
       res.json({ success: true, message: 'Login exitoso', token, user: { id_usuario: user.id_usuario, usuarioadmin: user.usuarioadmin, id_cargo: user.id_cargo, nombre_empleado: user.nombre_empleado } });
     } catch (error) {
       console.error('❌ Error en login (Controller):', error);

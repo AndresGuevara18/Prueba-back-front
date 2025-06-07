@@ -55,57 +55,57 @@ function LoginModal({ isOpen, onClose, onLogin }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative w-[400px] overflow-hidden rounded-lg bg-white">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg w-[400px] overflow-hidden relative">
         <button 
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 transition-colors hover:text-gray-700"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
         >
-          <X className="h-6 w-6" />
+          <X className="w-6 h-6" />
         </button>
 
         <div className="p-8">
-          <div className="mb-6 flex justify-center">
+          <div className="flex justify-center mb-6">
             {/* <span className="text-[#2D3748] text-2xl font-bold">COLPRYST</span> */}
             <img src={logoColpryst} alt="COLPRYST Logo" className="h-12" />
           </div>
 
-          <h2 className="mb-8 text-center text-2xl font-medium text-[#2D3748]">
+          <h2 className="text-[#2D3748] text-2xl font-medium text-center mb-8">
             Iniciar sesión
           </h2>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="mb-2 block text-[#4A5568]">Usuario</label>
+              <label className="block text-[#4A5568] mb-2">Usuario</label>
               <input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-md border border-[#E2E8F0] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-[#E2E8F0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ingrese su usuario"
                 required
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-[#4A5568]">Contraseña</label>
+              <label className="block text-[#4A5568] mb-2">Contraseña</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-[#E2E8F0] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-[#E2E8F0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ingrese su contraseña"
                 required
               />
             </div>
 
             {error && (
-              <div className="text-center text-sm text-red-600">{error}</div>
+              <div className="text-red-600 text-sm text-center">{error}</div>
             )}
 
             <button 
               type="submit"
-              className="w-full rounded-md bg-[#3182CE] py-3 text-white transition-colors hover:bg-[#2B6CB0] disabled:opacity-60"
+              className="w-full bg-[#3182CE] text-white py-3 rounded-md hover:bg-[#2B6CB0] transition-colors disabled:opacity-60"
               disabled={loading}
             >
               {loading ? 'Ingresando...' : 'Ingresar'}

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-console.log('[AUTH] En Middleware de autenticación');
+console.log('[AUTH] Middleware de autenticación cargado');
 
 // Middleware para proteger rutas con JWT
 function authenticateToken(req, res, next) {

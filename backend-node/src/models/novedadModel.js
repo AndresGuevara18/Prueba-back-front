@@ -30,13 +30,13 @@
  *           example: "Llegó 30 minutos tarde."
  */
 class Novedad {
-  constructor(id_usuario, nombre_usuario, tipo_novedad, fecha_hora, detalle) {
-    this.id_usuario = id_usuario;
-    this.nombre_usuario = nombre_usuario;
-    this.tipo_novedad = tipo_novedad;
-    this.fecha_hora = fecha_hora;
-    this.detalle = detalle;
-  }
+    constructor(id_usuario, nombre_usuario, tipo_novedad, fecha_hora, detalle) {
+        this.id_usuario = id_usuario;
+        this.nombre_usuario = nombre_usuario;
+        this.tipo_novedad = tipo_novedad;
+        this.fecha_hora = fecha_hora;
+        this.detalle = detalle;
+    }
 }
 
 module.exports = Novedad;

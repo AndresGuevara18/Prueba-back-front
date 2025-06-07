@@ -2,22 +2,12 @@
 create database colpryst_col3;
 use colpryst_col3;
 
--- Crear tala 'horario
-CREATE TABLE horario_laboral (
-    id_horario INT AUTO_INCREMENT PRIMARY KEY,
-    hora_entrada TIME NOT NULL,
-    hora_salida TIME NOT NULL,
-    descripcion VARCHAR(100)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
-
 -- Crear tabla 'cargo'
-CREATE TABLE cargo (
-    id_cargo INT AUTO_INCREMENT NOT NULL,
-    nombre_cargo VARCHAR(80) NOT NULL,
-    descripcion VARCHAR(80),
-    id_horario INT NOT NULL,
-    CONSTRAINT pk_cargo PRIMARY KEY (id_cargo),
-    CONSTRAINT fk_cargo_horario FOREIGN KEY (id_horario) REFERENCES horario_laboral(id_horario)
+create table cargo (
+    id_cargo int auto_increment not null,
+    nombre_cargo varchar(80) not null,
+    descripcion varchar(80),
+    constraint pk_cargo primary key (id_cargo)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 -- Crear tabla 'usuario'
@@ -112,31 +102,21 @@ CREATE TRIGGER notificar_llegada_tarde
 AFTER INSERT ON registro_entrada
 FOR EACH ROW
 BEGIN
-    DECLARE hora_limite TIME;
-
-    -- Obtener hora de entrada referencial desde el horario del cargo del usuario
-    SELECT h.hora_entrada INTO hora_limite
-    FROM usuario u
-    JOIN cargo c ON u.id_cargo = c.id_cargo
-    JOIN horario_laboral h ON c.id_horario = h.id_horario
-    WHERE u.id_usuario = NEW.id_usuario;
-
-    -- Verificar si llegó tarde
-    IF TIME(NEW.fecha_hora) > hora_limite THEN
-        INSERT INTO notificacion_entrada_tarde (
-            id_entrada, id_usuario, estado, fecha_hora, comentarios
-        ) VALUES (
-            NEW.id_entrada,
-            NEW.id_usuario,
-            FALSE,
-            NEW.fecha_hora,
-            COALESCE(NEW.comentarios, 'Sin comentarios')
+    -- Verifica si la hora de entrada es después de las 07:30 AM
+    IF TIME(NEW.fecha_hora) > '07:15:00' THEN
+        -- Inserta un registro en la tabla notificacion_entrada_tarde
+        INSERT INTO notificacion_entrada_tarde (id_entrada, id_usuario, estado, fecha_hora, comentarios) 
+        VALUES (
+            NEW.id_entrada, 
+            NEW.id_usuario, 
+            FALSE,  -- Estado en false por defecto
+            NEW.fecha_hora, 
+            COALESCE(NEW.comentarios, 'Sin comentarios') -- Si comentarios es NULL, usa "Sin comentarios"
         );
     END IF;
-END$$
+END $$
 
 DELIMITER ;
-
 
 -- DROP TRIGGER IF EXISTS notificar_llegada_tarde;
 
@@ -149,30 +129,213 @@ CREATE TRIGGER notificar_salida_temprana
 AFTER INSERT ON registro_salida
 FOR EACH ROW
 BEGIN
-    DECLARE hora_limite TIME;
-
-    -- Obtener hora de salida referencial desde el horario del cargo del usuario
-    SELECT h.hora_salida INTO hora_limite
-    FROM usuario u
-    JOIN cargo c ON u.id_cargo = c.id_cargo
-    JOIN horario_laboral h ON c.id_horario = h.id_horario
-    WHERE u.id_usuario = NEW.id_usuario;
-
-    -- Verificar si salió antes de tiempo
-    IF TIME(NEW.fecha_hora) < hora_limite THEN
+    -- Verifica si la hora de salida es antes de las 16:30 PM
+    IF TIME(NEW.fecha_hora) < '16:30:00' THEN
+        -- Inserta un registro en la tabla notificacion_salida_temprana
         INSERT INTO notificacion_salida_temprana (
-            id_salida, id_usuario, estado, fecha_hora, comentarios
+            id_salida, 
+            id_usuario, 
+            estado, 
+            fecha_hora, 
+            comentarios
         ) VALUES (
-            NEW.id_salida,
-            NEW.id_usuario,
-            FALSE,
-            NEW.fecha_hora,
+            NEW.id_salida, 
+            NEW.id_usuario, 
+            FALSE,  -- Estado en false por defecto (no revisado)
+            NEW.fecha_hora, 
             COALESCE(NEW.comentarios, 'Sin comentarios')
         );
     END IF;
-END$$
+END $$
 
 DELIMITER ;
+
+
+/*--------------------------------------------------------------------------------------------------------------*/
+-- INSERT
+
+INSERT INTO Cargo (nombre_cargo, descripcion) VALUES 
+('Gerente', 'Gerente de operaciones'),
+('Director', 'Director de la empresa'),
+('Administrativo', 'Administración general'),
+('Desarrollador', 'Desarrollador de software'),
+('Contador', 'Encargado de finanzas'),
+('Soporte Técnico', 'Soporte de IT'),
+('Marketing', 'Especialista en marketing'),
+('Recursos Humanos', 'Gestión de personal'),
+('Vendedor', 'Venta de productos'),
+('Analista', 'Analista de datos');
+
+-- Inserción de registros únicos por los tres primeros cargos
+-- 📌 Gerente (ID Cargo = 1)
+INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo)
+VALUES
+('DNI', '12345678A', 'Carlos Pérez', 'Calle 123, Ciudad A', '3001234567', 'carlos.perez@colpryst.com', 'EPS001', 'carlos.perez', 'admin123', 1);
+
+-- 📌 Director (ID Cargo = 2)
+INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo)
+VALUES
+('DNI', '66677788Z', 'Laura Castillo', 'Avenida 101, Ciudad Z', '3166789012', 'laura.castillo@colpryst.com', 'EPS026', 'laura.castillo', 'director2024', 2);
+
+-- 📌 Administrativo (ID Cargo = 3) (PRIMER INSERT)
+INSERT INTO usuario (
+  tipo_documento, numero_documento, nombre_empleado, direccion_empleado,
+  telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo
+) VALUES (
+  'Cedula', '123456', 'Ana Gómez', 'Avenida 456, Ciudad B', '3102345678',
+  'ana.gomez@colpryst.com', 'EPS002', 'ana.gomez', '$2b$10$U8BMZ3nkrPaj8ACH904iweDt6DxyDVziEktgu0klDfH.8lh8iZAv.', 3
+);
+
+-- 📌 Desarrolladores (ID Cargo = 4)
+INSERT INTO usuario (tipo_documento, numero_documento, nombre_empleado, direccion_empleado, telefono_empleado, email_empleado, eps_empleado, usuarioadmin, contrasenia, id_cargo)
+VALUES
+('DNI', '56789012E', 'Jorge Fernández', 'Avenida 112, Ciudad E', '3405678901', 'jorge.fernandez@colpryst.com', 'EPS005', 'jorge.fernandez', NULL, 4),  
+
+-- 📌 Contadores (ID Cargo = 5)
+('DNI', '78901234G', 'Juan López', 'Calle 415, Ciudad G', '3607890123', 'juan.lopez@colpryst.com', 'EPS007', 'juan.lopez', NULL, 5),  
+
+-- 📌 Soporte Técnico (ID Cargo = 6)
+('DNI', '22222222L', 'Gabriel Núñez', 'Carrera 324, Ciudad L', '3022345678', 'gabriel.nunez@colpryst.com', 'EPS012', 'gabriel.nunez', NULL, 6),  
+
+-- 📌 Marketing (ID Cargo = 7)
+('DNI', '55555555O', 'Marta Blanco', 'Carrera 101, Ciudad O', '3055678901', 'marta.blanco@colpryst.com', 'EPS015', 'marta.blanco', NULL, 7),  
+
+-- 📌 Recursos Humanos (ID Cargo = 8)
+('DNI', '77777777Q', 'Rosa Delgado', 'Avenida 131, Ciudad Q', '3077890123', 'rosa.delgado@colpryst.com', 'EPS017', 'rosa.delgado', NULL, 8),  
+
+-- 📌 Vendedores (ID Cargo = 9)
+('DNI', '22233344V', 'Alejandro Ortiz', 'Calle 221, Ciudad V', '3122345678', 'alejandro.ortiz@colpryst.com', 'EPS022', 'alejandro.ortiz', NULL, 9),  
+
+-- 📌 Analistas (ID Cargo = 10)
+('DNI', '55566677Y', 'Martín Herrera', 'Calle 789, Ciudad Y', '3155678901', 'martin.herrera@colpryst.com', 'EPS025', 'martin.herrera', NULL, 10);
+
+
+/****************************************************************************************
+*********************************************************************************************/
+-- Registros de ENTRADA del 2025-05-26 al 2025-05-30 (lunes a viernes)
+INSERT INTO registro_entrada (fecha_hora, comentarios, id_usuario) VALUES
+-- Lunes
+('2025-05-26 07:00:00', 'Entrada normal', 1),
+('2025-05-26 07:40:00', 'Llegada tarde por tráfico', 2),
+('2025-05-26 07:10:00', 'Entrada normal', 3),
+('2025-05-26 07:45:00', 'Retraso por transporte', 4),
+('2025-05-26 07:05:00', 'Entrada normal', 5),
+('2025-05-26 07:00:00', 'Entrada normal', 6),
+('2025-05-26 07:50:00', 'Despertador no sonó', 7),
+('2025-05-26 07:20:00', 'Entrada normal', 8),
+('2025-05-26 07:35:00', 'Tráfico intenso', 9),
+('2025-05-26 07:00:00', 'Entrada normal', 10);
+
+INSERT INTO registro_entrada (fecha_hora, comentarios, id_usuario) VALUES
+-- Martes
+('2025-05-27 07:05:00', 'Entrada normal', 1),
+('2025-05-27 07:30:00', 'Entrada normal', 2),
+('2025-05-27 07:40:00', 'Llegada tarde', 3),
+('2025-05-27 07:00:00', 'Entrada normal', 4),
+('2025-05-27 07:55:00', 'Retraso por clima', 5),
+('2025-05-27 07:15:00', 'Entrada normal', 6),
+('2025-05-27 07:00:00', 'Entrada normal', 7),
+('2025-05-27 07:35:00', 'Retraso menor', 8),
+('2025-05-27 07:25:00', 'Entrada normal', 9),
+('2025-05-27 07:50:00', 'Problema de transporte', 10);
+
+INSERT INTO registro_entrada (fecha_hora, comentarios, id_usuario) VALUES
+-- Miércoles
+('2025-05-28 07:00:00', 'Entrada normal', 1),
+('2025-05-28 07:35:00', 'Retraso por embotellamiento', 2),
+('2025-05-28 07:05:00', 'Entrada normal', 3),
+('2025-05-28 07:20:00', 'Entrada normal', 4),
+('2025-05-28 07:45:00', 'Llegada tarde', 5),
+('2025-05-28 07:00:00', 'Entrada normal', 6),
+('2025-05-28 07:50:00', 'Accidente en carretera', 7),
+('2025-05-28 07:10:00', 'Entrada normal', 8),
+('2025-05-28 07:00:00', 'Entrada normal', 9),
+('2025-05-28 07:40:00', 'Llegada tarde', 10);
+
+INSERT INTO registro_entrada (fecha_hora, comentarios, id_usuario) VALUES
+-- Jueves
+('2025-05-29 07:00:00', 'Entrada normal', 1),
+('2025-05-29 07:00:00', 'Entrada normal', 2),
+('2025-05-29 07:35:00', 'Tráfico inesperado', 3),
+('2025-05-29 07:10:00', 'Entrada normal', 4),
+('2025-05-29 07:50:00', 'Llegada tarde', 5),
+('2025-05-29 07:00:00', 'Entrada normal', 6),
+('2025-05-29 07:15:00', 'Entrada normal', 7),
+('2025-05-29 07:40:00', 'Tráfico pesado', 8),
+('2025-05-29 07:00:00', 'Entrada normal', 9),
+('2025-05-29 07:55:00', 'Despertador falló', 10),
+
+-- Viernes con inasitencia 3 ultimos
+('2025-05-30 07:00:00', 'Entrada normal', 1),
+('2025-05-30 07:20:00', 'Entrada normal', 2),
+('2025-05-30 07:45:00', 'Llegó tarde', 3),
+('2025-05-30 07:00:00', 'Entrada normal', 4),
+('2025-05-30 07:30:00', 'Entrada normal', 5),
+('2025-05-30 07:55:00', 'Tráfico', 6),
+('2025-05-30 07:10:00', 'Entrada normal', 7);
+
+
+-- Registros de SALIDA del 2025-05-26 al 2025-05-30 (lunes a viernes)
+INSERT INTO registro_salida (fecha_hora, comentarios, id_usuario) VALUES
+-- Lunes
+('2025-05-26 16:40:00', 'Salida normal', 1),
+('2025-05-26 16:00:00', 'Cita médica', 2),
+('2025-05-26 16:35:00', 'Salida normal', 3),
+('2025-05-26 15:50:00', 'Salida por asuntos personales', 4),
+('2025-05-26 16:50:00', 'Salida normal', 5),
+('2025-05-26 16:30:00', 'Salida normal', 6),
+('2025-05-26 14:45:00', 'Emergencia familiar', 7),
+('2025-05-26 16:40:00', 'Salida normal', 8),
+('2025-05-26 16:00:00', 'Retiro anticipado por clima', 9),
+('2025-05-26 16:45:00', 'Salida normal', 10),
+
+-- Martes
+('2025-05-27 16:30:00', 'Salida normal', 1),
+('2025-05-27 16:45:00', 'Salida normal', 2),
+('2025-05-27 15:30:00', 'Salida por reunión externa', 3),
+('2025-05-27 16:00:00', 'Salida justificada', 4),
+('2025-05-27 16:40:00', 'Salida normal', 5),
+('2025-05-27 16:50:00', 'Salida normal', 6),
+('2025-05-27 16:30:00', 'Salida normal', 7),
+('2025-05-27 14:30:00', 'Salida por consulta médica', 8),
+('2025-05-27 16:35:00', 'Salida normal', 9),
+('2025-05-27 16:50:00', 'Salida normal', 10),
+
+-- Miércoles
+('2025-05-28 16:30:00', 'Salida normal', 1),
+('2025-05-28 16:00:00', 'Salida temprana justificada', 2),
+('2025-05-28 15:45:00', 'Salida por enfermedad', 3),
+('2025-05-28 16:45:00', 'Salida normal', 4),
+('2025-05-28 16:50:00', 'Salida normal', 5),
+('2025-05-28 16:20:00', 'Salida normal', 6),
+('2025-05-28 14:50:00', 'Salida por asuntos personales', 7),
+('2025-05-28 16:30:00', 'Salida normal', 8),
+('2025-05-28 15:30:00', 'Salida justificada', 9),
+('2025-05-28 16:40:00', 'Salida normal', 10),
+
+-- Jueves
+('2025-05-29 16:30:00', 'Salida normal', 1),
+('2025-05-29 16:40:00', 'Salida normal', 2),
+('2025-05-29 16:00:00', 'Salida anticipada', 3),
+('2025-05-29 16:45:00', 'Salida normal', 4),
+('2025-05-29 14:50:00', 'Cita médica', 5),
+('2025-05-29 16:35:00', 'Salida normal', 6),
+('2025-05-29 16:20:00', 'Salida normal', 7),
+('2025-05-29 15:50:00', 'Salida por asuntos legales', 8),
+('2025-05-29 16:30:00', 'Salida normal', 9),
+('2025-05-29 16:40:00', 'Salida normal', 10),
+
+-- Viernes
+('2025-05-30 16:30:00', 'Salida normal', 1),
+('2025-05-30 16:45:00', 'Salida normal', 2),
+('2025-05-30 16:50:00', 'Salida normal', 3),
+('2025-05-30 16:30:00', 'Salida normal', 4),
+('2025-05-30 14:30:00', 'Salida médica', 5),
+('2025-05-30 16:00:00', 'Salida justificada', 6),
+('2025-05-30 16:50:00', 'Salida normal', 7),
+('2025-05-30 16:30:00', 'Salida normal', 8),
+('2025-05-30 16:40:00', 'Salida normal', 9),
+('2025-05-30 15:20:00', 'Salida anticipada', 10);
 
 
 /*--------------------------------------------------------------------------------------------------------------
@@ -181,9 +344,6 @@ DELIMITER $$
 
 CREATE PROCEDURE registrar_inasistencias_por_fecha(IN fecha_in DATE)
 BEGIN
-  -- Evitar duplicados si ya se corrió antes para esa fecha
-  DELETE FROM no_asistencia WHERE fecha = fecha_in;
-
   INSERT INTO no_asistencia (id_usuario, fecha)
   SELECT u.id_usuario, fecha_in
   FROM usuario u
