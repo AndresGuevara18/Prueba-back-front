@@ -8,11 +8,12 @@ function Reports() {
   const [dateRange, setDateRange] = useState({
     start: '',
     end: ''
-  }); const [reportData, setReportData] = useState([]);
+  });
+  const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Mapeo de tipos de reporte a endpoints
   const reportEndpoints = {
@@ -85,11 +86,11 @@ function Reports() {
     });
   }, [reportData, searchTerm]);
 
-  // Calcular datos de paginación
+  // Paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = filteredData.slice(startIndex, endIndex);
 
   // Resetear página cuando cambian los filtros
   useEffect(() => {
@@ -185,7 +186,7 @@ function Reports() {
       );
     }
 
-    return currentData.map((item, index) => {
+    return currentItems.map((item, index) => {
       switch (selectedType) {
         case 'attendance':
           return (
@@ -366,121 +367,100 @@ function Reports() {
   };
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Reportes</h1>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de reporte
-            </label>
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="attendance">Asistencia</option>
-              <option value="lateArrivals">Llegadas tarde</option>
-              <option value="earlyDepartures">Salidas temprano</option>
-              <option value="absences">Ausencias</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Fecha inicio
-            </label>
-            <input
-              type="date"
-              value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Fecha fin
-            </label>
-            <input
-              type="date"
-              value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Buscar
-            </label>
-            <div className="relative">              <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar por nombre, comentarios, motivo..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            </div>
-          </div>
-        </div>        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-600">
-              {filteredData.length > 0 && (
-                <span>
-                  Mostrando {startIndex + 1}-{Math.min(endIndex, filteredData.length)} de {filteredData.length} registro(s)
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">Mostrar:</label>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-              <span className="text-sm text-gray-600">por página</span>
-            </div>
-          </div>
-          <button
-            onClick={exportToCSV}
-            disabled={filteredData.length === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+    <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row gap-4 justify-between">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
           >
-            <Download className="w-5 h-5" />
-            Exportar CSV
+            <option value="attendance">Asistencia</option>
+            <option value="lateArrivals">Llegadas Tarde</option>
+            <option value="earlyDepartures">Salidas Tempranas</option>
+            <option value="absences">Inasistencias</option>
+          </select>
+          
+          <input
+            type="date"
+            value={dateRange.start}
+            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          />
+          
+          <input
+            type="date"
+            value={dateRange.end}
+            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          />
+          
+          <button
+            onClick={fetchReport}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
+          >
+            Generar Reporte
           </button>
-        </div>        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              {renderTableHeaders()}
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {renderTableRows()}
-            </tbody>
-          </table>
         </div>
 
-        {/* Paginación */}
-        {filteredData.length > 0 && totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-            <div className="text-sm text-gray-600">
-              Página {currentPage} de {totalPages}
+        <div className="relative max-w-xs">
+          <input
+            type="text"
+            placeholder="Buscar en el reporte..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+          />
+          <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+        </div>
+      </div>      <div className="flex flex-col min-h-[600px] bg-white rounded-lg shadow-sm">
+        <div className="p-6 flex-grow">
+          {loading && <div className="text-center text-gray-500 mt-8">Generando reporte...</div>}
+          {error && <div className="text-center text-red-500 mt-8">Error: {error}</div>}
+          
+          {!loading && !error && reportData.length === 0 && (
+            <div className="text-center text-gray-500 mt-8">
+              No hay datos para mostrar.
             </div>
-            <div className="flex items-center gap-2">
+          )}
+
+          {!loading && !error && reportData.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Empleado</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {currentItems.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm text-gray-900">{item.nombre_completo}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {new Date(item.fecha_hora).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {new Date(item.fecha_hora).toLocaleTimeString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{item.comentarios || item.motivo}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Paginación - Fija en la parte inferior */}
+        <div className="border-t border-gray-200 p-4 bg-white mt-auto">
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-gray-700">
+              Mostrando {indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredData.length)} de {filteredData.length} resultados
+            </div>
+            <div className="flex gap-2 items-center">
               <button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
@@ -488,41 +468,34 @@ function Reports() {
               >
                 Primero
               </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Anterior
-              </button>
-
-              {/* Números de página */}
-              <div className="flex gap-1">
+              
+              <div className="flex gap-1 min-w-[120px] justify-center">
                 {(() => {
-                  const pages = [];
-                  const showPages = 5;
-                  let startPage = Math.max(1, currentPage - Math.floor(showPages / 2));
-                  let endPage = Math.min(totalPages, startPage + showPages - 1);
-
-                  if (endPage - startPage + 1 < showPages) {
-                    startPage = Math.max(1, endPage - showPages + 1);
+                  let pagesToShow = [];
+                  let start = Math.max(1, currentPage - 1);
+                  let end = Math.min(start + 2, totalPages);
+                  
+                  // Ajustar el inicio si estamos al final
+                  if (end === totalPages) {
+                    start = Math.max(1, end - 2);
                   }
-
-                  for (let i = startPage; i <= endPage; i++) {
-                    pages.push(
+                  
+                  for (let i = start; i <= end; i++) {
+                    pagesToShow.push(
                       <button
                         key={i}
                         onClick={() => setCurrentPage(i)}
-                        className={`px-3 py-2 text-sm border rounded-lg ${currentPage === i
+                        className={`px-3 py-2 text-sm border rounded-lg ${
+                          currentPage === i
                             ? 'bg-blue-500 text-white border-blue-500'
                             : 'border-gray-300 hover:bg-gray-50'
-                          }`}
+                        }`}
                       >
                         {i}
                       </button>
                     );
                   }
-                  return pages;
+                  return pagesToShow;
                 })()}
               </div>
 
@@ -542,7 +515,7 @@ function Reports() {
               </button>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
