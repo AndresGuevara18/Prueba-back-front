@@ -1,3 +1,4 @@
+#SRC/utils/registro_salida_camara.py
 import cv2
 from multiprocessing import Process
 from tkinter import Tk, Label, CENTER, Button, Text, StringVar
@@ -8,6 +9,7 @@ from scipy.spatial.distance import cosine
 from src.services.registro_salida_service import registrar_salida
 import numpy as np
 import tkinter as tk
+from src.config.config import UMBRAL_SIMILITUD_REGISTRO
 
 def mostrar_ventana_comentario(tipo="Salida temprana"):
     ventana = Tk()
@@ -120,7 +122,6 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
     start_time = time.time()
     last_recognition_time = 0
     recognition_interval = 2
-    UMBRAL_SIMILITUD = 0.3
     UMBRAL_MOVIMIENTO = 5000
     last_face_region = None
     reconocimiento_realizado = False
@@ -236,7 +237,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
                 distancia = cosine(embedding_live, embedding_db)
                 print(f"🔍 Distancia coseno: {distancia:.4f}")
 
-                if distancia < UMBRAL_SIMILITUD:
+                if distancia < UMBRAL_SIMILITUD_REGISTRO:
                     if not hasattr(process_recognition, 'coincidencias_consecutivas'):
                         process_recognition.coincidencias_consecutivas = 0
                     

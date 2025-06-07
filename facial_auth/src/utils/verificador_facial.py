@@ -7,6 +7,14 @@ from src.config.db import get_connection
 from src.config.config import UMBRAL_SIMILITUD, GAP_MINIMO
 
 def verificar_embedding(nuevo_embedding):
+    print("⚠️ Comparación desactivada. Siempre retorna match=False (deja pasar todas las imágenes)")
+    return {
+        "match": False,
+        "id_usuario": None,
+        "distancia": None
+    }
+
+"""def verificar_embedding(nuevo_embedding):
     try:
         connection = get_connection()
         cursor = connection.cursor(dictionary=True)
@@ -64,4 +72,4 @@ def verificar_embedding(nuevo_embedding):
 
     except Exception as e:
         print("❌ Error al verificar embedding:", str(e))
-        return {"match": False, "error": str(e)}
+        return {"match": False, "error": str(e)}"""

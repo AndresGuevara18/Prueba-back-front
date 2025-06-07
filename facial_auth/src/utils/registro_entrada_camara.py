@@ -9,6 +9,7 @@ import time
 from scipy.spatial.distance import cosine
 from src.services.registro_entrada_service import registrar_entrada
 import numpy as np
+from src.config.config import UMBRAL_SIMILITUD_REGISTRO
 
 from tkinter import Tk, Label, Text, Button, StringVar
 import tkinter as tk
@@ -143,7 +144,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
     start_time = time.time()
     last_recognition_time = 0
     recognition_interval = 2  # Segundos entre reconocimientos
-    UMBRAL_SIMILITUD = 0.3
+    # UMBRAL_SIMILITUD = 0.3
     UMBRAL_MOVIMIENTO = 5000  # Umbral para detectar movimiento brusco
     last_face_region = None
     reconocimiento_realizado = False
@@ -264,7 +265,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
                 print(f"🔍 Distancia coseno: {distancia:.4f}")
 
                 # Validación estricta para evitar falsos positivos
-                if distancia < UMBRAL_SIMILITUD:
+                if distancia < UMBRAL_SIMILITUD_REGISTRO:
                     # Requerir múltiples coincidencias consecutivas
                     if not hasattr(process_recognition, 'coincidencias_consecutivas'):
                         process_recognition.coincidencias_consecutivas = 0
@@ -326,7 +327,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
     update_frame()
     root.mainloop()
     cap.release()
-    cv2.destroyAllWindows()
+    cv2.destroy_all_windows()
 
 def iniciar_camara_tkinter(embedding_db, id_usuario, comentario=None):
     Process(target=mostrar_camara, args=(embedding_db, id_usuario, comentario)).start()  # ¡Aquí va el 5to parámetro!
