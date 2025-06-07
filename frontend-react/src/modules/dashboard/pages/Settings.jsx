@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+//src/modules/dashboard/pages/Settings.jsx
+import React, { useState, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import Swal from 'sweetalert2';
+import API_BASE_URL from '../../../config/ConfigURL';
 
 function TabButton({ active, children, onClick }) {
   return (
@@ -139,11 +141,11 @@ function Settings() {
     schedules: {
       Lunes: {
         isWorkDay: true,
-        entryTime: '8:00 AM',
-        exitTime: '5:00 PM',
-        hasLunch: true,
-        lunchStart: '1:00 PM',
-        lunchEnd: '2:00 PM'
+        entryTime: '',
+        exitTime: '',
+        hasLunch: false,
+        lunchStart: '',
+        lunchEnd: ''
       },
       Martes: {
         isWorkDay: true,
@@ -195,6 +197,36 @@ function Settings() {
       }
     }
   });
+  const [horarios, setHorarios] = useState([]);
+
+  // Cargar horarios reales desde el backend
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/horarios`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Solo toma el primer horario (puedes adaptar para varios)
+          const horario = data[0];
+          setSettings(prev => ({
+            ...prev,
+            schedules: {
+              ...prev.schedules,
+              Lunes: {
+                ...prev.schedules.Lunes,
+                entryTime: horario.hora_entrada ? horario.hora_entrada.substring(0,5) : '',
+                exitTime: horario.hora_salida ? horario.hora_salida.substring(0,5) : ''
+              }
+            }
+          }));
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/horarios`)
+      .then(res => res.json())
+      .then(data => setHorarios(data));
+  }, []);
 
   const handleUpdateSchedule = (day, field, value) => {
     setSettings(prev => ({
@@ -272,7 +304,7 @@ function Settings() {
             active={activeTab === 'lateArrivals'}
             onClick={() => setActiveTab('lateArrivals')}
           >
-            Llegadas Tarde
+            Llegada Tarde
           </TabButton>
           <TabButton
             active={activeTab === 'earlyDepartures'}
@@ -287,6 +319,33 @@ function Settings() {
       <div className="rounded-lg bg-white p-6 shadow-sm">
         {activeTab === 'schedules' && (
           <div className="space-y-6">
+            {/* Tabla de horarios */}
+            <div className="mb-8 overflow-x-auto">
+              <table className="min-w-full border text-center text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border px-4 py-2">ID</th>
+                    <th className="border px-4 py-2">Hora Entrada</th>
+                    <th className="border px-4 py-2">Hora Salida</th>
+                    <th className="border px-4 py-2">Descripción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {horarios.map(h => (
+                    <tr key={h.id_horario}>
+                      <td className="border px-4 py-2">{h.id_horario}</td>
+                      <td className="border px-4 py-2">{h.hora_entrada}</td>
+                      <td className="border px-4 py-2">{h.hora_salida}</td>
+                      <td className="border px-4 py-2">{h.descripcion}</td>
+                    </tr>
+                  ))}
+                  {horarios.length === 0 && (
+                    <tr><td colSpan={4} className="border px-4 py-2 text-gray-400">No hay horarios registrados</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {Object.entries(settings.schedules).map(([day, schedule]) => (
                 <DaySchedule

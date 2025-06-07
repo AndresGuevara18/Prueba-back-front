@@ -1,3 +1,4 @@
+//src/controllers/cargoController.js
 const Cargo = require('../models/cargoModel');
 const cargoService = require('../services/cargoServices'); // Importar el servicio de cargo
 
@@ -38,15 +39,22 @@ const cargoController = {
   // Método para agregar un nuevo cargo
   createCargo: async (req, res) => {
     try {
-      const { nombre_cargo, descripcion } = req.body; // Extraemos datos del cuerpo de la solicitud
-      const nuevoCargo = new Cargo(null, nombre_cargo, descripcion); // Creamos una instancia de Cargo con los datos
+      const { nombre_cargo, descripcion, id_horario } = req.body; // Extraemos datos del cuerpo de la solicitud
+      if (!nombre_cargo || !descripcion || !id_horario) {
+        return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+      }
+      // Validar existencia del horario laboral
+      const horarioExiste = await cargoService.horarioExists(id_horario);
+      if (!horarioExiste) {
+        return res.status(400).json({ error: '❌El horario no existe', alert: true });
+      }
+      const nuevoCargo = new Cargo(null, nombre_cargo, descripcion, id_horario); // Creamos una instancia de Cargo con los datos
 
       const cargoCreado = await cargoService.createCargo(nuevoCargo); // Llamamos al servicio para crear el cargo
 
       res.status(201).json({
         message: '✅ Cargo agregado correctamente',
         cargo: cargoCreado, // Enviamos el nuevo cargo creado
-        //redirect: "/cargo.html" // URL a la que se redirigirá el usuario
       });
     } catch (error) {
       res.status(500).json({ error: 'Error al crear el cargo' }); // Manejo de errores
@@ -56,19 +64,19 @@ const cargoController = {
   // Método para actualizar un cargo
   updateCargo: async (req, res) => {
     try {
-      const { id_cargo } = req.params;//id de la  api 
-      const { nombre_cargo, descripcion } = req.body;//cuerpo de la solicitud "put"
-        
-      if (!nombre_cargo || !descripcion) {
+      const { id_cargo } = req.params;
+      const { nombre_cargo, descripcion, id_horario } = req.body;
+      if (!nombre_cargo || !descripcion || !id_horario) {
         return res.status(400).json({ error: 'Todos los campos son obligatorios' });
       }
-        
-      const resultado = await cargoService.updateCargo(id_cargo, nombre_cargo, descripcion);
-        
+      // Lógica delegada al servicio: si el horario no existe, el servicio retorna un objeto especial
+      const resultado = await cargoService.updateCargo(id_cargo, nombre_cargo, descripcion, id_horario);
+      if (resultado && resultado.alert) {
+        return res.status(400).json({ error: resultado.error, alert: true });
+      }
       if (resultado.affectedRows === 0) {
         return res.status(404).json({ error: 'Cargo no encontrado' });
       }
-        
       res.json({ message: 'Cargo actualizado correctamente' });
     } catch (error) {
       console.error('❌ Error en updateCargo:', error);

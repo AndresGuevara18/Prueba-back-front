@@ -1,3 +1,4 @@
+//src/moodules/dashboard/pages/cargoPages.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
@@ -7,6 +8,9 @@ const CargoPage = () => {
   const [idCargoBuscar, setIdCargoBuscar] = useState(""); // Estado para almacenar el ID del cargo a buscar
   const [cargoEncontrado, setCargoEncontrado] = useState(null); // Estado para almacenar el cargo encontrado
   const [modalAbierto, setModalAbierto] = useState(false); // Estado para controlar la visibilidad del modal
+  const [modalEditarAbierto, setModalEditarAbierto] = useState(false); // Estado para controlar el modal de edición
+  const [cargoAEditar, setCargoAEditar] = useState(null); // Estado para el cargo a editar
+  const [formEdit, setFormEdit] = useState({ nombre_cargo: "", descripcion: "", id_horario: "" }); // Estado para el formulario de edición
   const navigate = useNavigate();
 
   // URL del backend
@@ -82,33 +86,46 @@ const CargoPage = () => {
     }
   };
 
-  // Función para editar un cargo
-  const editarCargo = async (id) => {
+  // Función para abrir el modal de edición
+  const abrirModalEditar = (cargo) => {
+    setCargoAEditar(cargo);
+    setFormEdit({
+      nombre_cargo: cargo.nombre_cargo,
+      descripcion: cargo.descripcion,
+      id_horario: cargo.id_horario || ""
+    });
+    setModalEditarAbierto(true);
+  };
+
+  // Función para manejar cambios en el formulario de edición
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setFormEdit((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Función para actualizar el cargo
+  const actualizarCargo = async () => {
+    if (!formEdit.nombre_cargo || !formEdit.descripcion || !formEdit.id_horario) {
+      alert("⚠️ Todos los campos son obligatorios.");
+      return;
+    }
     try {
-      const cargo = cargos.find((cargo) => cargo.id_cargo === id);
-      if (!cargo) throw new Error("Cargo no encontrado");
-
-      const nuevoNombre = prompt("Nuevo nombre del cargo:", cargo.nombre_cargo);
-      const nuevaDescripcion = prompt("Nueva descripción del cargo:", cargo.descripcion || "");
-
-      if (!nuevoNombre || !nuevaDescripcion) {
-        alert("⚠️ Debes ingresar todos los datos.");
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${API_URL}/${cargoAEditar.id_cargo}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre_cargo: nuevoNombre,
-          descripcion: nuevaDescripcion,
-        }),
+        body: JSON.stringify(formEdit),
       });
-
-      if (!response.ok) throw new Error("Error al actualizar el cargo");
-
+      const data = await response.json();
+      if (!response.ok) {
+        if (data.alert) {
+          alert(data.error);
+          return; // Evita lanzar el error y mostrar doble alert
+        }
+        throw new Error(data.error || "Error al actualizar el cargo");
+      }
       alert("✅ Cargo actualizado correctamente.");
-      cargarTodosLosCargos(); // Recargar la lista actualizada
+      setModalEditarAbierto(false);
+      cargarTodosLosCargos();
     } catch (error) {
       console.error("Error editando cargo:", error);
       alert("❌ " + error.message);
@@ -155,6 +172,7 @@ const CargoPage = () => {
               <th className="border border-black p-2">ID</th>
               <th className="border border-black p-2">Nombre</th>
               <th className="border border-black p-2">Descripción</th>
+              <th className="border border-black p-2">ID Horario</th>
               <th className="border border-black p-2">Acciones</th>
             </tr>
           </thead>
@@ -169,9 +187,10 @@ const CargoPage = () => {
                 <td className="border border-black p-2">{cargo.id_cargo}</td>
                 <td className="border border-black p-2">{cargo.nombre_cargo}</td>
                 <td className="border border-black p-2">{cargo.descripcion || "N/A"}</td>
+                <td className="border border-black p-2">{cargo.id_horario || "N/A"}</td>
                 <td className="border border-black p-2">
                   <button
-                    onClick={() => editarCargo(cargo.id_cargo)}
+                    onClick={() => abrirModalEditar(cargo.id_cargo ? cargo : cargos.find(c => c.id_cargo === cargo.id_cargo))}
                     className="mr-2 rounded bg-yellow-500 p-1 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   >
                     ✏️ Editar
@@ -213,6 +232,61 @@ const CargoPage = () => {
             >
               Cerrar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para editar cargo */}
+      {modalEditarAbierto && cargoAEditar && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">Editar Cargo</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-left">Nombre del Cargo:</label>
+                <input
+                  type="text"
+                  name="nombre_cargo"
+                  value={formEdit.nombre_cargo}
+                  onChange={handleEditChange}
+                  className="w-full rounded border p-2"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-left">Descripción:</label>
+                <input
+                  type="text"
+                  name="descripcion"
+                  value={formEdit.descripcion}
+                  onChange={handleEditChange}
+                  className="w-full rounded border p-2"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-left">ID Horario:</label>
+                <input
+                  type="number"
+                  name="id_horario"
+                  value={formEdit.id_horario}
+                  onChange={handleEditChange}
+                  className="w-full rounded border p-2"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end space-x-2">
+              <button
+                onClick={() => setModalEditarAbierto(false)}
+                className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarCargo}
+                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              >
+                Guardar Cambios
+              </button>
+            </div>
           </div>
         </div>
       )}

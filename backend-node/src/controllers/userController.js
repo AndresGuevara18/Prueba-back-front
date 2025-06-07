@@ -9,6 +9,7 @@ const usuarioController = {
   // Obtener todos los usuarios
   getAllUsers: async (req, res) => {
     try {
+      console.log('🔍 Controlador Obteniendo todos los usuarios');
       // Llamar al servicio para obtener todos los usuarios
       const usuarios = await usuarioService.getAllUsers();
 
@@ -371,10 +372,32 @@ const usuarioController = {
       // Generar JWT
       const jwt = require('jsonwebtoken');
       const token = jwt.sign({ id_usuario: user.id_usuario, usuarioadmin: user.usuarioadmin, id_cargo: user.id_cargo }, process.env.JWT_SECRET || 'secreto', { expiresIn: '8h' });
+      console.log('[DEBUG] login - token generado:', token);
       res.json({ success: true, message: 'Login exitoso', token, user: { id_usuario: user.id_usuario, usuarioadmin: user.usuarioadmin, id_cargo: user.id_cargo, nombre_empleado: user.nombre_empleado } });
     } catch (error) {
       console.error('❌ Error en login (Controller):', error);
       res.status(500).json({ success: false, message: 'Error interno en login.' });
+    }
+  },
+
+  // Obtener perfil del usuario autenticado
+  getProfile: async (req, res) => {
+    console.log('🔍 Controlador Obteniendo perfil del usuario autenticado');
+    try {
+      const id_usuario = req.user.id_usuario;
+      // Buscar usuario por id_usuario
+      const query = 'SELECT * FROM usuario WHERE id_usuario = ?';
+      const db = require('../config/database');
+      const [userResult] = await db.promise().query(query, [id_usuario]);
+      if (userResult.length === 0) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+      // Buscar nombre del cargo
+      const [cargoResult] = await db.promise().query('SELECT nombre_cargo FROM cargo WHERE id_cargo = ?', [userResult[0].id_cargo]);
+      const cargo_user = cargoResult.length > 0 ? cargoResult[0].nombre_cargo : null;
+      res.json({ ...userResult[0], cargo_user });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener el perfil' });
     }
   },
 };

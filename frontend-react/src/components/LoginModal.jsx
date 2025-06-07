@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/ConfigURL';
+import logoColpryst from '../assets/img/colpryst-icon.png'; // Asegúrate de tener el logo en esta ruta
 
 function LoginModal({ isOpen, onClose, onLogin }) {
   const [email, setEmail] = useState('');
@@ -9,6 +10,14 @@ function LoginModal({ isOpen, onClose, onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Redirección automática si ya hay token
+  useEffect(() => {
+    if (isOpen && localStorage.getItem('token')) {
+      onClose && onClose();
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isOpen, onClose, navigate]);
 
   if (!isOpen) return null;
 
@@ -58,7 +67,7 @@ function LoginModal({ isOpen, onClose, onLogin }) {
         <div className="p-8">
           <div className="mb-6 flex justify-center">
             {/* <span className="text-[#2D3748] text-2xl font-bold">COLPRYST</span> */}
-            <img src="../../public/img/colpryst-icon.png" alt="COLPRYST Logo" className="h-12" />
+            <img src={logoColpryst} alt="COLPRYST Logo" className="h-12" />
           </div>
 
           <h2 className="mb-8 text-center text-2xl font-medium text-[#2D3748]">
