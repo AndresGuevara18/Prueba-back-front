@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
+import Swal from 'sweetalert2';
 
 const UsuariosPage = () => {
   const navigate = useNavigate(); //navegar
@@ -50,11 +51,19 @@ const UsuariosPage = () => {
         throw new Error(data.error || "Error al eliminar el usuario");
       }
 
-      alert(data.message || "Usuario eliminado correctamente");
+      Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: data.message || "Usuario eliminado correctamente"
+      });
       cargarTodosLosUsuarios(); // Recargar la lista de usuarios
     } catch (error) {
       console.error("Error eliminando usuario:", error);
-      alert(error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message
+      });
     }
   };
 
@@ -84,7 +93,11 @@ const UsuariosPage = () => {
         setModalAbierto(true);
     } catch (error) {
         console.error("Error buscando usuario:", error);
-        alert(`❌ ${error.message}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `❌ ${error.message}`
+        });
         setIdUsuarioBuscar(""); // Limpiar el input
     }
   };
@@ -136,16 +149,27 @@ const UsuariosPage = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          alert(`❌ ${data.message}`);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `❌ ${data.message}`
+          });
           return;
       }
-      
-      alert(data.message || "✅ Usuario actualizado correctamente");
-        setModalEditarAbierto(false);
-        cargarTodosLosUsuarios();
+      Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: data.message || "✅ Usuario actualizado correctamente"
+      });
+      setModalEditarAbierto(false);
+      cargarTodosLosUsuarios();
     } catch (error) {
         console.error("Error actualizando usuario:", error);
-        alert(`❌Error ${error.message}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `❌Error ${error.message}`
+        });
     }
   };
 

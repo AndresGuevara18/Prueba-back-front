@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
+import Swal from 'sweetalert2';
 
 const CargoPage = () => {
   const [cargos, setCargos] = useState([]); // Estado para almacenar la lista de cargos
@@ -40,7 +41,10 @@ const CargoPage = () => {
   // Función para buscar un cargo por ID
   const buscarCargo = async () => {
     if (!idCargoBuscar.trim()) {
-      alert("⚠️ Ingrese un ID.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ingrese un ID.',
+      });
       return;
     }
 
@@ -52,7 +56,11 @@ const CargoPage = () => {
       setModalAbierto(true);
     } catch (error) {
       console.error("Error buscando cargo:", error);
-      alert("❌ " + error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+      });
     }
   };
 
@@ -76,13 +84,20 @@ const CargoPage = () => {
       }
 
       // Si la eliminación es exitosa, mostrar el mensaje de éxito
-      alert(data.message || "✅ Cargo eliminado correctamente.");
+      Swal.fire({
+        icon: 'success',
+        title: 'Cargo eliminado correctamente.',
+      });
 
       // Recargar la lista de cargos
       await cargarTodosLosCargos(); // Recargar la lista después de eliminar
     } catch (error) {
       console.error("Error eliminando cargo:", error);
-      alert(error.message); // Mostrar el mensaje de error
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message, // Mostrar el mensaje de error
+      });
     }
   };
 
@@ -106,7 +121,10 @@ const CargoPage = () => {
   // Función para actualizar el cargo
   const actualizarCargo = async () => {
     if (!formEdit.nombre_cargo || !formEdit.descripcion || !formEdit.id_horario) {
-      alert("⚠️ Todos los campos son obligatorios.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Todos los campos son obligatorios.',
+      });
       return;
     }
     try {
@@ -118,17 +136,28 @@ const CargoPage = () => {
       const data = await response.json();
       if (!response.ok) {
         if (data.alert) {
-          alert(data.error);
-          return; // Evita lanzar el error y mostrar doble alert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.error || 'Error al actualizar el cargo.'
+          });
+          return;
         }
         throw new Error(data.error || "Error al actualizar el cargo");
       }
-      alert("✅ Cargo actualizado correctamente.");
+      Swal.fire({
+        icon: 'success',
+        title: 'Cargo actualizado correctamente.'
+      });
       setModalEditarAbierto(false);
       cargarTodosLosCargos();
     } catch (error) {
       console.error("Error editando cargo:", error);
-      alert("❌ " + error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Error al actualizar el cargo.'
+      });
     }
   };
 
