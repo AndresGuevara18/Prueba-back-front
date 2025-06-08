@@ -18,7 +18,7 @@ function TabButton({ active, children, onClick }) {
   );
 }
 
-function TimeInput({ label, value, onChange }) {
+function TimeInput({ label, value, onChange, readOnly = false }) {
   const handleTimeClick = async () => {
     const result = await Swal.fire({
       title: 'Seleccionar hora',
@@ -53,6 +53,21 @@ function TimeInput({ label, value, onChange }) {
     }
   };
 
+  if (readOnly) {
+    return (
+      <div className="relative">
+        <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
+        <input
+          type="text"
+          value={value}
+          readOnly
+          className="w-full cursor-default rounded-md border border-gray-200 bg-gray-100 px-2 py-1 text-center text-sm text-gray-700 focus:outline-none"
+          tabIndex={-1}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
@@ -68,7 +83,7 @@ function TimeInput({ label, value, onChange }) {
   );
 }
 
-function DaySchedule({ day, schedule, onUpdate, onApplyToAll, onEdit, onDelete }) {
+function DaySchedule({ day, schedule, onUpdate, onApplyToAll, onEdit, onDelete, readOnlyInputs }) {
   // Función para formatear la hora a 24 horas si es necesario
   const formatTime = (timeStr) => {
     if (!timeStr) return '';
@@ -105,31 +120,33 @@ function DaySchedule({ day, schedule, onUpdate, onApplyToAll, onEdit, onDelete }
               label="Entrada"
               value={formatTime(schedule.entryTime)}
               onChange={(value) => onUpdate(day, 'entryTime', value)}
+              readOnly={readOnlyInputs}
             />
             <TimeInput
               label="Salida"
               value={formatTime(schedule.exitTime)}
               onChange={(value) => onUpdate(day, 'exitTime', value)}
+              readOnly={readOnlyInputs}
             />
           </div>
 
-          <div className="flex justify-end gap-2 mt-2">
+          <div className="mt-2 flex justify-end gap-2">
             <div className="flex gap-2">
               <button
                 onClick={onEdit}
-                className="bg-blue-500 text-white px-2 py-1 text-xs rounded border border-blue-500 hover:bg-blue-600"
+                className="rounded border border-blue-500 bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-600"
               >
                 Editar
               </button>
               <button
                 onClick={onDelete}
-                className="bg-red-500 text-white px-2 py-1 text-xs rounded border border-red-500 hover:bg-red-600"
+                className="rounded border border-red-500 bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600"
               >
                 Eliminar
               </button>
               <button
                 onClick={() => onApplyToAll(day)}
-                className="bg-green-500 text-white px-3 py-1 text-xs rounded border border-green-500 hover:bg-green-600"
+                className="rounded border border-green-500 bg-green-500 px-3 py-1 text-xs text-white hover:bg-green-600"
               >
                 Aplicar a todos
               </button>
@@ -262,31 +279,44 @@ function Settings() {
     });
   };
 
-  const handleApplyToAll = (sourceDay) => {
-    const sourceSchedule = settings.schedules[sourceDay];
-    const updatedSchedules = {};
-    
-    Object.keys(settings.schedules).forEach(day => {
-      if (day !== sourceDay) {
-        updatedSchedules[day] = { ...sourceSchedule };
-      } else {
-        updatedSchedules[day] = settings.schedules[day];
+  // Aplica el horario seleccionado a todos los cargos en la base de datos
+  const handleApplyToAll = async (dayOrDesc) => {
+    // Buscar el horario por descripción (o por el campo que corresponda)
+    const horario = horarios.find(
+      h => h.descripcion === dayOrDesc
+    );
+    if (!horario) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se encontró el horario.' });
+      return;
+    }
+
+    const confirm = await Swal.fire({
+      title: '¿Aplicar este horario a todos los cargos?',
+      text: 'Esta acción actualizará el horario de todos los cargos en la base de datos.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, aplicar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#22c55e',
+      cancelButtonColor: '#6B7280',
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/horarios/aplicar-a-todos`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_horario_nuevo: horario.id_horario })
+        });
+        if (res.ok) {
+          Swal.fire({ icon: 'success', title: 'Horario aplicado a todos los cargos', timer: 1800, showConfirmButton: false });
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo aplicar el horario.' });
+        }
+      } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
       }
-    });
-
-    setSettings(prev => ({
-      ...prev,
-      schedules: updatedSchedules
-    }));
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Horario copiado',
-      text: `El horario de ${sourceDay} ha sido aplicado a todos los días`,
-      confirmButtonColor: '#3B82F6',
-      timer: 2000,
-      timerProgressBar: true
-    });
+    }
   };
 
   const handleAddHorario = async () => {
@@ -491,6 +521,7 @@ function Settings() {
                     onApplyToAll={handleApplyToAll}
                     onEdit={() => handleEditHorario(horario)}
                     onDelete={() => handleDeleteHorario(horario.id_horario)}
+                    readOnlyInputs={true}
                   />
                 </div>
               ))}

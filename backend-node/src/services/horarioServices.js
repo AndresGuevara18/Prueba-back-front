@@ -98,6 +98,33 @@ const horarioLaboralService = {
     }
   },
 
+  // Actualizar el id_horario en todos los cargos que tengan un id_horario específico
+  updateHorarioEnCargos: async (id_horario_actual, id_horario_nuevo) => {
+    const query = 'UPDATE cargo SET id_horario = ? WHERE id_horario = ?';
+    try {
+      const [result] = await db.promise().query(query, [
+        id_horario_nuevo,
+        id_horario_actual,
+      ]);
+      return result;
+    } catch (err) {
+      console.error('❌ Error en updateHorarioEnCargos (Service):', err);
+      throw err;
+    }
+  },
+
+  // Actualizar el id_horario en TODOS los cargos (solo si id_cargo > 0)
+  updateHorarioEnTodosLosCargos: async (id_horario_nuevo) => {
+    const query = 'UPDATE cargo SET id_horario = ? WHERE id_cargo > 0';
+    try {
+      const [result] = await db.promise().query(query, [id_horario_nuevo]);
+      return result;
+    } catch (err) {
+      console.error('❌ Error en updateHorarioEnTodosLosCargos (Service):', err);
+      throw err;
+    }
+  },
+
   // Verificar si un horario existe (similar al método en cargoService)
   /*horarioExists: async (id_horario) => {
     const query = 'SELECT COUNT(*) AS count FROM horario_laboral WHERE id_horario = ?';

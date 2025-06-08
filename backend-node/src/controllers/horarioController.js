@@ -96,6 +96,21 @@ const horarioLaboralController = {
       res.status(500).json({ error: '❌ Error interno al eliminar el horario laboral.' });
     }
   },
+
+  // Actualizar el id_horario en TODOS los cargos (sin importar el anterior)
+  aplicarHorarioATodos: async (req, res) => {
+    try {
+      const { id_horario_nuevo } = req.body;
+      if (!id_horario_nuevo) {
+        return res.status(400).json({ error: 'Se requiere id_horario_nuevo.' });
+      }
+      const resultado = await horarioLaboralService.updateHorarioEnTodosLosCargos(id_horario_nuevo);
+      res.json({ message: 'Horario aplicado a todos los cargos correctamente.', resultado });
+    } catch (error) {
+      console.error('❌ Error en aplicarHorarioATodos (Controller):', error);
+      res.status(500).json({ error: 'Error al aplicar el horario a todos los cargos.' });
+    }
+  },
 };
 
 module.exports = horarioLaboralController;
