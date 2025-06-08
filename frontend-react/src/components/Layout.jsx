@@ -141,13 +141,13 @@ function Layout() {
                 </div>
                 <h3 className="mb-6 text-center font-semibold">Síguenos</h3>
                 <div className="flex w-full justify-center space-x-8 md:space-x-12">
-                  <a href="#" className="hover:text-blue-400">
+                  <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
                     <Facebook className="h-6 w-6 md:h-8 md:w-8" />
                   </a>
-                  <a href="#" className="hover:text-blue-400">
+                  <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
                     <Instagram className="h-6 w-6 md:h-8 md:w-8" />
                   </a>
-                  <a href="#" className="hover:text-blue-400">
+                  <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
                     <Youtube className="h-6 w-6 md:h-8 md:w-8" />
                   </a>
                 </div>

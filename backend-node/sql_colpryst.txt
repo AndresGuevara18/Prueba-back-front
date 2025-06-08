@@ -82,13 +82,12 @@ create table registro_salida (
 CREATE TABLE notificacion_salida_temprana (
     id_notificacion INT AUTO_INCREMENT NOT NULL,
     id_salida INT NOT NULL,
-    id_usuario INT NOT NULL,
+    id_usuario INT NOT NULL, -- Se conserva como campo informativo, pero NO es clave foránea
     estado BOOLEAN NOT NULL,
     fecha_hora DATETIME NOT NULL,
     comentarios VARCHAR(500) NOT NULL,
     CONSTRAINT pk_notificacion_salida PRIMARY KEY (id_notificacion),
-    CONSTRAINT fk_notificacion_salida FOREIGN KEY (id_salida) REFERENCES registro_salida (id_salida),
-    CONSTRAINT fk_notificacion_salida_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+    CONSTRAINT fk_notificacion_salida FOREIGN KEY (id_salida) REFERENCES registro_salida (id_salida)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 -- tabal inasistencia

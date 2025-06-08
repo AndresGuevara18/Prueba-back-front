@@ -5,9 +5,9 @@ INSERT INTO horario_laboral (hora_entrada, hora_salida, descripcion)
 VALUES ('07:15:00', '16:30:00', 'Horario General');
 
 INSERT INTO Cargo (nombre_cargo, descripcion, id_horario) VALUES 
-('Gerente', 'Gerente de operaciones', 1),
-('Director', 'Director de la empresa', 1),
-('Administrativo', 'Administración general', 1),
+('Administrador', 'Administrador General', 1),
+('Gestor', 'Empleados y Jefes', 1),
+('Recursos Humanos', 'Nómina', 1),
 ('Desarrollador', 'Desarrollador de software', 1),
 ('Contador', 'Encargado de finanzas', 1),
 ('Soporte Técnico', 'Soporte de IT', 1),

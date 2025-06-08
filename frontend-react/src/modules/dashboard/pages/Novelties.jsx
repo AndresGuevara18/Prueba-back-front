@@ -109,7 +109,7 @@ function Novelties() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1">
           <input
             type="text"
             placeholder="Buscar novedades..."
@@ -129,9 +129,13 @@ function Novelties() {
           <option value="week">Esta semana</option>
           <option value="month">Este mes</option>
         </select>
-      </div>      <div className="flex flex-col min-h-[600px] bg-white rounded-lg shadow-sm">
-        <div className="p-6 flex-grow">
+      </div>
+
+      <div className="flex flex-col h-[calc(100vh-12rem)] bg-white rounded-lg shadow-sm">
+        {/* Contenido principal - Área scrollable */}
+        <div className="flex-1 p-6 overflow-auto min-h-0">
           {loading && <div className="text-center text-gray-500 mt-8">Cargando novedades...</div>}
+          
           {error && <div className="text-center text-red-500 mt-8">Error: {error}</div>}
           
           {!loading && !error && noveltiesData.length === 0 && (
@@ -143,8 +147,8 @@ function Novelties() {
           {!loading && !error && noveltiesData.length > 0 && (
             <div className="overflow-x-auto">
               <table className="min-w-full">
-                <thead>
-                  <tr className="bg-gray-50">
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Empleado</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha/Hora</th>
@@ -153,9 +157,18 @@ function Novelties() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {currentNovelties.map((novedad, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
+                    <tr key={`${novedad.id_usuario}-${novedad.fecha_hora}-${index}`} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-900">{novedad.nombre_usuario}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{novedad.tipo_novedad}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          novedad.tipo_novedad === 'Entrada Tarde' ? 'bg-yellow-100 text-yellow-800' :
+                          novedad.tipo_novedad === 'Salida Temprana' ? 'bg-orange-100 text-orange-800' :
+                          novedad.tipo_novedad === 'Inasistencia' ? 'bg-red-100 text-red-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {novedad.tipo_novedad}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {new Date(novedad.fecha_hora).toLocaleString('es-ES', {
                           year: 'numeric',
@@ -165,7 +178,7 @@ function Novelties() {
                           minute: '2-digit'
                         })}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{novedad.detalle}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{novedad.detalle || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -175,7 +188,7 @@ function Novelties() {
         </div>
 
         {/* Paginación - Fija en la parte inferior */}
-        <div className="border-t border-gray-200 p-4 bg-white mt-auto">
+        <div className="border-t border-gray-200 p-4 bg-white">
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-700">
               Mostrando {indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredNovelties.length)} de {filteredNovelties.length} resultados
