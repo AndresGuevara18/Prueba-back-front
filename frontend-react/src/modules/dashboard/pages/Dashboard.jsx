@@ -43,7 +43,19 @@ function Dashboard() {
     updateDateTime(); // Llamado inmediato
     const intervalId = setInterval(updateDateTime, 1000); // <-- Actualiza cada segundo
 
-    return () => clearInterval(intervalId); // Limpieza
+    // Cierre de sesión automático al cerrar pestaña/ventana
+    const handleBeforeUnload = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('nombre_empleado');
+      localStorage.removeItem('usuarioadmin');
+      // Puedes limpiar otros datos de sesión aquí si es necesario
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   return (

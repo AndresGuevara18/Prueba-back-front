@@ -15,16 +15,50 @@ function Layout() {
   });
   const navigate = useNavigate();
 
+  // Persist login state across reloads (main landing page)
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      try {
+        const userObj = JSON.parse(user);
+        const cargo = userObj.cargo ? userObj.cargo : (userObj.nombre_cargo ? userObj.nombre_cargo : '');
+        setIsLoggedIn(true);
+        setUserData({
+          name: userObj.nombre_empleado || userObj.usuarioadmin || 'Usuario',
+          role: cargo || (userObj.id_cargo === 1 ? 'Administrador' : userObj.id_cargo === 2 ? 'Supervisor' : 'Empleado'),
+          email: userObj.email_empleado || ''
+        });
+      } catch (e) {
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  // Save user info to localStorage on login
   const handleLogin = (user, token) => {
+    const cargo = user.cargo ? user.cargo : (user.nombre_cargo ? user.nombre_cargo : '');
     setIsLoggedIn(true);
     setUserData({
       name: user.nombre_empleado || user.usuarioadmin || 'Usuario',
-      role: user.id_cargo === 1 ? 'Administrador' : user.id_cargo === 2 ? 'Supervisor' : 'Empleado',
+      role: cargo || (user.id_cargo === 1 ? 'Administrador' : user.id_cargo === 2 ? 'Supervisor' : 'Empleado'),
       email: user.email_empleado || ''
     });
+    localStorage.setItem('user', JSON.stringify(user));
     setIsLoginModalOpen(false);
     // El token ya se guarda en localStorage en LoginModal
     navigate('/dashboard');
+  };
+
+  // Logout logic for main landing page
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserData({ name: '', role: '', email: '' });
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/';
   };
 
   return (
@@ -32,13 +66,17 @@ function Layout() {
       {/* Top Bar */}
       <div className="w-full bg-[#10374E] text-white">
         <div className="mx-auto h-[80px] max-w-7xl px-4">
-          <div className="mr-2 flex h-full items-center justify-end gap-4 md:mr-8 md:gap-8">
+          <div className="flex h-full items-center justify-end" style={{minWidth: 0}}>
             {isLoggedIn ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 relative group min-w-[180px] justify-end">
                 <div className="rounded-full bg-white/10 p-2">
                   <User className="h-5 w-5" />
                 </div>
-                <div className="text-sm">
+                <div
+                  className="text-sm cursor-pointer select-none hover:text-blue-200 transition-colors"
+                  onClick={() => navigate('/dashboard')}
+                  title="Ir al dashboard"
+                >
                   <div className="font-medium">{userData.name}</div>
                   <div className="text-xs text-white/70">{userData.role}</div>
                 </div>
@@ -46,7 +84,8 @@ function Layout() {
             ) : (
               <button 
                 onClick={() => setIsLoginModalOpen(true)} 
-                className="flex items-center gap-2 text-sm transition-colors hover:text-blue-200"
+                className="flex items-center gap-3 min-w-[180px] justify-end text-sm transition-colors hover:text-blue-200"
+                style={{marginRight: 0}}
               >
                 <div className="rounded-full bg-white/10 p-2">
                   <User className="h-5 w-5" />
