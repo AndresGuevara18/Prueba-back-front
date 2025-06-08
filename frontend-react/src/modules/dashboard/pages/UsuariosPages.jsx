@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
+import Swal from 'sweetalert2';
 
 const UsuariosPage = () => {
   const navigate = useNavigate(); //navegar
@@ -35,26 +36,39 @@ const UsuariosPage = () => {
 
   // Función para eliminar usuario
   const eliminarUsuario = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
-      return;
-    }
-
+    const result = await Swal.fire({
+      title: '¿Estás seguro de que deseas eliminar este usuario?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    });
+    if (!result.isConfirmed) return;
     try {
       const response = await fetch(`${API_URL}/${id}`, {
         method: "DELETE"
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.error || "Error al eliminar el usuario");
       }
-
-      alert(data.message || "Usuario eliminado correctamente");
-      cargarTodosLosUsuarios(); // Recargar la lista de usuarios
+      Swal.fire({
+        icon: 'success',
+        title: 'Usuario eliminado',
+        text: data.message || 'Usuario eliminado correctamente',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      cargarTodosLosUsuarios();
     } catch (error) {
       console.error("Error eliminando usuario:", error);
-      alert(error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message
+      });
     }
   };
 
@@ -62,7 +76,11 @@ const UsuariosPage = () => {
   //Función para buscar un usuario por docuemnto
   const buscarUsuario = async () => {
     if (!idUsuarioBuscar.trim()) {
-        alert("⚠️ Ingrese el número de documento.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Campo requerido',
+          text: '⚠️ Ingrese el número de documento.'
+        });
         return;
     }
 
@@ -75,16 +93,18 @@ const UsuariosPage = () => {
 
         const usuario = await response.json();
         
-        
         setUsuarioEncontrado({
             ...usuario,
             nombre_cargo: usuario.cargo_user || 'Sin cargo' // Mapeo a la propiedad 
         });
-        
         setModalAbierto(true);
     } catch (error) {
         console.error("Error buscando usuario:", error);
-        alert(`❌ ${error.message}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `❌ ${error.message}`
+        });
         setIdUsuarioBuscar(""); // Limpiar el input
     }
   };
@@ -136,16 +156,27 @@ const UsuariosPage = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          alert(`❌ ${data.message}`);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `❌ ${data.message}`
+          });
           return;
       }
-      
-      alert(data.message || "✅ Usuario actualizado correctamente");
-        setModalEditarAbierto(false);
-        cargarTodosLosUsuarios();
+      Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: data.message || "✅ Usuario actualizado correctamente"
+      });
+      setModalEditarAbierto(false);
+      cargarTodosLosUsuarios();
     } catch (error) {
         console.error("Error actualizando usuario:", error);
-        alert(`❌Error ${error.message}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `❌Error ${error.message}`
+        });
     }
   };
 

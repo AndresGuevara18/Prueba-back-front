@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';//hook para navegacion
 import API_BASE_URL from '../../../config/ConfigURL';//importacion url peticiones al back puerto 3000
 //reconocimiento
 import * as faceapi from 'face-api.js';//npm install react-webcam face-api.js
+import Swal from 'sweetalert2';
 
 //componete funcional en arrow function
 const AgregarUsuarioPage = () => {
@@ -147,7 +148,11 @@ const AgregarUsuarioPage = () => {
       startFaceDetection(); //llama duncion detectar rostros después de mostrar la cámara
     } catch (err) {
       console.error("Error al acceder a la cámara:", err);
-      alert("No se pudo acceder a la cámara. Por favor verifica los permisos.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Permiso denegado',
+        text: 'No se pudo acceder a la cámara. Por favor verifica los permisos.'
+      });
       setShowCameraModal(false);//cierra modal
     }
   };
@@ -192,10 +197,18 @@ const AgregarUsuarioPage = () => {
     canvas.toBlob((blob) => {
       if (blob) {
         setFormData({ ...formData, fotoBlob: blob });
-        alert("Imagen capturada correctamente!");
+        Swal.fire({
+          icon: 'success',
+          title: 'Imagen capturada',
+          text: 'Imagen capturada correctamente!'
+        });
         closeCamera();
       } else {
-        alert("Error al convertir la imagen a Blob");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al convertir la imagen a Blob'
+        });
         closeCamera();
       }
     }, 'image/jpeg', 0.95);
@@ -255,7 +268,11 @@ const AgregarUsuarioPage = () => {
       setTimeout(() => navigate("/dashboard/users"), 800);
     } catch (error) {
       console.error("Error:", error);
-      alert(`❌ Error: ${error.message}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `❌ Error: ${error.message}`
+      });
     } finally {
       setIsSubmitting(false); // 👈 DEBE estar aquí SIEMPRE
     }
