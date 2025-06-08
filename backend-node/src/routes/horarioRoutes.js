@@ -30,6 +30,31 @@ router.get('/', horarioController.getAllHorarios);
 
 /**
  * @swagger
+ * /api/horarios/aplicar-a-todos:
+ *   put:
+ *     summary: Aplica un horario a todos los cargos (actualiza el id_horario en toda la tabla cargo)
+ *     tags: [Horarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_horario_nuevo:
+ *                 type: integer
+ *                 example: 2
+ *     responses:
+ *       200:
+ *         description: Horario aplicado a todos los cargos correctamente
+ *       400:
+ *         description: Falta el parámetro id_horario_nuevo
+ */
+router.put('/aplicar-a-todos', horarioController.aplicarHorarioATodos);
+
+
+/**
+ * @swagger
  * /api/horarios:
  *   post:
  *     summary: Crea un nuevo horario laboral
@@ -103,5 +128,7 @@ router.put('/:id_horario', horarioController.updateHorario);
  *         description: Horario no encontrado
  */
 router.delete('/:id_horario', horarioController.deleteHorario);
+
+
 
 module.exports = router;

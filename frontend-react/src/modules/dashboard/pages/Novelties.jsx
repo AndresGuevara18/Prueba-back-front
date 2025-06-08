@@ -113,21 +113,21 @@ function Novelties() {
         <h1 className="text-2xl font-bold text-gray-800">Novedades de Asistencia</h1>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm mb-8">
-        <div className="flex flex-col md:flex-row items-center p-4 gap-4">
-          <div className="flex items-center w-full md:w-auto flex-1">
-            <Search className="text-gray-400 w-5 h-5" />            <input
+      <div className="mb-8 rounded-lg bg-white shadow-sm">
+        <div className="flex flex-col items-center gap-4 p-4 md:flex-row">
+          <div className="flex w-full flex-1 items-center md:w-auto">
+            <Search className="h-5 w-5 text-gray-400" />            <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nombre, tipo de novedad o detalle..."
-              className="flex-1 ml-3 outline-none w-full"
+              className="ml-3 w-full flex-1 outline-none"
             />
           </div>
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="w-full md:w-auto px-4 py-2 border border-gray-200 rounded-lg text-gray-600"
+            className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-600 md:w-auto"
           >
             <option value="today">Hoy</option>
             <option value="yesterday">Ayer</option>
@@ -137,10 +137,10 @@ function Novelties() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6 min-h-[400px]">        {loading && <div className="text-center text-gray-500 mt-8">Cargando novedades...</div>}
-        {error && <div className="text-center text-red-500 mt-8">Error al cargar novedades: {error}</div>}
+      <div className="min-h-[400px] rounded-lg bg-white p-6 shadow-sm">        {loading && <div className="mt-8 text-center text-gray-500">Cargando novedades...</div>}
+        {error && <div className="mt-8 text-center text-red-500">Error al cargar novedades: {error}</div>}
         {!loading && !error && filteredNovelties.length === 0 && (
-          <div className="text-center text-gray-500 mt-8">
+          <div className="mt-8 text-center text-gray-500">
             No hay novedades para mostrar con los filtros actuales.
           </div>
         )}
@@ -148,19 +148,19 @@ function Novelties() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo Novedad</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha y Hora</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Usuario</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tipo Novedad</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Fecha y Hora</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Detalle</th>
               </tr>
-            </thead>            <tbody className="bg-white divide-y divide-gray-200">
+            </thead>            <tbody className="divide-y divide-gray-200 bg-white">
               {currentNovelties.map((novedad, index) => (
                 <tr key={`${novedad.id_usuario}-${novedad.fecha_hora}-${index}`} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                     {novedad.nombre_usuario}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${novedad.tipo_novedad === 'Entrada Tarde' ? 'bg-yellow-100 text-yellow-800' :
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${novedad.tipo_novedad === 'Entrada Tarde' ? 'bg-yellow-100 text-yellow-800' :
                         novedad.tipo_novedad === 'Salida Temprana' ? 'bg-orange-100 text-orange-800' :
                           novedad.tipo_novedad === 'Inasistencia' ? 'bg-red-100 text-red-800' :
                             'bg-green-100 text-green-800'
@@ -168,7 +168,7 @@ function Novelties() {
                       {novedad.tipo_novedad}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                     {new Date(novedad.fecha_hora).toLocaleString('es-ES', {
                       year: 'numeric',
                       month: '2-digit',
@@ -186,11 +186,11 @@ function Novelties() {
           </table>)}
         {!loading && !error && filteredNovelties.length > itemsPerPage && (
           <div className="mt-4 flex justify-center">
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <nav className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
               >
                 Anterior
               </button>
@@ -198,7 +198,7 @@ function Novelties() {
                 <button
                   key={number + 1}
                   onClick={() => paginate(number + 1)}
-                  className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${currentPage === number + 1 ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:bg-gray-50'}`}
+                  className={`relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${currentPage === number + 1 ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'}`}
                 >
                   {number + 1}
                 </button>
@@ -206,7 +206,7 @@ function Novelties() {
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                className="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
               >
                 Siguiente
               </button>
