@@ -1,6 +1,5 @@
 //src/modules/dashboard/pages/Settings.jsx
 import React, { useState, useEffect } from 'react';
-import { Camera } from 'lucide-react';
 import Swal from 'sweetalert2';
 import API_BASE_URL from '../../../config/ConfigURL';
 
@@ -39,11 +38,13 @@ function TimeInput({ label, value, onChange }) {
         window.flatpickr(input, {
           enableTime: true,
           noCalendar: true,
-          dateFormat: "h:i K",
-          time_24hr: false,
+          dateFormat: "H:i", // 24 horas
+          time_24hr: true,    // 24 horas
           defaultDate: value,
           minuteIncrement: 1
         });
+        // Forzar el atributo inputmode para que muestre teclado numérico en móviles
+        if (input) input.setAttribute('inputmode', 'numeric');
       }
     });
 
@@ -67,63 +68,73 @@ function TimeInput({ label, value, onChange }) {
   );
 }
 
-function DaySchedule({ day, schedule, onUpdate }) {
+function DaySchedule({ day, schedule, onUpdate, onApplyToAll, onEdit, onDelete }) {
+  // Función para formatear la hora a 24 horas si es necesario
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '';
+    
+    // Si ya está en formato 24h (contiene solo números y :)
+    if (/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(timeStr)) {
+      return timeStr;
+    }
+    
+    // Convertir de AM/PM a 24h
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':');
+    
+    if (hours === '12') {
+      hours = '00';
+    }
+    
+    if (modifier === 'PM') {
+      hours = parseInt(hours, 10) + 12;
+    }
+    
+    return `${hours}:${minutes}`;
+  };
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-3">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700">{day}</span>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={schedule.isWorkDay}
-            onChange={(e) => onUpdate(day, 'isWorkDay', e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-          />
-          <span className="ml-2 text-xs text-gray-600">Día laboral</span>
-        </label>
+        <span className="text-sm font-medium text-gray-700">{schedule.descripcion ? schedule.descripcion : day}</span>
       </div>
-
       {schedule.isWorkDay && (
         <>
           <div className="mb-2 grid grid-cols-2 gap-2">
             <TimeInput
               label="Entrada"
-              value={schedule.entryTime}
+              value={formatTime(schedule.entryTime)}
               onChange={(value) => onUpdate(day, 'entryTime', value)}
             />
             <TimeInput
               label="Salida"
-              value={schedule.exitTime}
+              value={formatTime(schedule.exitTime)}
               onChange={(value) => onUpdate(day, 'exitTime', value)}
             />
           </div>
 
-          <div className="mb-2 flex items-center">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={schedule.hasLunch}
-                onChange={(e) => onUpdate(day, 'hasLunch', e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-              />
-              <span className="ml-2 text-xs text-gray-600">Almuerzo</span>
-            </label>
-          </div>
-
-          {schedule.hasLunch && (
-            <div className="grid grid-cols-2 gap-2">
-              <TimeInput
-                label="Inicio almuerzo"
-                value={schedule.lunchStart}
-                onChange={(value) => onUpdate(day, 'lunchStart', value)}
-              />
-              <TimeInput
-                label="Fin almuerzo"
-                value={schedule.lunchEnd}
-                onChange={(value) => onUpdate(day, 'lunchEnd', value)}
-              />
+          <div className="flex justify-end gap-2 mt-2">
+            <div className="flex gap-2">
+              <button
+                onClick={onEdit}
+                className="bg-blue-500 text-white px-2 py-1 text-xs rounded border border-blue-500 hover:bg-blue-600"
+              >
+                Editar
+              </button>
+              <button
+                onClick={onDelete}
+                className="bg-red-500 text-white px-2 py-1 text-xs rounded border border-red-500 hover:bg-red-600"
+              >
+                Eliminar
+              </button>
+              <button
+                onClick={() => onApplyToAll(day)}
+                className="bg-green-500 text-white px-3 py-1 text-xs rounded border border-green-500 hover:bg-green-600"
+              >
+                Aplicar a todos
+              </button>
             </div>
-          )}
+          </div>
         </>
       )}
     </div>
@@ -149,40 +160,40 @@ function Settings() {
       },
       Martes: {
         isWorkDay: true,
-        entryTime: '8:00 AM',
-        exitTime: '5:00 PM',
+        entryTime: '08:00',
+        exitTime: '17:00',
         hasLunch: true,
-        lunchStart: '1:00 PM',
-        lunchEnd: '2:00 PM'
+        lunchStart: '13:00',
+        lunchEnd: '14:00'
       },
       Miércoles: {
         isWorkDay: true,
-        entryTime: '8:00 AM',
-        exitTime: '5:00 PM',
+        entryTime: '08:00',
+        exitTime: '17:00',
         hasLunch: true,
-        lunchStart: '1:00 PM',
-        lunchEnd: '2:00 PM'
+        lunchStart: '13:00',
+        lunchEnd: '14:00'
       },
       Jueves: {
         isWorkDay: true,
-        entryTime: '8:00 AM',
-        exitTime: '5:00 PM',
+        entryTime: '08:00',
+        exitTime: '17:00',
         hasLunch: true,
-        lunchStart: '1:00 PM',
-        lunchEnd: '2:00 PM'
+        lunchStart: '13:00',
+        lunchEnd: '14:00'
       },
       Viernes: {
         isWorkDay: true,
-        entryTime: '8:00 AM',
-        exitTime: '4:00 PM',
+        entryTime: '08:00',
+        exitTime: '16:00',
         hasLunch: true,
-        lunchStart: '1:00 PM',
-        lunchEnd: '2:00 PM'
+        lunchStart: '13:00',
+        lunchEnd: '14:00'
       },
       Sábado: {
         isWorkDay: true,
-        entryTime: '8:00 AM',
-        exitTime: '1:00 PM',
+        entryTime: '08:00',
+        exitTime: '13:00',
         hasLunch: false,
         lunchStart: '',
         lunchEnd: ''
@@ -199,33 +210,32 @@ function Settings() {
   });
   const [horarios, setHorarios] = useState([]);
 
-  // Cargar horarios reales desde el backend
+  // Cargar horarios reales desde el backend y mapearlos a los días
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/horarios`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          // Solo toma el primer horario (puedes adaptar para varios)
-          const horario = data[0];
+          // Mapear los horarios a los días de la semana
+          const dias = Object.keys(settings.schedules);
+          const newSchedules = { ...settings.schedules };
+          data.forEach((horario, idx) => {
+            if (dias[idx]) {
+              newSchedules[dias[idx]] = {
+                ...newSchedules[dias[idx]],
+                entryTime: horario.hora_entrada ? horario.hora_entrada.substring(0,5) : '',
+                exitTime: horario.hora_salida ? horario.hora_salida.substring(0,5) : '',
+                descripcion: horario.descripcion || ''
+              };
+            }
+          });
           setSettings(prev => ({
             ...prev,
-            schedules: {
-              ...prev.schedules,
-              Lunes: {
-                ...prev.schedules.Lunes,
-                entryTime: horario.hora_entrada ? horario.hora_entrada.substring(0,5) : '',
-                exitTime: horario.hora_salida ? horario.hora_salida.substring(0,5) : ''
-              }
-            }
+            schedules: newSchedules
           }));
         }
+        setHorarios(data);
       });
-  }, []);
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/horarios`)
-      .then(res => res.json())
-      .then(data => setHorarios(data));
   }, []);
 
   const handleUpdateSchedule = (day, field, value) => {
@@ -279,6 +289,153 @@ function Settings() {
     });
   };
 
+  const handleAddHorario = async () => {
+    if (!newHorario.descripcion || !newHorario.hora_entrada || !newHorario.hora_salida) {
+      Swal.fire({ icon: 'warning', title: 'Campos requeridos', text: 'Completa todos los campos.' });
+      return;
+    }
+
+    // Asegurarse de que las horas están en formato 24h
+    const horarioToSend = {
+      ...newHorario,
+      hora_entrada: newHorario.hora_entrada,
+      hora_salida: newHorario.hora_salida
+    };
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/horarios`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(horarioToSend)
+      });
+      if (res.ok) {
+        Swal.fire({ icon: 'success', title: 'Horario agregado', timer: 1500, showConfirmButton: false });
+        setShowAddModal(false);
+        setNewHorario({ descripcion: '', hora_entrada: '', hora_salida: '' });
+        // Refrescar horarios
+        fetch(`${API_BASE_URL}/api/horarios`).then(res => res.json()).then(setHorarios);
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo agregar el horario.' });
+      }
+    } catch (e) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
+    }
+  };
+
+  const handleDeleteHorario = async (id_horario) => {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar horario?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    });
+    if (confirm.isConfirmed) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/horarios/${id_horario}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          Swal.fire({ icon: 'success', title: 'Horario eliminado', timer: 1200, showConfirmButton: false });
+          // Refrescar horarios
+          fetch(`${API_BASE_URL}/api/horarios`).then(res => res.json()).then(setHorarios);
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo eliminar el horario.' });
+        }
+      } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
+      }
+    }
+  };
+
+  const handleEditHorario = async (horario) => {
+    const { value: formValues } = await Swal.fire({
+      title: 'Editar horario',
+      html:
+        `<input id="swal-desc" class="swal2-input" placeholder="Descripción" value="${horario.descripcion || ''}">
+         <input id="swal-entrada" class="swal2-input" type="time" value="${horario.hora_entrada || ''}">
+         <input id="swal-salida" class="swal2-input" type="time" value="${horario.hora_salida || ''}">`,
+      focusConfirm: false,
+      preConfirm: () => {
+        return {
+          descripcion: document.getElementById('swal-desc').value,
+          hora_entrada: document.getElementById('swal-entrada').value,
+          hora_salida: document.getElementById('swal-salida').value
+        };
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3B82F6',
+      cancelButtonColor: '#6B7280',
+    });
+    if (formValues) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/horarios/${horario.id_horario}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formValues)
+        });
+        if (res.ok) {
+          Swal.fire({ icon: 'success', title: 'Horario actualizado', timer: 1200, showConfirmButton: false });
+          fetch(`${API_BASE_URL}/api/horarios`).then(res => res.json()).then(setHorarios);
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el horario.' });
+        }
+      } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
+      }
+    }
+  };
+
+  const handleShowAddHorarioModal = async () => {
+    const { value: formValues } = await Swal.fire({
+      title: 'Agregar horario',
+      html:
+        `<input id="swal-desc" class="swal2-input" placeholder="Descripción">
+         <input id="swal-entrada" class="swal2-input" type="time" placeholder="Hora entrada">
+         <input id="swal-salida" class="swal2-input" type="time" placeholder="Hora salida">`,
+      focusConfirm: false,
+      preConfirm: () => {
+        return {
+          descripcion: document.getElementById('swal-desc').value,
+          hora_entrada: document.getElementById('swal-entrada').value,
+          hora_salida: document.getElementById('swal-salida').value
+        };
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3B82F6',
+      cancelButtonColor: '#6B7280',
+    });
+    if (formValues) {
+      if (!formValues.descripcion || !formValues.hora_entrada || !formValues.hora_salida) {
+        Swal.fire({ icon: 'warning', title: 'Campos requeridos', text: 'Completa todos los campos.' });
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/horarios`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formValues)
+        });
+        if (res.ok) {
+          Swal.fire({ icon: 'success', title: 'Horario agregado', timer: 1500, showConfirmButton: false });
+          // Refrescar horarios
+          fetch(`${API_BASE_URL}/api/horarios`).then(res => res.json()).then(setHorarios);
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo agregar el horario.' });
+        }
+      } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
+      }
+    }
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -319,56 +476,32 @@ function Settings() {
       <div className="rounded-lg bg-white p-6 shadow-sm">
         {activeTab === 'schedules' && (
           <div className="space-y-6">
-            {/* Tabla de horarios */}
-            <div className="mb-8 overflow-x-auto">
-              <table className="min-w-full border text-center text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="border px-4 py-2">ID</th>
-                    <th className="border px-4 py-2">Hora Entrada</th>
-                    <th className="border px-4 py-2">Hora Salida</th>
-                    <th className="border px-4 py-2">Descripción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {horarios.map(h => (
-                    <tr key={h.id_horario}>
-                      <td className="border px-4 py-2">{h.id_horario}</td>
-                      <td className="border px-4 py-2">{h.hora_entrada}</td>
-                      <td className="border px-4 py-2">{h.hora_salida}</td>
-                      <td className="border px-4 py-2">{h.descripcion}</td>
-                    </tr>
-                  ))}
-                  {horarios.length === 0 && (
-                    <tr><td colSpan={4} className="border px-4 py-2 text-gray-400">No hay horarios registrados</td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Object.entries(settings.schedules).map(([day, schedule]) => (
-                <DaySchedule
-                  key={day}
-                  day={day}
-                  schedule={schedule}
-                  onUpdate={handleUpdateSchedule}
-                />
+              {horarios.map((horario, idx) => (
+                <div key={horario.id_horario || idx}>
+                  <DaySchedule
+                    day={horario.descripcion || `Horario ${idx+1}`}
+                    schedule={{
+                      isWorkDay: true,
+                      entryTime: horario.hora_entrada ? horario.hora_entrada.substring(0,5) : '',
+                      exitTime: horario.hora_salida ? horario.hora_salida.substring(0,5) : '',
+                      descripcion: horario.descripcion || ''
+                    }}
+                    onUpdate={handleUpdateSchedule}
+                    onApplyToAll={handleApplyToAll}
+                    onEdit={() => handleEditHorario(horario)}
+                    onDelete={() => handleDeleteHorario(horario.id_horario)}
+                  />
+                </div>
               ))}
             </div>
 
             <div className="flex justify-end space-x-4">
               <button
-                onClick={() => handleApplyToAll('Lunes')}
-                className="px-4 py-2 text-sm text-gray-600 transition-colors hover:text-gray-800"
-              >
-                Aplicar Lunes a todos
-              </button>
-              <button
-                onClick={handleSave}
+                onClick={handleShowAddHorarioModal}
                 className="rounded-lg bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600"
               >
-                Guardar cambios
+                Agregar horario
               </button>
             </div>
           </div>
