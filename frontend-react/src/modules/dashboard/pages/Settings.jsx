@@ -226,6 +226,7 @@ function Settings() {
     }
   });
   const [horarios, setHorarios] = useState([]);
+  const [inasistenciaFecha, setInasistenciaFecha] = useState(new Date().toISOString().slice(0, 10));
 
   // Cargar horarios reales desde el backend y mapearlos a los días
   useEffect(() => {
@@ -466,6 +467,28 @@ function Settings() {
     }
   };
 
+  const handleRevisarInasistencias = async () => {
+    if (!inasistenciaFecha) {
+      Swal.fire({ icon: 'warning', title: 'Fecha requerida', text: 'Selecciona una fecha para revisar inasistencias.' });
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/horarios/revisar-inasistencias`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fecha: inasistenciaFecha })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        Swal.fire({ icon: 'info', title: 'Resultado', text: data.mensaje || 'Revisión completada.' });
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo revisar inasistencias.' });
+      }
+    } catch (e) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
+    }
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -482,10 +505,10 @@ function Settings() {
             Horarios
           </TabButton>
           <TabButton
-            active={activeTab === 'permissions'}
-            onClick={() => setActiveTab('permissions')}
+            active={activeTab === 'inasistencias'}
+            onClick={() => setActiveTab('inasistencias')}
           >
-            Permisos
+            Inasistencias
           </TabButton>
           <TabButton
             active={activeTab === 'lateArrivals'}
@@ -538,9 +561,27 @@ function Settings() {
           </div>
         )}
 
-        {activeTab === 'permissions' && (
+        {activeTab === 'inasistencias' && (
           <div className="py-8 text-center text-gray-500">
-            Configuración de permisos (En desarrollo)
+            <div className="flex flex-col items-center space-y-4">
+              <h2 className="mb-2 text-lg font-semibold text-gray-700">Revisar Inasistencias</h2>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="date"
+                  id="fecha-inasistencia"
+                  className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={inasistenciaFecha}
+                  onChange={e => setInasistenciaFecha(e.target.value)}
+                  max={new Date().toISOString().slice(0, 10)}
+                />
+                <button
+                  onClick={handleRevisarInasistencias}
+                  className="px-4 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                >
+                  Revisar inasistencias
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
