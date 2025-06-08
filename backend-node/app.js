@@ -5,6 +5,7 @@ const usuarioRoutes = require('./src/routes/userRoutes'); // Importa rutas de us
 const cargoRoutes = require('./src/routes/cargoRoutes'); // Importa las rutas de cargo
 const novedadRoutes = require('./src/routes/novedadRoutes'); // Importa las rutas de novedades
 const reporteRoutes = require('./src/routes/reporteRoutes'); // Importa las rutas de reportes
+const horarioRoutes = require('./src/routes/horarioRoutes'); // Importa las rutas de horarios
 // const swaggerUi = require('swagger-ui-express'); // Importa Swagger UI
 // const swaggerJsdoc = require('swagger-jsdoc'); // Importa Swagger JSDoc
 const swaggerDocs = require('./swaggerConfig'); // Importa la configuración de Swagger
@@ -46,6 +47,7 @@ swaggerDocs(app); // Llama a la función de configuración de Swagger
 
 //parseo del body
 app.use((req, res, next) => {
+  console.log(`🔗 Ruta solicitada: ${req.method} ${req.originalUrl}`); // Log de la ruta solicitada
   if (req.originalUrl === '/api/usuarios' && req.method === 'POST') {//verificar ruta y metodo
     //No aplica el middleware express.json()
     next();
@@ -69,6 +71,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cargos', cargoRoutes);
 app.use('/api/novedades', novedadRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/horarios', horarioRoutes);
 
 // ruta principal al frontend (Vite)
 app.get('/', (req, res) => {

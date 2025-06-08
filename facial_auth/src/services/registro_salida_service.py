@@ -173,3 +173,43 @@ def registrar_salida(id_usuario, comentarios=""):
     finally:
         if connection:
             connection.close()
+
+# -----------------------------------------
+# 5. Obtener hora de salida por documento
+# -----------------------------------------
+def obtener_hora_salida_por_documento(numero_documento):
+    """
+    Obtiene la hora de salida (TIME) del horario asociado al usuario por su documento.
+    Retorna None si no encuentra el usuario o el horario.
+    """
+    connection = None
+    try:
+        print(f"🔎 Buscando hora de salida para documento: {numero_documento}")
+        connection = get_connection()
+        if connection is None:
+            print("❌ Sin conexión a la base de datos")
+            return None
+
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            SELECT h.hora_salida
+            FROM usuario u
+            JOIN cargo c ON u.id_cargo = c.id_cargo
+            JOIN horario_laboral h ON c.id_horario = h.id_horario
+            WHERE u.numero_documento = %s
+        """
+        cursor.execute(query, (numero_documento,))
+        result = cursor.fetchone()
+        if result:
+            print(f"✅ Hora de salida encontrada: {result['hora_salida']}")
+            return result['hora_salida']  # tipo datetime.time
+        else:
+            print(f"⚠️ No se encontró horario para el documento {numero_documento}")
+            return None
+    except Exception as e:
+        print(f"❌ Error al obtener hora de salida: {e}")
+        return None
+    finally:
+        if connection:
+            connection.close()
+            print("🔒 Conexión a la base de datos cerrada")
