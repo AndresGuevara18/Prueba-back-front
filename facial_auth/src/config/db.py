@@ -9,8 +9,7 @@ def get_connection():
             database='colpryst_col3',
             user='root',
             #password=''
-            #password='admin123' # pass mechas
-            password=''
+            password='admin123' # pass mechas
         )
         if connection.is_connected():
             print("✅ Conexión a la base de datos exitosa")

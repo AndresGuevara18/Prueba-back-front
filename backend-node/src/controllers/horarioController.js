@@ -111,6 +111,22 @@ const horarioLaboralController = {
       res.status(500).json({ error: 'Error al aplicar el horario a todos los cargos.' });
     }
   },
+
+  // Llamar al procedimiento revisar_inasistencias
+  revisarInasistencias: async (req, res) => {
+    console.log('Controlador: revisarInasistencias');
+    try {
+      const { fecha } = req.body;
+      if (!fecha) {
+        return res.status(400).json({ error: 'La fecha es requerida.' });
+      }
+      const resultado = await horarioLaboralService.revisarInasistencias(fecha);
+      res.json(resultado);
+    } catch (error) {
+      console.error('❌ Error en revisarInasistencias (Controller):', error);
+      res.status(500).json({ error: 'Error al revisar inasistencias.' });
+    }
+  },
 };
 
 module.exports = horarioLaboralController;
