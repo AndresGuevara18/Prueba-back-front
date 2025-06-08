@@ -129,6 +129,31 @@ router.put('/:id_horario', horarioController.updateHorario);
  */
 router.delete('/:id_horario', horarioController.deleteHorario);
 
+/**
+ * @swagger
+ * /api/horarios/revisar-inasistencias:
+ *   post:
+ *     summary: Llama al procedimiento revisar_inasistencias para una fecha dada
+ *     tags: [Horarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fecha:
+ *                 type: string
+ *                 format: date
+ *                 example: '2025-07-06'
+ *     responses:
+ *       200:
+ *         description: Resultado del procedimiento
+ *       400:
+ *         description: Falta el parámetro fecha
+ */
+router.post('/revisar-inasistencias', horarioController.revisarInasistencias);
+
 
 
 module.exports = router;

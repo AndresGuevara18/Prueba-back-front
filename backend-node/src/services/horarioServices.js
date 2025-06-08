@@ -125,6 +125,20 @@ const horarioLaboralService = {
     }
   },
 
+  // Llamar al procedimiento revisar_inasistencias
+  revisarInasistencias: async (fecha_revision) => {
+    try {
+      const [resultSets] = await db.promise().query('CALL revisar_inasistencias(?)', [fecha_revision]);
+      // El procedimiento retorna un mensaje en el último SELECT
+      // resultSets[0] es el array de resultados del SELECT final
+      const mensaje = resultSets && resultSets[0] && resultSets[0].mensaje ? resultSets[0].mensaje : 'Revisión completada.';
+      return { mensaje };
+    } catch (err) {
+      console.error('❌ Error en revisarInasistencias (Service):', err);
+      throw err;
+    }
+  },
+
   // Verificar si un horario existe (similar al método en cargoService)
   /*horarioExists: async (id_horario) => {
     const query = 'SELECT COUNT(*) AS count FROM horario_laboral WHERE id_horario = ?';
