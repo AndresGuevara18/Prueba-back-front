@@ -8,11 +8,12 @@ function Reports() {
   const [dateRange, setDateRange] = useState({
     start: '',
     end: ''
-  }); const [reportData, setReportData] = useState([]);
+  });
+  const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Mapeo de tipos de reporte a endpoints
   const reportEndpoints = {
@@ -22,7 +23,6 @@ function Reports() {
     absences: 'ausencias'
   };
 
-  // Función para obtener reportes
   const fetchReport = async () => {
     if (!dateRange.start || !dateRange.end) {
       setError('Por favor, selecciona las fechas de inicio y fin');
@@ -35,8 +35,7 @@ function Reports() {
     try {
       const endpoint = reportEndpoints[selectedType];
       const apiUrl = `${API_BASE_URL}/api/reportes/${endpoint}?fechaInicio=${dateRange.start}&fechaFin=${dateRange.end}`;
-
-      console.log('Fetching report from:', apiUrl);
+      
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -44,66 +43,46 @@ function Reports() {
       }
 
       const data = await response.json();
-      console.log('Report data received:', data);
       setReportData(Array.isArray(data) ? data : []);
+      setCurrentPage(1);
     } catch (err) {
-      console.error('Error fetching report:', err);
       setError(err.message);
       setReportData([]);
     } finally {
       setLoading(false);
     }
   };
-  // Función para normalizar texto (eliminar tildes y convertir a minúsculas)
-  const normalizeText = (text) => {
-    if (!text) return '';
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Eliminar tildes y acentos
-      .replace(/[^\w\s]/g, '') // Eliminar caracteres especiales excepto espacios
-      .trim();
-  };
 
-  // Filtrar datos basado en el término de búsqueda
+  // Filtrar datos según el término de búsqueda
   const filteredData = useMemo(() => {
-    if (!reportData.length) return [];
-
-    const normalizedSearchTerm = normalizeText(searchTerm);
-    if (!normalizedSearchTerm) return reportData;
-
     return reportData.filter(item => {
-      const searchableFields = [
-        item.nombre_completo,
-        item.comentarios,
-        item.motivo
-      ];
-
-      return searchableFields.some(field =>
-        normalizeText(field).includes(normalizedSearchTerm)
-      );
+      const searchStr = searchTerm.toLowerCase();
+      switch (selectedType) {
+        case 'attendance':
+          return item.nombre_completo?.toLowerCase().includes(searchStr);
+        case 'lateArrivals':
+        case 'earlyDepartures':
+          return (
+            item.nombre_completo?.toLowerCase().includes(searchStr) ||
+            item.comentarios?.toLowerCase().includes(searchStr)
+          );
+        case 'absences':
+          return (
+            item.nombre_completo?.toLowerCase().includes(searchStr) ||
+            item.motivo?.toLowerCase().includes(searchStr)
+          );
+        default:
+          return true;
+      }
     });
-  }, [reportData, searchTerm]);
+  }, [reportData, searchTerm, selectedType]);
 
   // Calcular datos de paginación
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = filteredData.slice(startIndex, endIndex);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Resetear página cuando cambian los filtros
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedType, dateRange.start, dateRange.end]);
-
-  // Obtener reporte automáticamente cuando cambian las fechas o el tipo
-  useEffect(() => {
-    if (dateRange.start && dateRange.end) {
-      fetchReport();
-    }
-  }, [selectedType, dateRange.start, dateRange.end]);
-
-  // Función para renderizar las columnas según el tipo de reporte
   const renderTableHeaders = () => {
     switch (selectedType) {
       case 'attendance':
@@ -123,7 +102,7 @@ function Reports() {
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nombre</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Fecha</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Entrada</th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Notificación</th>
+            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Esperada</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Comentarios</th>
           </tr>
         );
@@ -133,7 +112,7 @@ function Reports() {
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nombre</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Fecha</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Salida</th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Notificación</th>
+            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Esperada</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Comentarios</th>
           </tr>
         );
@@ -150,13 +129,12 @@ function Reports() {
     }
   };
 
-  // Función para renderizar las filas según el tipo de reporte
   const renderTableRows = () => {
     if (loading) {
       const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 6 : 5;
       return (
         <tr>
-          <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-900" colSpan={colSpan}>
+          <td colSpan={colSpan} className="px-6 py-4 text-center text-sm text-gray-500">
             Cargando datos del reporte...
           </td>
         </tr>
@@ -167,25 +145,25 @@ function Reports() {
       const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 6 : 5;
       return (
         <tr>
-          <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-red-500" colSpan={colSpan}>
+          <td colSpan={colSpan} className="px-6 py-4 text-center text-sm text-red-500">
             Error: {error}
           </td>
         </tr>
       );
     }
 
-    if (!filteredData.length) {
+    if (!currentItems.length) {
       const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 6 : 5;
       return (
         <tr>
-          <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500" colSpan={colSpan}>
+          <td colSpan={colSpan} className="px-6 py-4 text-center text-sm text-gray-500">
             No hay datos para mostrar
           </td>
         </tr>
       );
     }
 
-    return currentData.map((item, index) => {
+    return currentItems.map((item, index) => {
       switch (selectedType) {
         case 'attendance':
           return (
@@ -206,17 +184,22 @@ function Reports() {
                 {item.fecha_hora_salida ? new Date(item.fecha_hora_salida).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '-'}
               </td>
               <td className="whitespace-nowrap px-6 py-4">
-                <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${item.fecha_hora_entrada && item.fecha_hora_salida ? 'bg-green-100 text-green-800' :
-                    item.fecha_hora_entrada ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                  }`}>
-                  {item.fecha_hora_entrada && item.fecha_hora_salida ? 'Completa' :
-                    item.fecha_hora_entrada ? 'Entrada Registrada' : 'Sin Registro'}
+                <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                  item.fecha_hora_entrada && item.fecha_hora_salida 
+                    ? 'bg-green-100 text-green-800'
+                    : item.fecha_hora_entrada 
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {item.fecha_hora_entrada && item.fecha_hora_salida 
+                    ? 'Completa'
+                    : item.fecha_hora_entrada 
+                    ? 'Entrada Registrada'
+                    : 'Sin Registro'}
                 </span>
               </td>
             </tr>
           );
-
         case 'lateArrivals':
           return (
             <tr key={`${item.id_notificacion}-${index}`} className="hover:bg-gray-50">
@@ -237,7 +220,6 @@ function Reports() {
               </td>
             </tr>
           );
-
         case 'earlyDepartures':
           return (
             <tr key={`${item.id_notificacion}-${index}`} className="hover:bg-gray-50">
@@ -258,7 +240,6 @@ function Reports() {
               </td>
             </tr>
           );
-
         case 'absences':
           return (
             <tr key={`${item.id_inasistencia}-${index}`} className="hover:bg-gray-50">
@@ -273,45 +254,25 @@ function Reports() {
               </td>
             </tr>
           );
-
         default:
           return null;
       }
     });
   };
 
-  // Función para exportar a CSV
   const exportToCSV = () => {
-    if (!filteredData.length) return;
+    const filename = `reporte-${selectedType}-${new Date().toISOString().slice(0,10)}.csv`;
+    const headers = {
+      attendance: ['Nombre', 'Fecha Entrada', 'Hora Entrada', 'Fecha Salida', 'Hora Salida', 'Estado'],
+      lateArrivals: ['Nombre', 'Fecha', 'Hora Entrada', 'Hora Esperada', 'Comentarios'],
+      earlyDepartures: ['Nombre', 'Fecha', 'Hora Salida', 'Hora Esperada', 'Comentarios'],
+      absences: ['Nombre', 'Fecha', 'Motivo']
+    };
 
-    let headers = [];
-    let filename = '';
-
-    // Definir headers y filename según el tipo de reporte
-    switch (selectedType) {
-      case 'attendance':
-        headers = ['Nombre', 'Fecha Entrada', 'Hora Entrada', 'Fecha Salida', 'Hora Salida', 'Estado'];
-        filename = 'reporte_asistencia.csv';
-        break;
-      case 'lateArrivals':
-        headers = ['Nombre', 'Fecha', 'Hora Entrada', 'Hora Notificación', 'Comentarios'];
-        filename = 'reporte_llegadas_tarde.csv';
-        break;
-      case 'earlyDepartures':
-        headers = ['Nombre', 'Fecha', 'Hora Salida', 'Hora Notificación', 'Comentarios'];
-        filename = 'reporte_salidas_temprano.csv';
-        break;
-      case 'absences':
-        headers = ['Nombre', 'Fecha', 'Motivo'];
-        filename = 'reporte_ausencias.csv';
-        break;
-      default:
-        return;
-    }
-
-    // Crear contenido CSV
     const csvContent = [
-      headers.join(','),
+      // BOM for Excel to reconocer UTF-8
+      '\ufeff' + headers[selectedType].join(','),
+      // Filas de datos
       ...filteredData.map(item => {
         switch (selectedType) {
           case 'attendance':
@@ -369,177 +330,210 @@ function Reports() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Reportes</h1>
-      </div>
-
-      <div className="rounded-lg bg-white p-6 shadow-sm">
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Tipo de reporte
-            </label>
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="attendance">Asistencia</option>
-              <option value="lateArrivals">Llegadas tarde</option>
-              <option value="earlyDepartures">Salidas temprano</option>
-              <option value="absences">Ausencias</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Fecha inicio
-            </label>
-            <input
-              type="date"
-              value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Fecha fin
-            </label>
-            <input
-              type="date"
-              value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Buscar
-            </label>
-            <div className="relative">              <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar por nombre, comentarios, motivo..."
-              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-            </div>
-          </div>
-        </div>        <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-600">
-              {filteredData.length > 0 && (
-                <span>
-                  Mostrando {startIndex + 1}-{Math.min(endIndex, filteredData.length)} de {filteredData.length} registro(s)
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">Mostrar:</label>
+      </div>      <div className="flex flex-col h-[calc(100vh-12rem)] bg-white rounded-lg shadow-sm">
+        {/* Header y Filtros - Fijo en la parte superior */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Tipo de reporte
+              </label>
               <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="rounded border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
+                <option value="attendance">Asistencia</option>
+                <option value="lateArrivals">Llegadas tarde</option>
+                <option value="earlyDepartures">Salidas temprano</option>
+                <option value="absences">Ausencias</option>
               </select>
-              <span className="text-sm text-gray-600">por página</span>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Fecha inicio
+              </label>
+              <input
+                type="date"
+                value={dateRange.start}
+                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Fecha fin
+              </label>
+              <input
+                type="date"
+                value={dateRange.end}
+                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Buscar
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar por nombre..."
+                  className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+              </div>
             </div>
           </div>
-          <button
-            onClick={exportToCSV}
-            disabled={filteredData.length === 0}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300"
-          >
-            <Download className="h-5 w-5" />
-            Exportar CSV
-          </button>
-        </div>        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              {renderTableHeaders()}
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {renderTableRows()}
-            </tbody>
-          </table>
+
+          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <button
+              onClick={fetchReport}
+              className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!dateRange.start || !dateRange.end}
+            >
+              Generar Reporte
+            </button>
+            
+            <button
+              onClick={exportToCSV}
+              disabled={filteredData.length === 0}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              <Download className="h-5 w-5" />
+              Exportar CSV
+            </button>
+          </div>
         </div>
 
-        {/* Paginación */}
-        {filteredData.length > 0 && totalPages > 1 && (
-          <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="text-sm text-gray-600">
-              Página {currentPage} de {totalPages}
+        {/* Contenido principal - Área scrollable */}
+        <div className="flex-1 p-6 overflow-auto min-h-0">
+          {loading && (
+            <div className="text-center text-gray-500 mt-8">
+              Cargando datos del reporte...
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Primero
-              </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Anterior
-              </button>
+          )}
+          
+          {error && (
+            <div className="text-center text-red-500 mt-8">
+              Error: {error}
+            </div>
+          )}
+          
+          {!loading && !error && reportData.length === 0 && (
+            <div className="text-center text-gray-500 mt-8">
+              No hay datos para mostrar.
+            </div>
+          )}
 
-              {/* Números de página */}
-              <div className="flex gap-1">
-                {(() => {
-                  const pages = [];
-                  const showPages = 5;
-                  let startPage = Math.max(1, currentPage - Math.floor(showPages / 2));
-                  let endPage = Math.min(totalPages, startPage + showPages - 1);
+          {!loading && !error && reportData.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  {renderTableHeaders()}
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {renderTableRows()}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
-                  if (endPage - startPage + 1 < showPages) {
-                    startPage = Math.max(1, endPage - showPages + 1);
-                  }
-
-                  for (let i = startPage; i <= endPage; i++) {
-                    pages.push(
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(i)}
-                        className={`rounded-lg border px-3 py-2 text-sm ${currentPage === i
-                            ? 'border-blue-500 bg-blue-500 text-white'
-                            : 'border-gray-300 hover:bg-gray-50'
-                          }`}
-                      >
-                        {i}
-                      </button>
-                    );
-                  }
-                  return pages;
-                })()}
+        {/* Paginación - Fija en la parte inferior */}
+        {filteredData.length > 0 && (
+          <div className="border-t border-gray-200 p-4 bg-white">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-gray-600">
+                  Mostrando {indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredData.length)} de {filteredData.length} resultados
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="rounded border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value={5}>5</option>
+                    <option value={8}>8</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span className="text-sm text-gray-600">por página</span>
+                </div>
               </div>
 
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Siguiente
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Último
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Primero
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Anterior
+                </button>
+
+                {/* Números de página */}
+                <div className="flex gap-1">
+                  {(() => {
+                    let pagesToShow = [];
+                    let start = Math.max(1, currentPage - 1);
+                    let end = Math.min(start + 2, totalPages);
+                    
+                    // Ajustar el inicio si estamos al final
+                    if (end === totalPages) {
+                      start = Math.max(1, end - 2);
+                    }
+                    
+                    for (let i = start; i <= end; i++) {
+                      pagesToShow.push(
+                        <button
+                          key={i}
+                          onClick={() => setCurrentPage(i)}
+                          className={`rounded-lg border px-3 py-2 text-sm ${
+                            currentPage === i
+                              ? 'border-blue-500 bg-blue-500 text-white'
+                              : 'border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      );
+                    }
+                    return pagesToShow;
+                  })()}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Siguiente
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Último
+                </button>
+              </div>
             </div>
           </div>
         )}
