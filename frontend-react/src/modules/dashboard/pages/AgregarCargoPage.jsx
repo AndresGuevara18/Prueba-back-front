@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
+import Swal from 'sweetalert2';
 
 const AgregarCargoPage = () => {
     //Almacena el valor
@@ -37,7 +38,11 @@ const AgregarCargoPage = () => {
       if (!response.ok) {
         // Si el backend envía un error y alerta, mostrarlo como alerta
         if (data.alert) {
-          alert(data.error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.error
+          });
         }
         setMensaje(data.error || '❌ Error al agregar el cargo.');
         return;
