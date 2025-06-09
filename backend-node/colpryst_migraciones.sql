@@ -152,11 +152,15 @@ DELIMITER ;
 
 -- PROCEDIMIENTO: revisar_inasistencias
 DELIMITER $$
+
 CREATE PROCEDURE revisar_inasistencias(IN fecha_revision DATE)
 BEGIN
+  -- Eliminar usando la clave primaria para evitar el error
   DELETE na FROM no_asistencia na
   JOIN usuario u ON na.id_usuario = u.id_usuario
   WHERE na.fecha = fecha_revision;
+  
+  -- Insertar inasistencias
   INSERT INTO no_asistencia (id_usuario, fecha, motivo)
   SELECT u.id_usuario, fecha_revision, 'No marcó entrada'
   FROM usuario u
@@ -166,6 +170,16 @@ BEGIN
     WHERE re.id_usuario = u.id_usuario
       AND DATE(re.fecha_hora) = fecha_revision
   );
+
+  -- 1. Retornar la lista de inasistentes
+  SELECT na.id_inasistencia, u.numero_documento, u.nombre_empleado, c.nombre_cargo
+  FROM no_asistencia na
+  JOIN usuario u ON na.id_usuario = u.id_usuario
+  JOIN cargo c ON u.id_cargo = c.id_cargo
+  WHERE na.fecha = fecha_revision;
+
+  -- 2. Retornar el mensaje
   SELECT CONCAT('Se registraron ', ROW_COUNT(), ' inasistencias para el ', fecha_revision) AS mensaje;
 END$$
+
 DELIMITER ;

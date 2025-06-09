@@ -296,6 +296,8 @@ const usuarioService = {
     const queryCheckRegistro = 'SELECT COUNT(*) AS total FROM registro_entrada WHERE id_usuario = ?';
     const queryCheckRegistroSalida = 'SELECT COUNT(*) AS total FROM registro_salida WHERE id_usuario = ?';
     const queryCheckNotificacionSalida = 'SELECT COUNT(*) AS total FROM notificacion_salida_temprana WHERE id_usuario = ?';
+    const queryCheckNoAsistencia = 'SELECT COUNT(*) AS total FROM no_asistencia WHERE id_usuario = ?';
+    const queryCheckNotificacionEntradaTarde = 'SELECT COUNT(*) AS total FROM notificacion_entrada_tarde WHERE id_entrada IN (SELECT id_entrada FROM registro_entrada WHERE id_usuario = ?)';
     const queryReco = 'DELETE FROM reconocimiento_facial WHERE id_usuario = ?';
     const queryUser = 'DELETE FROM usuario WHERE id_usuario = ?';
         
@@ -324,6 +326,18 @@ const usuarioService = {
       if (notificacionSalidaResult[0].total > 0) {
         console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${notificacionSalidaResult[0].total} notificaciones de salida temprana asociadas.`);
         return { exists: true, hasNotificacionesSalida: true };
+      }
+      // Verificar si hay inasistencias asociadas
+      const [noAsistenciaResult] = await db.promise().query(queryCheckNoAsistencia, [parseInt(id_usuario)]);
+      if (noAsistenciaResult[0].total > 0) {
+        console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${noAsistenciaResult[0].total} registros de inasistencia asociados.`);
+        return { exists: true, hasNoAsistencia: true };
+      }
+      // Verificar si hay notificaciones de entrada tarde asociadas
+      const [notificacionEntradaTardeResult] = await db.promise().query(queryCheckNotificacionEntradaTarde, [parseInt(id_usuario)]);
+      if (notificacionEntradaTardeResult[0].total > 0) {
+        console.log(`⚠️ No se puede eliminar el usuario ${id_usuario}, tiene ${notificacionEntradaTardeResult[0].total} notificaciones de entrada tarde asociadas.`);
+        return { exists: true, hasNotificacionesEntradaTarde: true };
       }
         
       // Eliminar reconocimiento facial primero (si no hay registros de entrada)

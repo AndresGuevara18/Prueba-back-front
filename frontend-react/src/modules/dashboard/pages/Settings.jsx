@@ -227,6 +227,7 @@ function Settings() {
   });
   const [horarios, setHorarios] = useState([]);
   const [inasistenciaFecha, setInasistenciaFecha] = useState(new Date().toISOString().slice(0, 10));
+  const [inasistentes, setInasistentes] = useState([]);
 
   // Cargar horarios reales desde el backend y mapearlos a los días
   useEffect(() => {
@@ -480,11 +481,14 @@ function Settings() {
       });
       const data = await res.json();
       if (res.ok) {
+        setInasistentes(data.inasistentes || []); // <-- Guardar la lista
         Swal.fire({ icon: 'info', title: 'Resultado', text: data.mensaje || 'Revisión completada.' });
       } else {
+        setInasistentes([]);
         Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo revisar inasistencias.' });
       }
     } catch (e) {
+      setInasistentes([]);
       Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo conectar al backend.' });
     }
   };
@@ -581,6 +585,32 @@ function Settings() {
                   Revisar inasistencias
                 </button>
               </div>
+              {/* Tabla temporal de inasistentes */}
+              {inasistentes.length > 0 && (
+                <div className="mt-6 w-full max-w-2xl">
+                  <h3 className="mb-2 text-base font-semibold text-gray-700">Usuarios que no asistieron</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border bg-white text-sm shadow">
+                      <thead>
+                        <tr className="bg-gray-200">
+                          <th className="border px-2 py-1">Documento</th>
+                          <th className="border px-2 py-1">Nombre</th>
+                          <th className="border px-2 py-1">Cargo</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {inasistentes.map((u, idx) => (
+                          <tr key={u.id_usuario || idx}>
+                            <td className="border px-2 py-1">{u.numero_documento}</td>
+                            <td className="border px-2 py-1">{u.nombre_empleado}</td>
+                            <td className="border px-2 py-1">{u.cargo || u.nombre_cargo || ''}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

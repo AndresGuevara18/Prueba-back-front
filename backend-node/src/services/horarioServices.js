@@ -129,10 +129,25 @@ const horarioLaboralService = {
   revisarInasistencias: async (fecha_revision) => {
     try {
       const [resultSets] = await db.promise().query('CALL revisar_inasistencias(?)', [fecha_revision]);
-      // El procedimiento retorna un mensaje en el último SELECT
-      // resultSets[0] es el array de resultados del SELECT final
-      const mensaje = resultSets && resultSets[0] && resultSets[0].mensaje ? resultSets[0].mensaje : 'Revisión completada.';
-      return { mensaje };
+      console.log('DEBUG revisar_inasistencias resultSets:', JSON.stringify(resultSets));
+      // resultSets puede ser un array de arrays si el procedimiento retorna varios SELECT
+      // Suponiendo que el primer SELECT es la lista de inasistentes y el último el mensaje
+      let inasistentes = [];
+      let mensaje = 'Revisión completada.';
+      if (Array.isArray(resultSets)) {
+        if (resultSets.length > 1) {
+          inasistentes = resultSets[0];
+          mensaje = resultSets[resultSets.length - 1][0]?.mensaje || mensaje;
+        } else if (resultSets.length === 1) {
+          // Si solo hay un resultado, puede ser solo mensaje o solo lista
+          if (resultSets[0][0]?.mensaje) {
+            mensaje = resultSets[0][0].mensaje;
+          } else {
+            inasistentes = resultSets[0];
+          }
+        }
+      }
+      return { mensaje, inasistentes };
     } catch (err) {
       console.error('❌ Error en revisarInasistencias (Service):', err);
       throw err;
