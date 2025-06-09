@@ -333,6 +333,12 @@ const usuarioController = {
       if (resultado.hasNotificacionesSalida) {
         return res.status(400).json({ error: '⚠️ No se puede eliminar porque el usuario tiene notificaciones de salida temprana asociadas.' });
       }
+      if (resultado.hasNotificacionesEntradaTarde) {
+        return res.status(400).json({ error: '⚠️ No se puede eliminar porque el usuario tiene notificaciones de entrada tarde asociadas.' });
+      }
+      if (resultado.hasNoAsistencia) {
+        return res.status(400).json({ error: '⚠️ No se puede eliminar porque el usuario tiene registros de inasistencia asociados.' });
+      }
       if (resultado.deleted) {
         return res.status(200).json({ message: '✅ Usuario eliminado correctamente.' });
       }

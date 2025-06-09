@@ -184,8 +184,14 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
         # Ajustar el cuadro al modo espejo
         if last_face_region and not movimiento_detectado:
             x, y, w, h = last_face_region
-            # Invertir la coordenada x para el modo espejo
-            x_mirror = display_frame.shape[1] - (x + w)
+            # EXPANDIR EL CUADRO UN 20%
+            margen_x = int(w * 0.2)
+            margen_y = int(h * 0.2)
+            x_exp = max(0, x - margen_x)
+            y_exp = max(0, y - margen_y)
+            w_exp = min(display_frame.shape[1] - x_exp, w + 2 * margen_x)
+            h_exp = min(display_frame.shape[0] - y_exp, h + 2 * margen_y)
+            x_mirror = display_frame.shape[1] - (x_exp + w_exp)
             if estado_reconocimiento == "reconocido":
                 color = (0, 255, 0)  # Verde
                 texto = "RECONOCIDO"
@@ -195,8 +201,8 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
             else:  # analizando
                 color = (0, 255, 255)  # Amarillo
                 texto = "ANALIZANDO..."
-            cv2.rectangle(display_frame, (x_mirror, y), (x_mirror + w, y + h), color, 2)
-            cv2.putText(display_frame, texto, (x_mirror, y-10), 
+            cv2.rectangle(display_frame, (x_mirror, y_exp), (x_mirror + w_exp, y_exp + h_exp), color, 2)
+            cv2.putText(display_frame, texto, (x_mirror, y_exp-10), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         elif movimiento_detectado:
             cv2.putText(display_frame, "MOVIMIENTO DETECTADO", (10, 30), 

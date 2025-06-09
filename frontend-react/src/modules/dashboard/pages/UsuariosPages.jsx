@@ -1,3 +1,4 @@
+//src/modules/dashboard/pages/UsuariosPages.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
@@ -187,48 +188,75 @@ const UsuariosPage = () => {
     setIdUsuarioBuscar("");
   };
 
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  // Estado para búsqueda por nombre
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filtrar usuarios por nombre
+  const filteredUsuarios = usuarios.filter(usuario =>
+    usuario.nombre_empleado?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Calcular datos de paginación sobre los filtrados
+  const totalPages = Math.ceil(filteredUsuarios.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsuarios.slice(indexOfFirstItem, indexOfLastItem);
+
   useEffect(() => {
     cargarTodosLosUsuarios();
-
     document.title = "COLPRYST | Usuarios";
+    // eslint-disable-next-line
   }, []);
 
   return (
     <div className="ml-46 m-5 text-center font-sans">
       <h1 className="mb-4 text-3xl font-bold">Lista de Usuarios</h1>
 
-      <div className="mb-4 flex justify-center space-x-4">
-        {/* Botón para agregar usuario */}
-        <button
-          onClick={() => navigate("/dashboard/agregar-users")}
-          className="mb-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          ➕ Agregar Usuario
-        </button>
-
-        {/* Buscar usuario por ID */}
-        <div className="mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+        {/* Input: Buscar por nombre a la izquierda */}
+        <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Ingresar documento"
-            value={idUsuarioBuscar}
-            onChange={(e) => setIdUsuarioBuscar(e.target.value)}
-            className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Buscar por nombre..."
+            value={searchTerm}
+            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
-            onClick={buscarUsuario}
-            className="ml-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            🔍 Buscar 
-          </button>
         </div>
 
-        <button
-          onClick={() => navigate("/dashboard/cargos")}
-          className="mb-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          📌 Ver Cargos
-        </button>
+        {/* Botones a la derecha */}
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={() => navigate("/dashboard/agregar-users")}
+            className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            ➕ Agregar Usuario
+          </button>
+          <div className="flex items-center gap-0">
+            <input
+              type="text"
+              placeholder="Ingresar documento"
+              value={idUsuarioBuscar}
+              onChange={(e) => setIdUsuarioBuscar(e.target.value)}
+              className="p-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={buscarUsuario}
+              className="p-2 border border-gray-300 border-l-0 rounded-r bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              🔍 Buscar
+            </button>
+          </div>
+          <button
+            onClick={() => navigate("/dashboard/cargos")}
+            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            📌 Ver Cargos
+          </button>
+        </div>
       </div>
 
       <div className="table-container overflow-x-auto">
@@ -246,7 +274,7 @@ const UsuariosPage = () => {
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((usuario) => (
+            {currentItems.map((usuario) => (
               <tr key={usuario.id_usuario}>
                 <td className="border border-black p-2">{usuario.id_usuario}</td>
                 <td className="border border-black p-2">{usuario.numero_documento}</td>
@@ -477,6 +505,85 @@ const UsuariosPage = () => {
           </div>
         </div>
       )}
+
+      {/* Paginación sticky */}
+      <div
+        className="sticky left-0 right-0 z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded border-t bg-white p-4 shadow sm:flex-row"
+        style={{ bottom: 0 }}
+      >
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-600">
+            Mostrando {filteredUsuarios.length === 0 ? 0 : indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredUsuarios.length)} de {filteredUsuarios.length} usuarios
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={itemsPerPage}
+              onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+              className="rounded border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={5}>5</option>
+              <option value={8}>8</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+            <span className="text-sm text-gray-600">por página</span>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Primero
+          </button>
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          {/* Números de página */}
+          <div className="flex gap-1">
+            {(() => {
+              let pagesToShow = [];
+              let start = Math.max(1, currentPage - 1);
+              let end = Math.min(start + 2, totalPages);
+              if (end === totalPages) {
+                start = Math.max(1, end - 2);
+              }
+              for (let i = start; i <= end; i++) {
+                pagesToShow.push(
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i)}
+                    className={`rounded-lg border px-3 py-2 text-sm ${currentPage === i ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
+                  >
+                    {i}
+                  </button>
+                );
+              }
+              return pagesToShow;
+            })()}
+          </div>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Último
+          </button>
+        </div>
+      </div>
 
     </div>
   );
