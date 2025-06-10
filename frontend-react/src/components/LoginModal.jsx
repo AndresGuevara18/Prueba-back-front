@@ -26,7 +26,7 @@ function LoginModal({ isOpen, onClose, onLogin }) {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${API_BASE_URL}/api/usuarios/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuarioadmin: email, contrasenia: password })
