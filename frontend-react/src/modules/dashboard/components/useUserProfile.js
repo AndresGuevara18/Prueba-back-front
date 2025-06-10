@@ -12,7 +12,7 @@ export function useUserProfile() {
       try {
         const token = sessionStorage.getItem('token');
         if (!token) throw new Error('No autenticado');
-        const response = await fetch(`${API_BASE_URL}/api/usuarios/profile`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('No se pudo obtener el perfil');

@@ -15,6 +15,41 @@ function Layout() {
   });
   const navigate = useNavigate();
 
+  // Sincroniza el usuario con el backend al montar
+  React.useEffect(() => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      fetch('/api/auth/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('No autorizado');
+          return res.json();
+        })
+        .then(userObj => {
+          console.log('Perfil recibido en Layout:', userObj); // <-- Debug
+          const cargo = userObj.cargo ? userObj.cargo : (userObj.nombre_cargo ? userObj.nombre_cargo : '');
+          setIsLoggedIn(true);
+          setUserData({
+            name: userObj.nombre_empleado || userObj.usuarioadmin || 'Usuario',
+            role: cargo || (userObj.id_cargo === 1 ? 'Administrador' : userObj.id_cargo === 2 ? 'Supervisor' : 'Empleado'),
+            email: userObj.email_empleado || userObj.email || ''
+          });
+          localStorage.setItem('user', JSON.stringify(userObj));
+        })
+        .catch(() => {
+          setIsLoggedIn(false);
+          setUserData({ name: '', role: '', email: '' });
+          localStorage.removeItem('user');
+        });
+    } else {
+      setIsLoggedIn(false);
+      setUserData({ name: '', role: '', email: '' });
+    }
+  }, []);
+
   // Persist login state across reloads (main landing page)
   React.useEffect(() => {
     const token = sessionStorage.getItem('token');

@@ -21,6 +21,21 @@ export function UserProvider({ children }) {
     if (stored) {
       setUser(JSON.parse(stored));
     }
+    // Intentar sincronizar con el backend si hay token
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/auth/profile`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) {
+            setUser(data);
+            localStorage.setItem('user_profile', JSON.stringify(data));
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   return (
