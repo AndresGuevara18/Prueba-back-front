@@ -10,7 +10,7 @@ import final from '../assets/img/final-inicio.avif';
 import investigacion from '../assets/img/investigacion-inicio.jpg';
 import poligrafiaV2 from '../assets/img/poligrafia-inicio.webp';
 
-function ServiceCard({ title, description, image, link }) {
+function ServiceCard({ title, description, image }) {
   return (
     <div className="w-full max-w-[328px] overflow-hidden rounded-lg bg-white shadow-md">
       <div className="relative h-[200px]">
@@ -18,17 +18,8 @@ function ServiceCard({ title, description, image, link }) {
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
           <h3 className="px-4 text-center text-xl font-bold text-white md:text-2xl">{title}</h3>
         </div>
-      </div>
-      <div className="p-4 md:p-6">
-        <p className="mb-4 line-clamp-4 h-[80px] text-sm text-gray-700">{description}</p>
-        <div className="flex justify-center">
-          <a 
-            href={link} 
-            className="inline-flex items-center rounded bg-[#10374E] px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700 md:px-6 md:text-base"
-          >
-            VER MÁS
-          </a>
-        </div>
+      </div>      <div className="p-4 md:p-6">
+        <p className="text-base text-gray-700 md:text-lg">{description}</p>
       </div>
     </div>
   );
