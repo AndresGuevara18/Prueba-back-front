@@ -13,7 +13,7 @@ function LoginModal({ isOpen, onClose, onLogin }) {
 
   // Redirección automática si ya hay token
   useEffect(() => {
-    if (isOpen && localStorage.getItem('token')) {
+    if (isOpen && sessionStorage.getItem('token')) {
       onClose && onClose();
       navigate('/dashboard', { replace: true });
     }
@@ -37,8 +37,8 @@ function LoginModal({ isOpen, onClose, onLogin }) {
         setLoading(false);
         return;
       }
-      // Guardar token en localStorage
-      localStorage.setItem('token', data.token);
+      // Guardar token en sessionStorage
+      sessionStorage.setItem('token', data.token);
       // Pasar datos al padre (Layout)
       if (onLogin) {
         onLogin(data.user, data.token);

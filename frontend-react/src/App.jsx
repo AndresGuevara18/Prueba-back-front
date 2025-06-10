@@ -134,6 +134,22 @@ function Carousel() {
 
 // Componente principal de la aplicación
 function App() {
+  // Guardar la posición del scroll antes de recargar
+  useEffect(() => {
+    const saveScrollPosition = () => {
+      localStorage.setItem('scrollPosition', window.scrollY);
+    };
+    window.addEventListener('beforeunload', saveScrollPosition);
+    // Restaurar la posición del scroll al cargar
+    const scrollPosition = localStorage.getItem('scrollPosition');
+    if (scrollPosition) {
+      window.scrollTo(0, parseInt(scrollPosition, 10));
+    }
+    return () => {
+      window.removeEventListener('beforeunload', saveScrollPosition);
+    };
+  }, []);
+
   // Array de servicios
   const services = [
     {

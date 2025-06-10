@@ -17,7 +17,7 @@ function Layout() {
 
   // Persist login state across reloads (main landing page)
   React.useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token && user) {
       try {
@@ -58,6 +58,7 @@ function Layout() {
     setUserData({ name: '', role: '', email: '' });
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
     window.location.href = '/';
   };
 

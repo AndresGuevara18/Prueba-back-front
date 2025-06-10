@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 
 // Recibe children y verifica si el usuario está autenticado (token en localStorage)
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   if (!token) {
     // Si no hay token, redirige al home (o login)
     return <Navigate to="/" replace />;
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
 
 // Utilidad para cerrar sesión (borrar token)
 export function logout() {
-  localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
 }
 
 export default ProtectedRoute;
