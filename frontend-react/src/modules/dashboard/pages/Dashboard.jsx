@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Shield } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import Novelties from './Novelties';
@@ -17,6 +17,8 @@ import logoColpryst from '../../../assets/img/colpryst-icon.png'; // Asegúrate 
 function Dashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [capitalizedDate, setCapitalizedDate] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -43,19 +45,35 @@ function Dashboard() {
     updateDateTime(); // Llamado inmediato
     const intervalId = setInterval(updateDateTime, 1000); // <-- Actualiza cada segundo
 
-    // Cierre de sesión automático al cerrar pestaña/ventana
-    const handleBeforeUnload = () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('nombre_empleado');
-      localStorage.removeItem('usuarioadmin');
-      // Puedes limpiar otros datos de sesión aquí si es necesario
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
     return () => {
       clearInterval(intervalId);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
+  }, []);
+
+  // Guardar la ruta interna actual del dashboard en localStorage
+  useEffect(() => {
+    if (location.pathname.startsWith('/dashboard')) {
+      localStorage.setItem('dashboardLastPath', location.pathname + location.search);
+    }
+    // Limpiar la ruta guardada si el usuario sale del dashboard
+    else {
+      localStorage.removeItem('dashboardLastPath');
+    }
+  }, [location]);
+
+  // Al montar, restaurar la última ruta interna si existe y es diferente a la actual
+  useEffect(() => {
+    const lastPath = localStorage.getItem('dashboardLastPath');
+    // Solo redirige si estamos exactamente en /dashboard (sin subruta)
+    if (
+      lastPath &&
+      lastPath !== location.pathname &&
+      lastPath.startsWith('/dashboard') &&
+      (location.pathname === '/dashboard' || location.pathname === '/dashboard/')
+    ) {
+      navigate(lastPath, { replace: true });
+    }
+    // eslint-disable-next-line
   }, []);
 
   return (
