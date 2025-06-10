@@ -73,22 +73,27 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
    .\venv310\Scripts\Activate.ps1
    ```
 
-4. Instalar dependencias:
+4. Actualiza pip antes de instalar dependencias  
+   ```bash
+   python -m pip install --upgrade pip
+   ```
+
+5. Instalar dependencias:
    ```bash
    pip install -r requirements.txt
    pip install tensorflow==2.12.0 deepface==0.0.79
    ```
 
-5. Verificar instalación:
+6. Verificar instalación:
    ```bash
    pip list
    ```
 
-6. Para salir del entorno virtual:
+7. Para salir del entorno virtual:
    ```bash
    deactivate
    ```
-7. iniciar archivo facial:
+8. iniciar archivo facial:
     ```bash
    uvicorn main:app --reload 
    ```

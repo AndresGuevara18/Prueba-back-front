@@ -8,8 +8,8 @@ import API_BASE_URL from '../../../config/ConfigURL';
 async function getProfileData() {
   console.log("en getProfileData");
   console.log("API_BASE_URL:", API_BASE_URL);
-  console.log("token:", localStorage.getItem('token'));
-  const token = localStorage.getItem('token');
+  console.log("token:", sessionStorage.getItem('token'));
+  const token = sessionStorage.getItem('token');
   if (!token) throw new Error('No autenticado');
   const response = await fetch(`${API_BASE_URL}/api/usuarios/profile`, {
     headers: { 'Authorization': `Bearer ${token}` }

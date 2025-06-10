@@ -10,7 +10,7 @@ export function useUserProfile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) throw new Error('No autenticado');
         const response = await fetch(`${API_BASE_URL}/api/usuarios/profile`, {
           headers: { 'Authorization': `Bearer ${token}` }
