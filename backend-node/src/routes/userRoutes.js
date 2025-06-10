@@ -35,24 +35,6 @@ router.get('/', usuarioController.getAllUsers);
 
 /**
  * @swagger
- * /api/usuarios/profile:
- *   get:
- *     summary: Obtiene el perfil del usuario autenticado
- *     tags: [Usuarios]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Perfil del usuario obtenido correctamente
- *       401:
- *         description: No autorizado (token faltante o inválido)
- *       500:
- *         description: Error interno del servidor
- */
-router.get('/profile', auth, usuarioController.getProfile);
-
-/**
- * @swagger
  * /api/usuarios/{numero_documento}:
  *   get:
  *     summary: Obtiene la información de un usuario por su número de documento
@@ -254,60 +236,6 @@ router.put('/:id_usuario', usuarioController.updateUser);
  *         description: Usuario eliminado correctamente
  */
 router.delete('/:id_usuario', usuarioController.deleteUser);
-
-/**
- * @swagger
- * /api/usuarios/login:
- *   post:
- *     summary: Inicia sesión de usuario
- *     tags: [Usuarios]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               usuarioadmin:
- *                 type: string
- *                 example: admin
- *               contrasenia:
- *                 type: string
- *                 example: "123456"
- *     responses:
- *       200:
- *         description: Login exitoso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 token:
- *                   type: string
- *                 user:
- *                   type: object
- *                   properties:
- *                     id_usuario:
- *                       type: integer
- *                     usuarioadmin:
- *                       type: string
- *                     id_cargo:
- *                       type: integer
- *                     nombre_empleado:
- *                       type: string
- *       400:
- *         description: Usuario y contraseña son requeridos
- *       401:
- *         description: Usuario o contraseña incorrectos
- *       500:
- *         description: Error interno en login
- */
-router.post('/login', usuarioController.login);
-
 
 
 module.exports = router; // Exportar el router
