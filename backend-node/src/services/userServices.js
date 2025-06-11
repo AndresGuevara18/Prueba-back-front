@@ -375,6 +375,18 @@ const usuarioService = {
       throw new Error('Error al verificar usuarios con cargos 1, 2 o 3.');
     }
   },
+
+  // Obtener todos los usuarios con un cargo específico
+  getUsersByCargo: async (id_cargo) => {
+    const query = 'SELECT * FROM usuario WHERE id_cargo = ?';
+    try {
+      const [results] = await db.promise().query(query, [id_cargo]);
+      return results; // Devuelve un array de usuarios (objetos planos)
+    } catch (err) {
+      console.error('❌ Error en getUsersByCargo (Service):', err);
+      throw new Error('Error al obtener usuarios por cargo.');
+    }
+  },
 };
 
 module.exports = usuarioService; // Exportamos el servicio

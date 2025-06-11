@@ -154,6 +154,44 @@ router.delete('/:id_horario', horarioController.deleteHorario);
  */
 router.post('/revisar-inasistencias', horarioController.revisarInasistencias);
 
-
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Horario:
+ *       type: object
+ *       properties:
+ *         id_horario:
+ *           type: integer
+ *           example: 1
+ *         hora_entrada:
+ *           type: string
+ *           example: "07:00:00"
+ *         hora_salida:
+ *           type: string
+ *           example: "17:00:00"
+ *         descripcion:
+ *           type: string
+ *           example: "Lunes"
+ *     HorarioInput:
+ *       type: object
+ *       required:
+ *         - hora_entrada
+ *         - hora_salida
+ *         - descripcion
+ *       properties:
+ *         hora_entrada:
+ *           type: string
+ *           description: Hora de entrada en formato HH:mm:ss
+ *           example: "07:00:00"
+ *         hora_salida:
+ *           type: string
+ *           description: Hora de salida en formato HH:mm:ss
+ *           example: "17:00:00"
+ *         descripcion:
+ *           type: string
+ *           description: Descripción del horario
+ *           example: "Lunes"
+ */
 
 module.exports = router;

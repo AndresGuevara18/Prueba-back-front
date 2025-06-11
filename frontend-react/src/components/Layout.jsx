@@ -30,7 +30,7 @@ function Layout() {
         })
         .then(userObj => {
           console.log('Perfil recibido en Layout:', userObj); // <-- Debug
-          const cargo = userObj.cargo ? userObj.cargo : (userObj.nombre_cargo ? userObj.nombre_cargo : '');
+          const cargo = userObj.cargo || userObj.nombre_cargo || userObj.cargo_user || '';
           setIsLoggedIn(true);
           setUserData({
             name: userObj.nombre_empleado || userObj.usuarioadmin || 'Usuario',
