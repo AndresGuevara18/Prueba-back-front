@@ -259,12 +259,21 @@ const usuarioController = {
           error: 'MISSING_REQUIRED_FIELDS',
         });
       }
-    
+
       // Validar si el cargo existe (si se está actualizando)
       if (userData.id_cargo) {
         const cargo = await cargoService.getCargoById(userData.id_cargo);
         if (!cargo) {
           throw new Error('CARGO_NOT_FOUND');
+        }
+        // Validar que solo haya un usuario con cargo 1, 2 o 3 (excepto el usuario actual)
+        if ([1,2,3,'1','2','3'].includes(userData.id_cargo)) {
+          const usuariosConCargo = await usuarioService.getUsersByCargo(userData.id_cargo);
+          // Filtrar el usuario actual
+          const otrosUsuarios = usuariosConCargo.filter(u => u.id_usuario != id_usuario);
+          if (otrosUsuarios.length > 0) {
+            throw new Error('SOLO_UNO_POR_CARGO');
+          }
         }
       }
     
@@ -302,6 +311,10 @@ const usuarioController = {
       case 'CARGO_NOT_FOUND':
         statusCode = 400;
         message = 'El cargo especificado no existe';
+        break;
+      case 'SOLO_UNO_POR_CARGO':
+        statusCode = 400;
+        message = 'Solo se permite un usuario para este cargo';
         break;
       }
     

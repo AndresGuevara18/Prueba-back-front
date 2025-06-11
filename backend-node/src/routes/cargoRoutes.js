@@ -34,13 +34,42 @@ router.get('/', cargoController.getAllCargos);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - nombre_cargo
+ *               - id_horario
  *             properties:
- *               nombre:
+ *               nombre_cargo:
  *                 type: string
+ *                 description: Nombre del cargo a crear
  *                 example: "Gerente"
+ *               descripcion:
+ *                 type: string
+ *                 description: Descripción del cargo (opcional)
+ *                 example: "Gerente de operaciones"
+ *               id_horario:
+ *                 type: integer
+ *                 description: ID del horario asociado
+ *                 example: 2
  *     responses:
  *       201:
  *         description: Cargo creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_cargo:
+ *                   type: integer
+ *                   example: 1
+ *                 nombre_cargo:
+ *                   type: string
+ *                   example: "Gerente"
+ *                 descripcion:
+ *                   type: string
+ *                   example: "Gerente de operaciones"
+ *                 id_horario:
+ *                   type: integer
+ *                   example: 2
  */
 router.post('/', cargoController.createCargo);
 
@@ -82,13 +111,42 @@ router.get('/:id_cargo', cargoController.getCargoById);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - nombre_cargo
+ *               - id_horario
  *             properties:
- *               nombre:
+ *               nombre_cargo:
  *                 type: string
+ *                 description: Nuevo nombre del cargo
  *                 example: "Director"
+ *               descripcion:
+ *                 type: string
+ *                 description: Nueva descripción del cargo (opcional)
+ *                 example: "Director de proyectos"
+ *               id_horario:
+ *                 type: integer
+ *                 description: Nuevo ID de horario asociado
+ *                 example: 3
  *     responses:
  *       200:
  *         description: Cargo actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_cargo:
+ *                   type: integer
+ *                   example: 1
+ *                 nombre_cargo:
+ *                   type: string
+ *                   example: "Director"
+ *                 descripcion:
+ *                   type: string
+ *                   example: "Director de proyectos"
+ *                 id_horario:
+ *                   type: integer
+ *                   example: 3
  */
 router.put('/:id_cargo', cargoController.updateCargo);
 

@@ -357,7 +357,7 @@ const UsuariosPage = () => {
 
       {/* Modal para editar usuario */}
       {modalEditarAbierto && usuarioAEditar && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-lg">
             <h2 className="mb-4 text-xl font-bold">Editar Usuario</h2>
 
