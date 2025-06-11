@@ -215,6 +215,6 @@ SET SQL_SAFE_UPDATES = 0; -- desctivar safe updates temporalmente
 CALL revisar_inasistencias('2025-07-06');
 SET SQL_SAFE_UPDATES = 1; -- Reactivar después
 
-
 -- DROP PROCEDURE IF EXISTS revisar_inasistencias;
+
 

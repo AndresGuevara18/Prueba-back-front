@@ -73,7 +73,7 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
    .\venv310\Scripts\Activate.ps1
    ```
 
-4. Actualiza pip antes de instalar dependencias  
+4. Actualiza pip antes de instalar dependencias:
    ```bash
    python -m pip install --upgrade pip
    ```

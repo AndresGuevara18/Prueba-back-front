@@ -376,7 +376,7 @@ const CargoPage = () => {
 
       {/* Modal para editar cargo */}
       {modalEditarAbierto && cargoAEditar && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-lg">
             <h2 className="mb-4 text-xl font-bold">Editar Cargo</h2>
             <div className="space-y-3">
