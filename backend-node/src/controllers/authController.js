@@ -1,5 +1,5 @@
+//src/controllers/authController.js
 const authService = require('../services/authService');
-const usuarioService = require('../services/userServices');
 const db = require('../config/database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -18,10 +18,6 @@ const authController = {
       console.log('[DEBUG] login - user encontrado:', user);
       if (!user) {
         return res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos.' });
-      }
-      // Validar que el usuario tenga id_cargo 1, 2 o 3
-      if (!authService.isCargoAutorizado(user.id_cargo)) {
-        return res.status(403).json({ success: false, message: 'Acceso denegado: solo usuarios con cargo autorizado pueden ingresar.' });
       }
       // Validar contraseña
       const passwordMatch = await bcrypt.compare(contrasenia, user.contrasenia);
