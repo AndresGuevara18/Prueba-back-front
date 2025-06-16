@@ -4,10 +4,11 @@ import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu } from 'lucide-react';
 import MenuUsuario from '../../components/MenuUsuario';
 import logoColpryst from '../../../../assets/img/colpryst-icon.png';
-import BienvenidaUsuario from './BienvenidaUsuario';
+
+import PerfilUsuario from './ProfileUser';
 import HistorialUsuario from './HistorialUsuario';
-import NotificacionesUsuario from './NotificacionesUsuario';
-import PerfilUsuario from './PerfilUsuario';
+import IncidenciasUsuario from './IncidenciasUsuario';
+import AsistenciaUsuario from './AsistenciaUsuario';
 
 function DashboardUsuario() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -60,6 +61,13 @@ function DashboardUsuario() {
     }
   }, []);
 
+  useEffect(() => {
+    // Redirigir automáticamente al perfil al ingresar al dashboard de usuario
+    if (location.pathname === '/dashboard-usuario' || location.pathname === '/dashboard-usuario/') {
+      navigate('/dashboard-usuario/perfil', { replace: true });
+    }
+  }, [location, navigate]);
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <MenuUsuario isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
@@ -86,10 +94,12 @@ function DashboardUsuario() {
         {/* Content Area */}
         <div className="p-4 md:p-8">
           <Routes>
-            <Route index element={<BienvenidaUsuario />} />
+            <Route path="asistencia" element={<AsistenciaUsuario />} />
             <Route path="historial" element={<HistorialUsuario />} />
-            <Route path="notificaciones" element={<NotificacionesUsuario />} />
+            <Route path="incidencias" element={<IncidenciasUsuario />} />
             <Route path="perfil" element={<PerfilUsuario />} />
+            <Route index element={<PerfilUsuario />} />
+            <Route path="*" element={<PerfilUsuario />} />
           </Routes>
         </div>
       </div>

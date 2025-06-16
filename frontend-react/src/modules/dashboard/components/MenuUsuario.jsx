@@ -10,16 +10,29 @@ function MenuUsuario({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Simulación: obtener usuario desde localStorage
-    const userData = JSON.parse(localStorage.getItem('user'));
-    setProfile(userData);
-    setLoading(false);
+    async function fetchProfile() {
+      try {
+        const token = sessionStorage.getItem('token');
+        if (!token) throw new Error('No autenticado');
+        const response = await fetch(`/api/auth/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('No se pudo obtener el perfil');
+        const data = await response.json();
+        setProfile(data);
+      } catch (err) {
+        setProfile(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProfile();
   }, []);
 
   const menuItems = [
-    { icon: <Bell className="h-5 w-5" />, label: 'Bienvenida', path: '/dashboard-usuario' },
+    { icon: <User className="h-5 w-5" />, label: 'Mi Asistencia', path: '/dashboard-usuario/asistencia' },
     { icon: <FileText className="h-5 w-5" />, label: 'Historial', path: '/dashboard-usuario/historial' },
-    { icon: <Bell className="h-5 w-5" />, label: 'Notificaciones', path: '/dashboard-usuario/notificaciones' },
+    { icon: <Bell className="h-5 w-5" />, label: 'Incidencias', path: '/dashboard-usuario/incidencias' },
   ];
 
   const handleLogout = () => {
@@ -52,10 +65,10 @@ function MenuUsuario({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           {loading ? 'Cargando...' : (profile ? profile.nombre_empleado : 'Usuario')}
         </h2>
         <p className="text-sm text-gray-400">
-          {loading ? 'Cargando...' : (profile ? profile.usuarioadmin : 'usuario@colpryst.com')}
+          {loading ? 'Cargando...' : (profile ? profile.email_empleado || profile.usuarioadmin || 'correo@colpryst.com' : 'correo@colpryst.com')}
         </p>
         <p className="mt-1 text-xs text-gray-400">
-          {loading ? '' : (profile ? (profile.id_cargo || 'Sin cargo') : '')}
+          {loading ? '' : (profile ? (profile.cargo_user || 'Sin rol') : '')}
         </p>
       </div>
       <nav className="flex-1 p-4">
