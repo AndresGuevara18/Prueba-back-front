@@ -47,7 +47,12 @@ function LoginModal({ isOpen, onClose, onLogin }) {
       setEmail('');
       setPassword('');
       onClose();
-      navigate('/dashboard');
+      // Redirección según cargo
+      if (data.user.id_cargo === 1 || data.user.id_cargo === 2 || data.user.id_cargo === 3) {
+        navigate('/dashboard');
+      } else {
+        navigate('/dashboard-usuario');
+      }
     } catch (err) {
       setError('Error de red o servidor');
       setLoading(false);
