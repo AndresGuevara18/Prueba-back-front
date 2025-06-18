@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../../config/ConfigURL'; 
 import Swal from 'sweetalert2';
+import { Undo2 } from 'lucide-react';
 
 const AgregarCargoPage = () => {
     //Almacena el valor
@@ -67,7 +68,18 @@ const AgregarCargoPage = () => {
 
   return (
     <div className="m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Agregar Nuevo Cargo</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          className="rounded-full bg-gray-200 p-2 text-gray-700 hover:bg-gray-300"
+          onClick={() => navigate('/dashboard/cargos')}
+          title="Regresar a Cargos"
+        >
+          <Undo2 className="h-7 w-7" />
+        </button>
+        <h1 className="flex-1 text-center text-3xl font-bold">Agregar Cargo</h1>
+        <div style={{ width: '40px' }} />
+      </div>
       <form className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
         <div className="mb-4">
           <input

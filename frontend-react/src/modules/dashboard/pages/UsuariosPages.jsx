@@ -205,6 +205,12 @@ const UsuariosPage = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredUsuarios.slice(indexOfFirstItem, indexOfLastItem);
 
+  // Función para capitalizar la primera letra de cada palabra
+  function capitalizeWords(str) {
+    if (!str) return '';
+    return str.replace(/\b\w/g, c => c.toUpperCase()).replace(/\B\w/g, c => c.toLowerCase());
+  }
+
   useEffect(() => {
     cargarTodosLosUsuarios();
     document.title = "COLPRYST | Usuarios";
@@ -278,7 +284,7 @@ const UsuariosPage = () => {
               <tr key={usuario.id_usuario}>
                 <td className="border border-black p-2">{usuario.id_usuario}</td>
                 <td className="border border-black p-2">{usuario.numero_documento}</td>
-                <td className="border border-black p-2">{usuario.nombre_empleado}</td>
+                <td className="border border-black p-2">{capitalizeWords(usuario.nombre_empleado)}</td>
                 <td className="border border-black p-2">{usuario.telefono_empleado}</td>
                 <td className="border border-black p-2">{usuario.email_empleado}</td>
                 <td className="border border-black p-2">{usuario.usuarioadmin}</td>
@@ -312,7 +318,7 @@ const UsuariosPage = () => {
             <div className="mb-4 space-y-2 text-left">
               <p><strong>ID:</strong> {usuarioEncontrado.id_usuario}</p>
               <p><strong>Número Documento:</strong> {usuarioEncontrado.numero_documento}</p>
-              <p><strong>Nombre:</strong> {usuarioEncontrado.nombre_empleado}</p>
+              <p><strong>Nombre:</strong> {capitalizeWords(usuarioEncontrado.nombre_empleado)}</p>
               <p><strong>Teléfono:</strong> {usuarioEncontrado.telefono_empleado}</p>
               <p><strong>Email:</strong> {usuarioEncontrado.email_empleado}</p>
               <p><strong>Cargo:</strong> {usuarioEncontrado.nombre_cargo}</p>

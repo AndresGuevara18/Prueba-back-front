@@ -5,6 +5,7 @@ import API_BASE_URL from '../../../config/ConfigURL';//importacion url peticione
 //reconocimiento
 import * as faceapi from 'face-api.js';//npm install react-webcam face-api.js
 import Swal from 'sweetalert2';
+import { Undo2 } from 'lucide-react';
 
 //componete funcional en arrow function
 const AgregarUsuarioPage = () => {
@@ -308,9 +309,25 @@ const AgregarUsuarioPage = () => {
     );
   };
 
+  // Función para capitalizar la primera letra de cada palabra en tiempo real
+  function capitalizeWordsLive(str) {
+    return str.replace(/\b\w/g, c => c.toUpperCase()).replace(/\B\w/g, c => c.toLowerCase());
+  }
+
   return (
     <div className="m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Agregar Nuevo Usuario</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          className="rounded-full bg-gray-200 p-2 text-gray-700 hover:bg-gray-300"
+          onClick={() => navigate('/dashboard/users')}
+          title="Regresar a Usuarios"
+        >
+          <Undo2 className="h-7 w-7" />
+        </button>
+        <h1 className="flex-1 text-center text-3xl font-bold">Agregar Nuevo Usuario</h1>
+        <div style={{ width: '40px' }} /> {/* Espacio para balancear el layout */}
+      </div>
       <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg">
         <div className="grid grid-cols-2 gap-4">
           {/* Columna Izquierda */}
@@ -382,7 +399,10 @@ const AgregarUsuarioPage = () => {
                 id="nombre_empleado"
                 className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.nombre_empleado}
-                onChange={handleChange}
+                onChange={e => {
+                  const value = e.target.value;
+                  setFormData({ ...formData, nombre_empleado: capitalizeWordsLive(value) });
+                }}
                 required
               />
             </div>
