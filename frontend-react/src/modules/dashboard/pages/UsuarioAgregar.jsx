@@ -580,20 +580,17 @@ const AgregarUsuarioPage = () => {
             
             <div className="mt-4 flex justify-end space-x-2">
               <button
-                onClick={captureImage}
-                className={`rounded px-4 py-2 ${
-                  isCaptureEnabled
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'cursor-not-allowed bg-gray-400 text-white'
-                }`}
-              >
-                Capturar
-              </button>
-              <button
                 onClick={closeCamera}
-                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                className="rounded bg-red-300 px-4 py-2 text-white hover:bg-red-400"
               >
                 Cerrar Cámara
+              </button>
+              <button
+                onClick={captureImage}
+                className={`rounded px-4 py-2 text-white ${isCaptureEnabled ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`}
+                disabled={!isCaptureEnabled}
+              >
+                Capturar
               </button>
             </div>
 

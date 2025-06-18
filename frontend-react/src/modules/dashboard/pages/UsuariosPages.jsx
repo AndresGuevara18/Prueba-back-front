@@ -239,7 +239,7 @@ const UsuariosPage = () => {
             onClick={() => navigate("/dashboard/agregar-users")}
             className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            ➕ Agregar Usuario
+            Agregar Usuario
           </button>
           <div className="flex items-center gap-0">
             <input
@@ -253,14 +253,14 @@ const UsuariosPage = () => {
               onClick={buscarUsuario}
               className="p-2 border border-gray-300 border-l-0 rounded-r bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              🔍 Buscar
+              Buscar
             </button>
           </div>
           <button
             onClick={() => navigate("/dashboard/cargos")}
             className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            📌 Ver Cargos
+            Ver Cargos
           </button>
         </div>
       </div>
@@ -294,12 +294,12 @@ const UsuariosPage = () => {
                     <button className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
                       onClick={() => abrirModalEditar(usuario)}
                     >
-                      ✏️ Editar
+                      Editar
                     </button>
                     <button className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
                       onClick={() => eliminarUsuario(usuario.id_usuario)}
                     >
-                      🗑 Eliminar
+                      Eliminar
                     </button>
                   </div>
                 </td>
@@ -311,8 +311,8 @@ const UsuariosPage = () => {
 
       {/* Modal para mostrar detalles del usuario */}
       {modalAbierto && usuarioEncontrado && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-full max-w-md rounded bg-white p-6 shadow-lg">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md rounded bg-white p-6 shadow-2xl">
             <h2 className="mb-4 text-xl font-bold">Detalles del Usuario</h2>
             
             <div className="mb-4 space-y-2 text-left">
@@ -363,8 +363,8 @@ const UsuariosPage = () => {
 
       {/* Modal para editar usuario */}
       {modalEditarAbierto && usuarioAEditar && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-lg">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50">
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded bg-white p-6 shadow-2xl">
             <h2 className="mb-4 text-xl font-bold">Editar Usuario</h2>
 
             <div className="space-y-3">
