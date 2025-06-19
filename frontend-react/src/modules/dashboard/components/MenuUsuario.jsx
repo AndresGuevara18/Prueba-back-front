@@ -31,8 +31,9 @@ function MenuUsuario({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   const menuItems = [
     { icon: <User className="h-5 w-5" />, label: 'Mi Asistencia', path: '/dashboard-usuario/asistencia' },
-    { icon: <FileText className="h-5 w-5" />, label: 'Historial', path: '/dashboard-usuario/historial' },
     { icon: <Bell className="h-5 w-5" />, label: 'Incidencias', path: '/dashboard-usuario/incidencias' },
+    { icon: <FileText className="h-5 w-5" />, label: 'Historial', path: '/dashboard-usuario/historial' },
+    
   ];
 
   const handleLogout = () => {

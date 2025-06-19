@@ -1,3 +1,4 @@
+//src/modules/dashboard/pages/usuario/AsistenciaUsuario.jsx
 import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../../../../config/ConfigURL';
 import { Search } from 'lucide-react';
@@ -102,9 +103,11 @@ function AsistenciaUsuario() {
                     <tr key={i} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm">
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                          a.tipo === 'Entrada tarde' || a.tipo === 'Salida temprana' ? 'bg-red-100 text-red-800' :
-                          a.tipo === 'Inasistencia' ? 'bg-orange-100 text-orange-800' :
-                          'bg-green-100 text-green-800'
+                          a.tipo === 'Entrada'
+                            ? 'bg-blue-100 text-blue-800'
+                            : a.tipo === 'Salida'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
                         }`}>
                           {a.tipo}
                         </span>
