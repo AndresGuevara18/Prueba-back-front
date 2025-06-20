@@ -116,46 +116,74 @@ class AsistenciaService {
     }
   }
 
-  static async getHistorialByUsuario(id_usuario, filtroTabla) {
+  static async getHistorialByUsuario(id_usuario, filtroTabla, fecha, mes, anio) {
     // Mapear nombre de tabla a consulta y tipo
     const tablas = {
       'registro_entrada': {
-        query: `SELECT 'Entrada' AS tipo, fecha_hora, comentarios AS detalle, 
-        'registro_entrada' AS origen FROM registro_entrada WHERE id_usuario = ?`,
+        query: `SELECT 'Entrada' AS tipo, fecha_hora, comentarios AS detalle 
+        FROM registro_entrada WHERE id_usuario = ?`,
         params: [id_usuario],
+        campoFecha: 'fecha_hora',
       },
       'notificacion_entrada_tarde': {
-        query: `SELECT 'Entrada tarde' AS tipo, fecha_hora, comentarios AS detalle, 
-        'notificacion_entrada_tarde' AS origen FROM notificacion_entrada_tarde WHERE id_usuario = ?`,
+        query: `SELECT 'Entrada tarde' AS tipo, fecha_hora, comentarios AS detalle 
+        FROM notificacion_entrada_tarde WHERE id_usuario = ?`,
         params: [id_usuario],
+        campoFecha: 'fecha_hora',
       },
       'registro_salida': {
-        query: `SELECT 'Salida' AS tipo, fecha_hora, comentarios AS detalle, 
-        'registro_salida' AS origen FROM registro_salida WHERE id_usuario = ?`,
+        query: `SELECT 'Salida' AS tipo, fecha_hora, comentarios AS detalle 
+        FROM registro_salida WHERE id_usuario = ?`,
         params: [id_usuario],
+        campoFecha: 'fecha_hora',
       },
       'notificacion_salida_temprana': {
-        query: `SELECT 'Salida temprana' AS tipo, fecha_hora, comentarios AS detalle, 
-        'notificacion_salida_temprana' AS origen FROM notificacion_salida_temprana WHERE id_usuario = ?`,
+        query: `SELECT 'Salida temprana' AS tipo, fecha_hora, comentarios 
+        AS detalle FROM notificacion_salida_temprana WHERE id_usuario = ?`,
         params: [id_usuario],
+        campoFecha: 'fecha_hora',
       },
       'no_asistencia': {
-        query: `SELECT 'Inasistencia' AS tipo, fecha AS fecha_hora, motivo AS detalle, 
-        'no_asistencia' AS origen FROM no_asistencia WHERE id_usuario = ?`,
+        query: `SELECT 'Inasistencia' AS tipo, fecha AS fecha_hora, motivo 
+        AS detalle FROM no_asistencia WHERE id_usuario = ?`,
         params: [id_usuario],
+        campoFecha: 'fecha',
       },
     };
 
     let results = [];
+    // Si se filtra por tabla
     if (filtroTabla && tablas[filtroTabla]) {
-      // Solo una tabla
-      const { query, params } = tablas[filtroTabla];
+      let { query, params, campoFecha } = tablas[filtroTabla];
+      // Filtro por fecha exacta
+      if (fecha) {
+        query += ` AND DATE(${campoFecha}) = ?`;
+        params.push(fecha);
+      }
+      // Filtro por mes y año
+      if (mes && anio) {
+        query += ` AND MONTH(${campoFecha}) = ? AND YEAR(${campoFecha}) = ?`;
+        params.push(mes, anio);
+      }
       const [rows] = await connection.promise().query(query + ' ORDER BY fecha_hora DESC', params);
       results = rows;
     } else {
       // Todas las tablas (unión)
-      const unionQuery = Object.values(tablas).map(t => t.query).join(' UNION ALL ');
-      const allParams = [].concat(...Object.values(tablas).map(t => t.params));
+      const subconsultas = Object.entries(tablas).map(([nombre, t]) => {
+        let q = t.query;
+        let p = [...t.params];
+        if (fecha) {
+          q += ` AND DATE(${t.campoFecha}) = ?`;
+          p.push(fecha);
+        }
+        if (mes && anio) {
+          q += ` AND MONTH(${t.campoFecha}) = ? AND YEAR(${t.campoFecha}) = ?`;
+          p.push(mes, anio);
+        }
+        return { q, p };
+      });
+      const unionQuery = subconsultas.map(s => s.q).join(' UNION '); // Usar UNION para eliminar duplicados exactos
+      const allParams = subconsultas.reduce((acc, s) => acc.concat(s.p), []);
       const [rows] = await connection.promise().query(unionQuery + ' ORDER BY fecha_hora DESC', allParams);
       results = rows;
     }

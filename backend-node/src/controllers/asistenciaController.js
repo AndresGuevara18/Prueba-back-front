@@ -29,13 +29,15 @@ const asistenciaController = {
     }
   },
 
-  // GET /api/asistencia/historial?tabla=nombre_tabla
+  // GET /api/asistencia/historial?tabla=nombre_tabla&fecha=YYYY-MM-DD&mes=MM&anio=YYYY
   getHistorialUsuario: async (req, res) => {
     try {
       const id_usuario = req.user.id_usuario;
-      const filtroTabla = req.query.tabla || null; // nombre de la tabla o null para todo
-      const historial = await AsistenciaService.getHistorialByUsuario(id_usuario, filtroTabla);
-      // No se envía el id_usuario en la respuesta, solo tipo, fecha_hora, detalle, origen
+      const filtroTabla = req.query.tabla || null;
+      const fecha = req.query.fecha || null;
+      const mes = req.query.mes || null;
+      const anio = req.query.anio || null;
+      const historial = await AsistenciaService.getHistorialByUsuario(id_usuario, filtroTabla, fecha, mes, anio);
       res.json(historial);
     } catch (error) {
       console.error('Error en getHistorialUsuario:', error);
