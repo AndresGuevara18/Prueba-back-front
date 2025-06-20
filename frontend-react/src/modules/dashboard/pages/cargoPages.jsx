@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config/ConfigURL";
 import Swal from 'sweetalert2';
+import { Undo2 } from 'lucide-react';
 
 const CargoPage = () => {
   const [cargos, setCargos] = useState([]); // Estado para almacenar la lista de cargos
@@ -184,8 +185,19 @@ const CargoPage = () => {
   const currentItems = filteredCargos.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="ml-46 m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Lista de Cargos</h1>
+    <div className="m-5 text-center font-sans">
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          className="rounded-full bg-gray-200 p-2 text-gray-700 hover:bg-gray-300"
+          onClick={() => navigate('/dashboard/users')}
+          title="Regresar a Usuarios"
+        >
+          <Undo2 className="h-7 w-7" />
+        </button>
+        <h1 className="flex-1 text-center text-3xl font-bold">Lista de Cargos</h1>
+        <div style={{ width: '40px' }} />
+      </div>
 
       {/* Barra de controles: búsqueda por nombre a la izquierda, resto a la derecha */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">

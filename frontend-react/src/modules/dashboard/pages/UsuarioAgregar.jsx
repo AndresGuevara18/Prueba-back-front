@@ -5,6 +5,7 @@ import API_BASE_URL from '../../../config/ConfigURL';//importacion url peticione
 //reconocimiento
 import * as faceapi from 'face-api.js';//npm install react-webcam face-api.js
 import Swal from 'sweetalert2';
+import { Undo2 } from 'lucide-react';
 
 //componete funcional en arrow function
 const AgregarUsuarioPage = () => {
@@ -215,9 +216,23 @@ const AgregarUsuarioPage = () => {
   };
 
   //manejo formulario
-  const handleChange = (e) => {//handleChange: Función que maneja cambios en los inputs
-    const { id, value } = e.target;//Desestructura el evento obtine id y el nuevo valor
-    setFormData({ ...formData, [id]: value });
+  // Validar solo números en el campo número de documento
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    if (id === 'numero_documento') {
+      // Permitir solo números
+      if (/^\d*$/.test(value)) {
+        setFormData({ ...formData, [id]: value });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Solo se permiten números',
+          text: 'No se aceptan letras en el número de documento.'
+        });
+      }
+    } else {
+      setFormData({ ...formData, [id]: value });
+    }
     /*Copia todo el estado anterior (...formData)
     Actualiza  la propiedad cuyo nombre coincide con el id del input*/ 
   };
@@ -278,9 +293,41 @@ const AgregarUsuarioPage = () => {
     }
   };
 
+  // Función para validar si todos los campos requeridos están llenos
+  const isFormComplete = () => {
+    return (
+      formData.tipo_documento &&
+      formData.numero_documento &&
+      formData.nombre_empleado &&
+      formData.direccion_empleado &&
+      formData.telefono_empleado &&
+      formData.email_empleado &&
+      formData.eps_empleado &&
+      formData.usuarioadmin &&
+      formData.contrasenia &&
+      formData.id_cargo
+    );
+  };
+
+  // Función para capitalizar la primera letra de cada palabra en tiempo real
+  function capitalizeWordsLive(str) {
+    return str.replace(/\b\w/g, c => c.toUpperCase()).replace(/\B\w/g, c => c.toLowerCase());
+  }
+
   return (
     <div className="m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Agregar Nuevo Usuario</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          className="rounded-full bg-gray-200 p-2 text-gray-700 hover:bg-gray-300"
+          onClick={() => navigate('/dashboard/users')}
+          title="Regresar a Usuarios"
+        >
+          <Undo2 className="h-7 w-7" />
+        </button>
+        <h1 className="flex-1 text-center text-3xl font-bold">Agregar Nuevo Usuario</h1>
+        <div style={{ width: '40px' }} /> {/* Espacio para balancear el layout */}
+      </div>
       <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-lg">
         <div className="grid grid-cols-2 gap-4">
           {/* Columna Izquierda */}
@@ -316,6 +363,28 @@ const AgregarUsuarioPage = () => {
                 className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.numero_documento}
                 onChange={handleChange}
+                maxLength={25}
+                onInput={e => {
+                  let original = e.target.value;
+                  // Limitar a 25 dígitos
+                  if (original.length > 25) {
+                    original = original.slice(0, 25);
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Máximo 25 dígitos',
+                      text: 'El número de documento no puede tener más de 25 dígitos.'
+                    });
+                  }
+                  const soloNumeros = original.replace(/[^\d]/g, '');
+                  if (original !== soloNumeros) {
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Solo se permiten números',
+                      text: 'No se aceptan letras en el número de documento.'
+                    });
+                  }
+                  e.target.value = soloNumeros;
+                }}
                 required
               />
             </div>
@@ -330,7 +399,10 @@ const AgregarUsuarioPage = () => {
                 id="nombre_empleado"
                 className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.nombre_empleado}
-                onChange={handleChange}
+                onChange={e => {
+                  const value = e.target.value;
+                  setFormData({ ...formData, nombre_empleado: capitalizeWordsLive(value) });
+                }}
                 required
               />
             </div>
@@ -379,6 +451,16 @@ const AgregarUsuarioPage = () => {
                 className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={formData.email_empleado}
                 onChange={handleChange}
+                onBlur={e => {
+                  const value = e.target.value;
+                  if (value && (!value.includes('@') || !value.endsWith('.com'))) {
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Correo electrónico inválido',
+                      text: 'El correo debe contener "@" y terminar en ".com".'
+                    });
+                  }
+                }}
                 required
               />
             </div>
@@ -449,9 +531,9 @@ const AgregarUsuarioPage = () => {
         <div className="mt-6 flex flex-col items-center">
           <button
             type="button"
-            className="mb-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            //onClick={() => alert("Función de cámara no implementada aún")}
+            className={`mb-4 rounded px-4 py-2 text-white ${isFormComplete() ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`}
             onClick={openCamera}
+            disabled={!isFormComplete()}
           >
             Abrir Cámara
           </button>
@@ -459,7 +541,11 @@ const AgregarUsuarioPage = () => {
 
         
         {/* Botón Registrar */}
-        <button type="submit" className="mt-6 w-full rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+        <button 
+          type="submit" 
+          className={`mt-6 w-full rounded px-4 py-2 text-white ${formData.fotoBlob ? 'bg-green-500 hover:bg-green-600 focus:ring-2 focus:ring-green-500' : 'bg-gray-400 cursor-not-allowed'}`}
+          disabled={!formData.fotoBlob}
+        >
           Registrar
         </button>
 
@@ -494,20 +580,17 @@ const AgregarUsuarioPage = () => {
             
             <div className="mt-4 flex justify-end space-x-2">
               <button
-                onClick={captureImage}
-                className={`rounded px-4 py-2 ${
-                  isCaptureEnabled
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'cursor-not-allowed bg-gray-400 text-white'
-                }`}
-              >
-                Capturar
-              </button>
-              <button
                 onClick={closeCamera}
-                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                className="rounded bg-red-300 px-4 py-2 text-white hover:bg-red-400"
               >
                 Cerrar Cámara
+              </button>
+              <button
+                onClick={captureImage}
+                className={`rounded px-4 py-2 text-white ${isCaptureEnabled ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`}
+                disabled={!isCaptureEnabled}
+              >
+                Capturar
               </button>
             </div>
 

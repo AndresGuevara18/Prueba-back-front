@@ -1,9 +1,5 @@
+//src/services/authService.js
 const db = require('../config/database');
-
-// Validar si el usuario tiene un cargo autorizado para login
-const isCargoAutorizado = (id_cargo) => {
-  return [1, 2, 3, '1', '2', '3'].includes(id_cargo);
-};
 
 // Buscar usuario por nombre de usuario (usuarioadmin)
 const getUserByUsername = async (usuarioadmin) => {
@@ -20,6 +16,5 @@ const getUserByUsername = async (usuarioadmin) => {
 };
 
 module.exports = {
-  isCargoAutorizado,
   getUserByUsername,
 };
