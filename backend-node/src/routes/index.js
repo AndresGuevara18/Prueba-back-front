@@ -8,6 +8,7 @@ const novedadRoutes = require('./novedadRoutes');
 //const reconocimientoRoutes = require('./reconocimientoRoutes');
 const reporteRoutes = require('./reporteRoutes');
 const authRoutes = require('./authRoutes');
+const asistenciaRoutes = require('./asistenciaRoutes');
 
 router.use('/usuarios', userRoutes);
 router.use('/cargos', cargoRoutes);
@@ -16,5 +17,6 @@ router.use('/novedades', novedadRoutes);
 //router.use('/reconocimiento', reconocimientoRoutes);
 router.use('/reportes', reporteRoutes);
 router.use('/auth', authRoutes);
+router.use('/asistencia', asistenciaRoutes);
 
 module.exports = router;

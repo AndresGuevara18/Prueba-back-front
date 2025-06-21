@@ -28,7 +28,7 @@ class ReporteService {
                 FROM usuario u
                 LEFT JOIN registro_entrada re ON u.id_usuario = re.id_usuario AND DATE(re.fecha_hora) BETWEEN ? AND ?
                 LEFT JOIN registro_salida rs ON u.id_usuario = rs.id_usuario AND DATE(rs.fecha_hora) = DATE(re.fecha_hora) -- Asumiendo una salida por día de entrada
-                ORDER BY u.id_usuario, re.fecha_hora;
+                ORDER BY u.id_usuario, re.fecha_hora DESC;
             `;
             
       const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
@@ -36,17 +36,19 @@ class ReporteService {
       // Procesar los resultados para agrupar por usuario y fecha si es necesario,
       // y calcular la asistencia. Esta es una simplificación.
       // Podrías necesitar una lógica más compleja para emparejar entradas y salidas correctamente.
-      const reporte = results.map(row => {
-        return {
-          id_usuario: row.id_usuario,
-          nombre_completo: row.nombre_empleado,
-          fecha_hora_entrada: row.fecha_hora_entrada,
-          fecha_hora_salida: row.fecha_hora_salida,
-          comentarios_entrada: row.comentarios_entrada,
-          comentarios_salida: row.comentarios_salida,
-          // Aquí podrías calcular la duración, estado (Presente, Ausente si no hay entrada/salida), etc.
-        };
-      });
+      const reporte = results
+        .filter(row => (row.comentarios_entrada === 'Entrada normal' && row.comentarios_salida === 'Salida normal'))
+        .map(row => {
+          return {
+            id_usuario: row.id_usuario,
+            nombre_completo: row.nombre_empleado,
+            fecha_hora_entrada: row.fecha_hora_entrada,
+            fecha_hora_salida: row.fecha_hora_salida,
+            comentarios_entrada: row.comentarios_entrada,
+            comentarios_salida: row.comentarios_salida,
+            // Aquí podrías calcular la duración, estado (Presente, Ausente si no hay entrada/salida), etc.
+          };
+        });
 
       console.log(`Generando reporte de asistencia desde ${fechaInicio} hasta ${fechaFin}`);
       return reporte; 
@@ -76,7 +78,7 @@ class ReporteService {
                 JOIN registro_entrada re ON net.id_entrada = re.id_entrada
                 JOIN usuario u ON net.id_usuario = u.id_usuario
                 WHERE DATE(net.fecha_hora) BETWEEN ? AND ?
-                ORDER BY net.fecha_hora;
+                ORDER BY net.fecha_hora DESC;
             `;
       const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
             
@@ -117,7 +119,7 @@ class ReporteService {
                 JOIN registro_salida rs ON nst.id_salida = rs.id_salida
                 JOIN usuario u ON nst.id_usuario = u.id_usuario
                 WHERE DATE(nst.fecha_hora) BETWEEN ? AND ?
-                ORDER BY nst.fecha_hora;
+                ORDER BY nst.fecha_hora DESC;
             `;
       const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
 
@@ -156,7 +158,7 @@ class ReporteService {
                 FROM no_asistencia na
                 JOIN usuario u ON na.id_usuario = u.id_usuario
                 WHERE na.fecha BETWEEN ? AND ?
-                ORDER BY na.fecha;
+                ORDER BY na.fecha DESC;
             `;
       const [results] = await db.promise().query(query, [fechaInicio, fechaFin]);
             

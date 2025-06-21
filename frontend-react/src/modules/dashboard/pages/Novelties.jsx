@@ -1,3 +1,4 @@
+//src/modules/dashboard/pages/Novelties.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import API_BASE_URL from '../../../config/ConfigURL';
 import { Search } from 'lucide-react';
