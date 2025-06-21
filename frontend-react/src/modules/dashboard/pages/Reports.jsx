@@ -91,8 +91,10 @@ function Reports() {
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nombre</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Fecha Entrada</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Entrada</th>
+            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Comentario Entrada</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Fecha Salida</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Hora Salida</th>
+            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Comentario Salida</th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Estado</th>
           </tr>
         );
@@ -131,7 +133,7 @@ function Reports() {
 
   const renderTableRows = () => {
     if (loading) {
-      const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 6 : 5;
+      const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 8 : 5;
       return (
         <tr>
           <td colSpan={colSpan} className="px-6 py-4 text-center text-sm text-gray-500">
@@ -142,7 +144,7 @@ function Reports() {
     }
 
     if (error) {
-      const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 6 : 5;
+      const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 8 : 5;
       return (
         <tr>
           <td colSpan={colSpan} className="px-6 py-4 text-center text-sm text-red-500">
@@ -153,7 +155,7 @@ function Reports() {
     }
 
     if (!currentItems.length) {
-      const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 6 : 5;
+      const colSpan = selectedType === 'absences' ? 3 : selectedType === 'attendance' ? 8 : 5;
       return (
         <tr>
           <td colSpan={colSpan} className="px-6 py-4 text-center text-sm text-gray-500">
@@ -178,10 +180,16 @@ function Reports() {
                 {item.fecha_hora_entrada ? new Date(item.fecha_hora_entrada).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '-'}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                {item.comentarios_entrada || '-'}
+              </td>
+              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {item.fecha_hora_salida ? new Date(item.fecha_hora_salida).toLocaleDateString('es-ES') : '-'}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {item.fecha_hora_salida ? new Date(item.fecha_hora_salida).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '-'}
+              </td>
+              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                {item.comentarios_salida || '-'}
               </td>
               <td className="whitespace-nowrap px-6 py-4">
                 <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
@@ -263,7 +271,7 @@ function Reports() {
   const exportToCSV = () => {
     const filename = `reporte-${selectedType}-${new Date().toISOString().slice(0,10)}.csv`;
     const headers = {
-      attendance: ['Nombre', 'Fecha Entrada', 'Hora Entrada', 'Fecha Salida', 'Hora Salida', 'Estado'],
+      attendance: ['Nombre', 'Fecha Entrada', 'Hora Entrada', 'Comentario Entrada', 'Fecha Salida', 'Hora Salida', 'Comentario Salida', 'Estado'],
       lateArrivals: ['Nombre', 'Fecha', 'Hora Entrada', 'Hora Esperada', 'Comentarios'],
       earlyDepartures: ['Nombre', 'Fecha', 'Hora Salida', 'Hora Esperada', 'Comentarios'],
       absences: ['Nombre', 'Fecha', 'Motivo']
@@ -280,8 +288,10 @@ function Reports() {
               `"${capitalizeWords(item.nombre_completo || '')}"`,
               `"${item.fecha_hora_entrada ? new Date(item.fecha_hora_entrada).toLocaleDateString('es-ES') : ''}"`,
               `"${item.fecha_hora_entrada ? new Date(item.fecha_hora_entrada).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : ''}"`,
+              `"${item.comentarios_entrada || ''}"`,
               `"${item.fecha_hora_salida ? new Date(item.fecha_hora_salida).toLocaleDateString('es-ES') : ''}"`,
               `"${item.fecha_hora_salida ? new Date(item.fecha_hora_salida).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : ''}"`,
+              `"${item.comentarios_salida || ''}"`,
               `"${item.fecha_hora_entrada && item.fecha_hora_salida ? 'Completa' : item.fecha_hora_entrada ? 'Entrada Registrada' : 'Sin Registro'}"`
             ].join(',');
           case 'lateArrivals':
@@ -331,6 +341,14 @@ function Reports() {
     if (!str) return '';
     return str.replace(/\b\w/g, c => c.toUpperCase()).replace(/\B\w/g, c => c.toLowerCase());
   }
+
+  // Llama automáticamente a fetchReport al cambiar el tipo de reporte si hay fechas seleccionadas
+  useEffect(() => {
+    if (dateRange.start && dateRange.end) {
+      fetchReport();
+    }
+    // eslint-disable-next-line
+  }, [selectedType]);
 
   return (
     <div>
