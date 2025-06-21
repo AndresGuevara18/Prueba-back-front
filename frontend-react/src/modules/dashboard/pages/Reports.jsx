@@ -171,7 +171,7 @@ function Reports() {
           return (
             <tr key={`${item.id_usuario}-${index}`} className="hover:bg-gray-50">
               <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                {capitalizeWords(item.nombre_completo)}
+                {item.nombre_completo}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {item.fecha_hora_entrada ? new Date(item.fecha_hora_entrada).toLocaleDateString('es-ES') : '-'}
@@ -212,7 +212,7 @@ function Reports() {
           return (
             <tr key={`${item.id_notificacion}-${index}`} className="hover:bg-gray-50">
               <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                {capitalizeWords(item.nombre_completo)}
+                {item.nombre_completo}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {new Date(item.fecha_hora_entrada_registrada).toLocaleDateString('es-ES')}
@@ -232,7 +232,7 @@ function Reports() {
           return (
             <tr key={`${item.id_notificacion}-${index}`} className="hover:bg-gray-50">
               <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                {capitalizeWords(item.nombre_completo)}
+                {item.nombre_completo}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {new Date(item.fecha_hora_salida_registrada).toLocaleDateString('es-ES')}
@@ -252,7 +252,7 @@ function Reports() {
           return (
             <tr key={`${item.id_inasistencia}-${index}`} className="hover:bg-gray-50">
               <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                {capitalizeWords(item.nombre_completo)}
+                {item.nombre_completo}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                 {new Date(item.fecha).toLocaleDateString('es-ES')}
@@ -285,7 +285,7 @@ function Reports() {
         switch (selectedType) {
           case 'attendance':
             return [
-              `"${capitalizeWords(item.nombre_completo || '')}"`,
+              `"${item.nombre_completo || ''}"`,
               `"${item.fecha_hora_entrada ? new Date(item.fecha_hora_entrada).toLocaleDateString('es-ES') : ''}"`,
               `"${item.fecha_hora_entrada ? new Date(item.fecha_hora_entrada).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : ''}"`,
               `"${item.comentarios_entrada || ''}"`,
@@ -296,7 +296,7 @@ function Reports() {
             ].join(',');
           case 'lateArrivals':
             return [
-              `"${capitalizeWords(item.nombre_completo || '')}"`,
+              `"${item.nombre_completo || ''}"`,
               `"${new Date(item.fecha_hora_entrada_registrada).toLocaleDateString('es-ES')}"`,
               `"${new Date(item.fecha_hora_entrada_registrada).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}"`,
               `"${new Date(item.fecha_hora_notificacion).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}"`,
@@ -304,7 +304,7 @@ function Reports() {
             ].join(',');
           case 'earlyDepartures':
             return [
-              `"${capitalizeWords(item.nombre_completo || '')}"`,
+              `"${item.nombre_completo || ''}"`,
               `"${new Date(item.fecha_hora_salida_registrada).toLocaleDateString('es-ES')}"`,
               `"${new Date(item.fecha_hora_salida_registrada).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}"`,
               `"${new Date(item.fecha_hora_notificacion).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}"`,
@@ -312,7 +312,7 @@ function Reports() {
             ].join(',');
           case 'absences':
             return [
-              `"${capitalizeWords(item.nombre_completo || '')}"`,
+              `"${item.nombre_completo || ''}"`,
               `"${new Date(item.fecha).toLocaleDateString('es-ES')}"`,
               `"${item.motivo || ''}"`
             ].join(',');
@@ -335,12 +335,6 @@ function Reports() {
       document.body.removeChild(link);
     }
   };
-
-  // Función para capitalizar la primera letra de cada palabra
-  function capitalizeWords(str) {
-    if (!str) return '';
-    return str.replace(/\b\w/g, c => c.toUpperCase()).replace(/\B\w/g, c => c.toLowerCase());
-  }
 
   // Llama automáticamente a fetchReport al cambiar el tipo de reporte si hay fechas seleccionadas
   useEffect(() => {
