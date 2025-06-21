@@ -6,10 +6,10 @@ def get_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            database='colpryst_col3',
+            database='colpryst_col4',
             user='root',
             #password=''
-            password='' # pass mechas
+            password='admin123' # pass mechas
         )
         if connection.is_connected():
             print("✅ Conexión a la base de datos exitosa")

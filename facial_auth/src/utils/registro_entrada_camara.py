@@ -286,7 +286,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
                         #esultado = registrar_entrada(id_usuario)
 
                         # Usar comentario de tardía si existe
-                        comentario_final = f"Llegada tardía: {comentario_tardia}" if comentario_tardia else "Registro normal"
+                        comentario_final = f"Llegada tarde: {comentario_tardia}" if comentario_tardia else "Entrada normal"
                         resultado = registrar_entrada(id_usuario, comentario_final)  # Registrar con comentario
 
                         #registrar_entrada(id_usuario)
