@@ -219,7 +219,9 @@ const UsuariosPage = () => {
 
   return (
     <div className="ml-46 m-5 text-center font-sans">
-      <h1 className="mb-4 text-3xl font-bold">Lista de Usuarios</h1>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 text-left">Lista de Usuarios</h1>
+      </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         {/* Input: Buscar por nombre a la izquierda */}
@@ -258,7 +260,7 @@ const UsuariosPage = () => {
           </div>
           <button
             onClick={() => navigate("/dashboard/cargos")}
-            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="px-4 py-2 rounded bg-blue-500 text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150"
           >
             Ver Cargos
           </button>
@@ -291,12 +293,12 @@ const UsuariosPage = () => {
                 <td className="border border-black p-2">{usuario.id_cargo}</td>
                 <td className="whitespace-nowrap border border-black p-2">
                   <div className="flex space-x-2">
-                    <button className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
+                    <button className="rounded bg-blue-400 px-2 py-1 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
                       onClick={() => abrirModalEditar(usuario)}
                     >
                       Editar
                     </button>
-                    <button className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
+                    <button className="rounded border border-blue-500 bg-white px-2 py-1 text-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
                       onClick={() => eliminarUsuario(usuario.id_usuario)}
                     >
                       Eliminar
@@ -326,9 +328,8 @@ const UsuariosPage = () => {
 
             {/* Botones de acciones en el modal */}
             <div className="flex justify-end space-x-2">
-              {/* Botón de editar (sin funcionalidad) onClick={() => alert("Función de editar no implementada aún")}*/}
               <button 
-                className="rounded bg-yellow-500 px-3 py-1 text-white hover:bg-yellow-600"
+                className="rounded bg-blue-400 px-3 py-1 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 onClick={() => {
                   setModalAbierto(false);
                   abrirModalEditar(usuarioEncontrado);
@@ -336,10 +337,8 @@ const UsuariosPage = () => {
               >
                 ✏️ Editar
               </button>
-              
-              {/* Botón de eliminar (funcional) */}
               <button 
-                className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                className="rounded border border-blue-500 bg-white px-3 py-1 text-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
                 onClick={() => {
                   eliminarUsuario(usuarioEncontrado.id_usuario);
                   cerrarModal();
@@ -347,8 +346,6 @@ const UsuariosPage = () => {
               >
                 🗑 Eliminar
               </button>
-              
-              {/* Botón de cerrar */}
               <button
                 onClick={cerrarModal}
                 className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
@@ -512,10 +509,10 @@ const UsuariosPage = () => {
         </div>
       )}
 
-      {/* Paginación sticky */}
+      {/* Paginación fija al fondo del área principal, sin invadir el menú lateral */}
       <div
-        className="sticky left-0 right-0 z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded border-t bg-white p-4 shadow sm:flex-row"
-        style={{ bottom: 0 }}
+        className="fixed bottom-0 z-50 flex flex-col items-center justify-between gap-4 border-t bg-white p-4 shadow sm:flex-row"
+        style={{ left: '260px', width: 'calc(100% - 260px)', minWidth: 0 }}
       >
         <div className="flex items-center gap-4">
           <div className="text-sm text-gray-600">
@@ -551,29 +548,26 @@ const UsuariosPage = () => {
           >
             Anterior
           </button>
-          {/* Números de página */}
-          <div className="flex gap-1">
-            {(() => {
-              let pagesToShow = [];
-              let start = Math.max(1, currentPage - 1);
-              let end = Math.min(start + 2, totalPages);
-              if (end === totalPages) {
-                start = Math.max(1, end - 2);
-              }
-              for (let i = start; i <= end; i++) {
-                pagesToShow.push(
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i)}
-                    className={`rounded-lg border px-3 py-2 text-sm ${currentPage === i ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
-                  >
-                    {i}
-                  </button>
-                );
-              }
-              return pagesToShow;
-            })()}
-          </div>
+          {Array.from({ length: Math.min(3, totalPages) }, (_, idx) => {
+            let pageNum;
+            if (currentPage <= 2 || totalPages <= 3) {
+              pageNum = idx + 1;
+            } else if (currentPage >= totalPages - 1) {
+              pageNum = totalPages - 2 + idx;
+            } else {
+              pageNum = currentPage - 1 + idx;
+            }
+            if (pageNum < 1 || pageNum > totalPages) return null;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`rounded-lg border px-3 py-2 text-sm ${currentPage === pageNum ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}

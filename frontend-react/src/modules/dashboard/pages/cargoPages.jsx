@@ -195,8 +195,10 @@ const CargoPage = () => {
         >
           <Undo2 className="h-7 w-7" />
         </button>
-        <h1 className="flex-1 text-center text-3xl font-bold">Lista de Cargos</h1>
-        <div style={{ width: '40px' }} />
+      </div>
+
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 text-left">Lista de Cargos</h1>
       </div>
 
       {/* Barra de controles: búsqueda por nombre a la izquierda, resto a la derecha */}
@@ -262,15 +264,15 @@ const CargoPage = () => {
                 <td className="border border-black p-2">
                   <button
                     onClick={() => abrirModalEditar(cargo.id_cargo ? cargo : cargos.find(c => c.id_cargo === cargo.id_cargo))}
-                    className="mr-2 rounded bg-yellow-500 p-1 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    className="mr-2 rounded bg-blue-400 px-2 py-1 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
-                    ✏️ Editar
+                    Editar
                   </button>
                   <button
                     onClick={() => eliminarCargo(cargo.id_cargo)}
-                    className="rounded bg-red-500 p-1 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="rounded border border-blue-500 bg-white px-2 py-1 text-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
-                    🗑 Eliminar
+                    Eliminar
                   </button>
                 </td>
               </tr>
@@ -279,10 +281,10 @@ const CargoPage = () => {
         </table>
       </div>
 
-      {/* Paginación sticky */}
+      {/* Paginación fija al fondo del área principal, sin invadir el menú lateral */}
       <div
-        className="sticky left-0 right-0 z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded border-t bg-white p-4 shadow sm:flex-row"
-        style={{ bottom: 0 }}
+        className="fixed bottom-0 z-50 flex flex-col items-center justify-between gap-4 border-t bg-white p-4 shadow sm:flex-row"
+        style={{ left: '260px', width: 'calc(100% - 260px)', minWidth: 0 }}
       >
         <div className="flex items-center gap-4">
           <div className="text-sm text-gray-600">
@@ -318,29 +320,26 @@ const CargoPage = () => {
           >
             Anterior
           </button>
-          {/* Números de página */}
-          <div className="flex gap-1">
-            {(() => {
-              let pagesToShow = [];
-              let start = Math.max(1, currentPage - 1);
-              let end = Math.min(start + 2, totalPages);
-              if (end === totalPages) {
-                start = Math.max(1, end - 2);
-              }
-              for (let i = start; i <= end; i++) {
-                pagesToShow.push(
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i)}
-                    className={`rounded-lg border px-3 py-2 text-sm ${currentPage === i ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
-                  >
-                    {i}
-                  </button>
-                );
-              }
-              return pagesToShow;
-            })()}
-          </div>
+          {Array.from({ length: Math.min(3, totalPages) }, (_, idx) => {
+            let pageNum;
+            if (currentPage <= 2 || totalPages <= 3) {
+              pageNum = idx + 1;
+            } else if (currentPage >= totalPages - 1) {
+              pageNum = totalPages - 2 + idx;
+            } else {
+              pageNum = currentPage - 1 + idx;
+            }
+            if (pageNum < 1 || pageNum > totalPages) return null;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`rounded-lg border px-3 py-2 text-sm ${currentPage === pageNum ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}

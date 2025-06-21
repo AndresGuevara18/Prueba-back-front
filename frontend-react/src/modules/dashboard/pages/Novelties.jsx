@@ -109,6 +109,9 @@ function Novelties() {
 
   return (
     <div className="space-y-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800">Novedades</h1>
+      </div>
       <div className="flex flex-col md:flex-row justify-between gap-4">
         <div className="relative flex-1">
           <input
@@ -188,66 +191,80 @@ function Novelties() {
           )}
         </div>
 
-        {/* Paginación - Fija en la parte inferior */}
-        <div className="border-t border-gray-200 p-4 bg-white">
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-700">
-              Mostrando {indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredNovelties.length)} de {filteredNovelties.length} resultados
+        {/* Paginación fija al fondo del área principal, sin invadir el menú lateral */}
+        <div
+          className="fixed bottom-0 z-50 flex flex-col items-center justify-between gap-4 border-t bg-white p-4 shadow sm:flex-row"
+          style={{ left: '260px', width: 'calc(100% - 260px)', minWidth: 0 }}
+        >
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-600">
+              Mostrando {filteredNovelties.length === 0 ? 0 : indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredNovelties.length)} de {filteredNovelties.length} resultados
             </div>
-            <div className="flex gap-2 items-center">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            <div className="flex items-center gap-2">
+              <select
+                value={itemsPerPage}
+                onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="rounded border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Primero
-              </button>
-              
-              <div className="flex gap-1 min-w-[120px] justify-center">
-                {(() => {
-                  let pagesToShow = [];
-                  let start = Math.max(1, currentPage - 1);
-                  let end = Math.min(start + 2, totalPages);
-                  
-                  // Ajustar el inicio si estamos al final
-                  if (end === totalPages) {
-                    start = Math.max(1, end - 2);
-                  }
-                  
-                  for (let i = start; i <= end; i++) {
-                    pagesToShow.push(
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(i)}
-                        className={`px-3 py-2 text-sm border rounded-lg ${
-                          currentPage === i
-                            ? 'bg-blue-500 text-white border-blue-500'
-                            : 'border-gray-300 hover:bg-gray-50'
-                        }`}
-                      >
-                        {i}
-                      </button>
-                    );
-                  }
-                  return pagesToShow;
-                })()}
-              </div>
-
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Siguiente
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Último
-              </button>
+                <option value={5}>5</option>
+                <option value={8}>8</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="text-sm text-gray-600">por página</span>
             </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Primero
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            {/* Mostrar hasta 3 páginas, desplazando la ventana según la página actual */}
+            {Array.from({ length: Math.min(3, totalPages) }, (_, idx) => {
+              let pageNum;
+              if (currentPage <= 2 || totalPages <= 3) {
+                pageNum = idx + 1;
+              } else if (currentPage >= totalPages - 1) {
+                pageNum = totalPages - 2 + idx;
+              } else {
+                pageNum = currentPage - 1 + idx;
+              }
+              if (pageNum < 1 || pageNum > totalPages) return null;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`rounded-lg border px-3 py-2 text-sm ${currentPage === pageNum ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Último
+            </button>
           </div>
         </div>
       </div>
