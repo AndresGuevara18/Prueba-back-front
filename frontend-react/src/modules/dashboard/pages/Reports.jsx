@@ -354,7 +354,7 @@ function Reports() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Reportes</h1>
-      </div>      <div className="flex flex-col h-[calc(100vh-12rem)] bg-white rounded-lg shadow-sm">
+      </div>      <div className="flex flex-col bg-white rounded-lg shadow-sm">
         {/* Header y Filtros - Fijo en la parte superior */}
         <div className="p-6 border-b border-gray-200">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
