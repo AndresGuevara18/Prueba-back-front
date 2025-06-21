@@ -195,8 +195,10 @@ const CargoPage = () => {
         >
           <Undo2 className="h-7 w-7" />
         </button>
-        <h1 className="flex-1 text-center text-3xl font-bold">Lista de Cargos</h1>
-        <div style={{ width: '40px' }} />
+      </div>
+
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 text-left">Lista de Cargos</h1>
       </div>
 
       {/* Barra de controles: búsqueda por nombre a la izquierda, resto a la derecha */}

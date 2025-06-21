@@ -231,7 +231,6 @@ const UsuariosPage = () => {
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
         {/* Botones a la derecha */}
         <div className="ml-auto flex items-center gap-2">
           <button
@@ -263,7 +262,6 @@ const UsuariosPage = () => {
           </button>
         </div>
       </div>
-
       {/* Envolver todo en un contenedor de altura mínima para que la paginación quede abajo */}
       <div className="min-h-[70vh] flex flex-col justify-between">
         <div className="table-container overflow-x-auto">
@@ -327,29 +325,24 @@ const UsuariosPage = () => {
 
               {/* Botones de acciones en el modal */}
               <div className="flex justify-end space-x-2">
-                {/* Botón de editar (sin funcionalidad) onClick={() => alert("Función de editar no implementada aún")}*/}
                 <button 
-                  className="rounded border border-blue-400 bg-white px-3 py-1 text-blue-500 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors"
+                  className="rounded bg-blue-400 px-3 py-1 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   onClick={() => {
                     setModalAbierto(false);
                     abrirModalEditar(usuarioEncontrado);
                   }}
                 >
-                  Editar
+                  ✏️ Editar
                 </button>
-                
-                {/* Botón de eliminar (funcional) */}
                 <button 
-                  className="rounded border border-blue-400 bg-white px-3 py-1 text-blue-500 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors"
+                  className="rounded border border-blue-500 bg-white px-3 py-1 text-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
                   onClick={() => {
                     eliminarUsuario(usuarioEncontrado.id_usuario);
                     cerrarModal();
                   }}
                 >
-                  Eliminar
+                  🗑 Eliminar
                 </button>
-                
-                {/* Botón de cerrar */}
                 <button
                   onClick={cerrarModal}
                   className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
@@ -360,7 +353,6 @@ const UsuariosPage = () => {
             </div>
           </div>
         )}
-
 
         {/* Modal para editar usuario */}
         {modalEditarAbierto && usuarioAEditar && (
