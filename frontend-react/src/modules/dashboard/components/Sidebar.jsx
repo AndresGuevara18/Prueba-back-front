@@ -84,7 +84,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   const DesktopSidebar = () => (
     <div
-      className={`hidden min-h-screen flex-col bg-[#2D3748] text-white md:flex transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-16'}`}
+      className={`hidden min-h-screen flex-col bg-[#2D3748] text-white md:flex transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-16'} ${!isSidebarOpen ? 'items-center' : ''}`}
       onMouseEnter={() => setIsSidebarOpen(true)}
       onMouseLeave={() => setIsSidebarOpen(false)}
     >
@@ -112,21 +112,25 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           </>
         )}
       </div>
-      <nav className={`flex-1 p-4 flex flex-col ${isSidebarOpen ? 'items-start' : 'items-center'}`}>
-        {menuItems.map((item, index) => (
+      <nav className={`flex-1 ${isSidebarOpen ? 'p-4' : 'py-2 px-0'} flex ${isSidebarOpen ? 'flex-col items-start' : 'flex-col items-center justify-center'} w-full`}>
+        {[...menuItems,
+          { icon: <User className="h-5 w-5" />, label: 'Mi Perfil', path: '/dashboard/profile', isProfile: true },
+          { icon: <LogOut className="h-5 w-5" />, label: 'Cerrar Sesión', path: '/logout', isLogout: true }
+        ].map((item, index) => (
           <button
             key={index}
             onClick={() => {
+              if (item.isLogout) { handleLogout(); return; }
               navigate(item.path);
               setIsMobileMenuOpen && setIsMobileMenuOpen(false);
             }}
-            className={`mb-2 flex items-center rounded-lg px-0 py-3 transition-all duration-300 w-full ${
+            className={`flex items-center rounded-lg px-0 ${isSidebarOpen ? 'py-3 mb-2' : 'py-1 mb-0'} transition-all duration-300 w-full ${
               isSidebarOpen ? 'justify-start' : 'justify-center'
             } ${
-              currentPath === item.path
-                ? 'bg-[#3182CE] text-white' 
+              (currentPath === item.path || (item.isProfile && currentPath === '/dashboard/profile')) && !item.isLogout
+                ? 'bg-[#3182CE] text-white'
                 : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-            }`}
+            } ${item.isLogout ? '' : ''}`}
             style={{ minWidth: isSidebarOpen ? '100%' : 'auto' }}
           >
             <span className={`flex items-center justify-center ${isSidebarOpen ? 'w-12' : 'w-full'} transition-all duration-300`}>{item.icon}</span>
@@ -134,22 +138,6 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           </button>
         ))}
       </nav>
-      <div className={`border-t border-gray-700 p-4 transition-all duration-300 flex flex-col ${isSidebarOpen ? 'items-start' : 'items-center'}`}> 
-        <button 
-          onClick={() => navigate('/dashboard/profile')}
-          className={`mb-2 flex items-center rounded-lg px-0 py-3 w-full ${isSidebarOpen ? 'justify-start' : 'justify-center'} text-gray-400 transition-colors hover:text-white`}
-        >
-          <span className={`flex items-center justify-center ${isSidebarOpen ? 'w-12' : 'w-full'} transition-all duration-300`}><User className="h-5 w-5" /></span>
-          <span className={`${isSidebarOpen ? 'inline' : 'hidden'} ml-1`}>Mi Perfil</span>
-        </button>
-        <button 
-          onClick={handleLogout}
-          className={`flex items-center rounded-lg px-0 py-3 w-full ${isSidebarOpen ? 'justify-start' : 'justify-center'} text-gray-400 transition-colors hover:text-white`}
-        >
-          <span className={`flex items-center justify-center ${isSidebarOpen ? 'w-12' : 'w-full'} transition-all duration-300`}><LogOut className="h-5 w-5" /></span>
-          <span className={`${isSidebarOpen ? 'inline' : 'hidden'} ml-1`}>Cerrar Sesión</span>
-        </button>
-      </div>
     </>
   );
 
