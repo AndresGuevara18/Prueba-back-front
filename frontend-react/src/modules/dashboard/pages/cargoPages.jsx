@@ -195,8 +195,10 @@ const CargoPage = () => {
         >
           <Undo2 className="h-7 w-7" />
         </button>
-        <h1 className="flex-1 text-center text-3xl font-bold">Lista de Cargos</h1>
-        <div style={{ width: '40px' }} />
+      </div>
+
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 text-left">Lista de Cargos</h1>
       </div>
 
       {/* Barra de controles: búsqueda por nombre a la izquierda, resto a la derecha */}
@@ -237,124 +239,120 @@ const CargoPage = () => {
         </div>
       </div>
 
-      {/* Tabla de cargos paginada */}
-      <div className="table-container overflow-x-auto">
-        <table className="w-full bg-white shadow-lg">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-black p-2">ID</th>
-              <th className="border border-black p-2">Nombre</th>
-              <th className="border border-black p-2">Descripción</th>
-              <th className="border border-black p-2">ID Horario</th>
-              <th className="border border-black p-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((cargo, index) => (
-              <tr
-                key={cargo.id_cargo}
-                className={`${index % 2 === 0 ? "bg-white" : "bg-gray-100"} border-b`}
-              >
-                <td className="border border-black p-2">{cargo.id_cargo}</td>
-                <td className="border border-black p-2">{cargo.nombre_cargo}</td>
-                <td className="border border-black p-2">{cargo.descripcion || "N/A"}</td>
-                <td className="border border-black p-2">{cargo.id_horario || "N/A"}</td>
-                <td className="border border-black p-2">
-                  <button
-                    onClick={() => abrirModalEditar(cargo.id_cargo ? cargo : cargos.find(c => c.id_cargo === cargo.id_cargo))}
-                    className="mr-2 rounded bg-yellow-500 p-1 text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                  >
-                    ✏️ Editar
-                  </button>
-                  <button
-                    onClick={() => eliminarCargo(cargo.id_cargo)}
-                    className="rounded bg-red-500 p-1 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  >
-                    🗑 Eliminar
-                  </button>
-                </td>
+      {/* Envolver el contenido principal en un div con min-h-screen para que la paginación no se suba */}
+      <div className="min-h-[70vh] flex flex-col justify-between">
+        {/* Tabla de cargos paginada */}
+        <div className="table-container overflow-x-auto">
+          <table className="w-full bg-white shadow-lg">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-black p-2">ID</th>
+                <th className="border border-black p-2">Nombre</th>
+                <th className="border border-black p-2">Descripción</th>
+                <th className="border border-black p-2">ID Horario</th>
+                <th className="border border-black p-2">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Paginación sticky */}
-      <div
-        className="sticky left-0 right-0 z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded border-t bg-white p-4 shadow sm:flex-row"
-        style={{ bottom: 0 }}
-      >
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-600">
-            Mostrando {filteredCargos.length === 0 ? 0 : indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredCargos.length)} de {filteredCargos.length} cargos
-          </div>
-          <div className="flex items-center gap-2">
-            <select
-              value={itemsPerPage}
-              onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-              className="rounded border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value={5}>5</option>
-              <option value={8}>8</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
-            <span className="text-sm text-gray-600">por página</span>
-          </div>
+            </thead>
+            <tbody>
+              {currentItems.map((cargo, index) => (
+                <tr
+                  key={cargo.id_cargo}
+                  className={`${index % 2 === 0 ? "bg-white" : "bg-gray-100"} border-b`}
+                >
+                  <td className="border border-black p-2">{cargo.id_cargo}</td>
+                  <td className="border border-black p-2">{cargo.nombre_cargo}</td>
+                  <td className="border border-black p-2">{cargo.descripcion || "N/A"}</td>
+                  <td className="border border-black p-2">{cargo.id_horario || "N/A"}</td>
+                  <td className="border border-black p-2">
+                    <button
+                      onClick={() => abrirModalEditar(cargo.id_cargo ? cargo : cargos.find(c => c.id_cargo === cargo.id_cargo))}
+                      className="mr-2 rounded border border-blue-400 bg-white p-1 text-blue-500 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => eliminarCargo(cargo.id_cargo)}
+                      className="rounded border border-blue-400 bg-white p-1 text-blue-500 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Primero
-          </button>
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Anterior
-          </button>
-          {/* Números de página */}
-          <div className="flex gap-1">
-            {(() => {
-              let pagesToShow = [];
-              let start = Math.max(1, currentPage - 1);
-              let end = Math.min(start + 2, totalPages);
-              if (end === totalPages) {
-                start = Math.max(1, end - 2);
-              }
-              for (let i = start; i <= end; i++) {
-                pagesToShow.push(
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i)}
-                    className={`rounded-lg border px-3 py-2 text-sm ${currentPage === i ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
-                  >
-                    {i}
-                  </button>
-                );
-              }
-              return pagesToShow;
-            })()}
+
+        {/* Paginación sticky, pero siempre al fondo con min-height */}
+        <div
+          className="sticky left-0 right-0 z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded border-t bg-white p-4 shadow sm:flex-row"
+          style={{ bottom: 0, minHeight: '80px' }}
+        >
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-600">
+              Mostrando {filteredCargos.length === 0 ? 0 : indexOfFirstItem + 1} a {Math.min(indexOfLastItem, filteredCargos.length)} de {filteredCargos.length} cargos
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={itemsPerPage}
+                onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="rounded border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={5}>5</option>
+                <option value={8}>8</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="text-sm text-gray-600">por página</span>
+            </div>
           </div>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Siguiente
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Último
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Primero
+            </button>
+            {/* Números de página */}
+            <div className="flex gap-1">
+              {(() => {
+                let pagesToShow = [];
+                let start = Math.max(1, currentPage - 1);
+                let end = Math.min(start + 2, totalPages);
+                if (end === totalPages) {
+                  start = Math.max(1, end - 2);
+                }
+                for (let i = start; i <= end; i++) {
+                  pagesToShow.push(
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i)}
+                      className={`rounded-lg border px-3 py-2 text-sm ${currentPage === i ? 'border-blue-500 bg-blue-500 text-white' : 'border-gray-300 hover:bg-gray-50'}`}
+                    >
+                      {i}
+                    </button>
+                  );
+                }
+                return pagesToShow;
+              })()}
+            </div>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Último
+            </button>
+          </div>
         </div>
       </div>
 

@@ -108,9 +108,15 @@ function AsistenciaUsuario() {
                         <td className="px-6 py-4 text-sm">
                           <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                             a.tipo === 'Entrada'
-                              ? 'bg-blue-100 text-blue-800'
+                              ? 'bg-blue-500 text-white'
                               : a.tipo === 'Salida'
-                              ? 'bg-green-100 text-green-800'
+                              ? 'bg-green-500 text-white'
+                              : a.tipo === 'Entrada tarde'
+                              ? 'bg-violet-600 text-white'
+                              : a.tipo === 'Salida temprana'
+                              ? 'bg-orange-500 text-white'
+                              : a.tipo === 'Inasistencia'
+                              ? 'bg-red-500 text-white'
                               : 'bg-gray-100 text-gray-800'
                           }`}>
                             {a.tipo}
