@@ -1,5 +1,5 @@
 //src/modules/dashboard/components/Sidebar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Bell, 
@@ -25,6 +25,7 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [profile, setProfile] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   React.useEffect(() => {
     async function fetchProfile() {
@@ -82,64 +83,61 @@ function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   );
 
   const DesktopSidebar = () => (
-    <div className="hidden min-h-screen w-64 flex-col bg-[#2D3748] text-white md:flex">
-      <SidebarContent />
+    <div
+      className={`hidden min-h-screen flex-col bg-[#2D3748] text-white md:flex transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-16'} ${!isSidebarOpen ? 'items-center' : ''}`}
+      onMouseEnter={() => setIsSidebarOpen(true)}
+      onMouseLeave={() => setIsSidebarOpen(false)}
+    >
+      <SidebarContent isSidebarOpen={isSidebarOpen} />
     </div>
   );
 
-  const SidebarContent = () => (
+  const SidebarContent = ({ isSidebarOpen }) => (
     <>
-      <div className="border-b border-gray-700 p-6 text-center">
+      <div className={`border-b border-gray-700 p-6 text-center transition-all duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 h-0 p-0 overflow-hidden'}`}>
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#3182CE] text-2xl font-semibold text-white">
           {profile && profile.nombre_empleado ? profile.nombre_empleado[0] : 'U'}
         </div>
-        <h2 className="text-lg font-semibold">
-          {loading ? 'Cargando...' : (profile ? profile.nombre_empleado : 'Usuario')}
-        </h2>
-        <p className="text-sm text-gray-400">
-          {loading ? 'Cargando...' : (profile ? profile.email_empleado : 'correo@colpryst.com')}
-        </p>
-        <p className="mt-1 text-xs text-gray-400">
-          {loading ? '' : (profile ? (profile.cargo_user || 'Sin rol') : '')}
-        </p>
+        {isSidebarOpen && (
+          <>
+            <h2 className="text-lg font-semibold">
+              {loading ? 'Cargando...' : (profile ? profile.nombre_empleado : 'Usuario')}
+            </h2>
+            <p className="text-sm text-gray-400">
+              {loading ? 'Cargando...' : (profile ? profile.email_empleado : 'correo@colpryst.com')}
+            </p>
+            <p className="mt-1 text-xs text-gray-400">
+              {loading ? '' : (profile ? (profile.cargo_user || 'Sin rol') : '')}
+            </p>
+          </>
+        )}
       </div>
-
-      <nav className="flex-1 p-4">
-        {menuItems.map((item, index) => (
+      <nav className={`flex-1 ${isSidebarOpen ? 'p-4' : 'py-2 px-0'} flex ${isSidebarOpen ? 'flex-col items-start' : 'flex-col items-center justify-center'} w-full`}>
+        {[...menuItems,
+          { icon: <User className="h-5 w-5" />, label: 'Mi Perfil', path: '/dashboard/profile', isProfile: true },
+          { icon: <LogOut className="h-5 w-5" />, label: 'Cerrar Sesión', path: '/logout', isLogout: true }
+        ].map((item, index) => (
           <button
             key={index}
             onClick={() => {
+              if (item.isLogout) { handleLogout(); return; }
               navigate(item.path);
-              setIsMobileMenuOpen(false);
+              setIsMobileMenuOpen && setIsMobileMenuOpen(false);
             }}
-            className={`mb-2 flex w-full items-center gap-3 rounded-lg px-4 py-3 ${
-              currentPath === item.path
-                ? 'bg-[#3182CE] text-white' 
+            className={`flex items-center rounded-lg px-0 ${isSidebarOpen ? 'py-3 mb-2' : 'py-1 mb-0'} transition-all duration-300 w-full ${
+              isSidebarOpen ? 'justify-start' : 'justify-center'
+            } ${
+              (currentPath === item.path || (item.isProfile && currentPath === '/dashboard/profile')) && !item.isLogout
+                ? 'bg-[#3182CE] text-white'
                 : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-            } transition-colors`}
+            } ${item.isLogout ? '' : ''}`}
+            style={{ minWidth: isSidebarOpen ? '100%' : 'auto' }}
           >
-            {item.icon}
-            {item.label}
+            <span className={`flex items-center justify-center ${isSidebarOpen ? 'w-12' : 'w-full'} transition-all duration-300`}>{item.icon}</span>
+            <span className={`ml-1 transition-all duration-300 ${isSidebarOpen ? 'inline' : 'hidden'}`}>{item.label}</span>
           </button>
         ))}
       </nav>
-
-      <div className="border-t border-gray-700 p-4">
-        <button 
-          onClick={() => navigate('/dashboard/profile')}
-          className="mb-2 flex w-full items-center gap-3 px-4 py-3 text-gray-400 transition-colors hover:text-white"
-        >
-          <User className="h-5 w-5" />
-          Mi Perfil
-        </button>
-        <button 
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 px-4 py-3 text-gray-400 transition-colors hover:text-white"
-        >
-          <LogOut className="h-5 w-5" />
-          Cerrar Sesión
-        </button>
-      </div>
     </>
   );
 

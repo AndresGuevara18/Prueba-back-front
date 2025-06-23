@@ -94,28 +94,40 @@ function AsistenciaUsuario() {
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha/Hora</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentAsistencias.map((a, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm">
-                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                          a.tipo === 'Entrada'
-                            ? 'bg-blue-100 text-blue-800'
-                            : a.tipo === 'Salida'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {a.tipo}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{a.fecha_hora ? new Date(a.fecha_hora).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{a.detalle || '-'}</td>
-                    </tr>
-                  ))}
+                  {currentAsistencias.map((a, i) => {
+                    const fecha = a.fecha_hora ? new Date(a.fecha_hora).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '-';
+                    const hora = a.fecha_hora ? new Date(a.fecha_hora).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '-';
+                    return (
+                      <tr key={i} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 text-sm">
+                          <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                            a.tipo === 'Entrada'
+                              ? 'bg-blue-500 text-white'
+                              : a.tipo === 'Salida'
+                              ? 'bg-green-500 text-white'
+                              : a.tipo === 'Entrada tarde'
+                              ? 'bg-violet-600 text-white'
+                              : a.tipo === 'Salida temprana'
+                              ? 'bg-orange-500 text-white'
+                              : a.tipo === 'Inasistencia'
+                              ? 'bg-red-500 text-white'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {a.tipo}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{fecha}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{hora}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{a.detalle || '-'}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

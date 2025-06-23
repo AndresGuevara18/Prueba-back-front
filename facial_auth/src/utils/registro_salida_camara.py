@@ -256,7 +256,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_salida=None):
                         reconocimiento_realizado = True
                         estado_reconocimiento = "reconocido"
                         
-                        comentario_final = f"Salida temprana: {comentario_salida}" if comentario_salida else "Registro normal"
+                        comentario_final = f"Salida temprana: {comentario_salida}" if comentario_salida else "Salida normal"
                         resultado = registrar_salida(id_usuario, comentario_final)
 
                         if after_id:
