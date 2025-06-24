@@ -102,11 +102,11 @@ function IncidenciasUsuario() {
                         <td className="px-6 py-4 text-sm">
                           <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                             a.tipo === 'Entrada tarde'
-                              ? 'bg-orange-300 text-red-800'
-                              : a.tipo === 'Salida temprana'
-                              ? 'bg-orange-400 text-red-800'
-                              : a.tipo === 'Inasistencia'
                               ? 'bg-orange-100 text-orange-800'
+                              : a.tipo === 'Salida temprana'
+                              ? 'bg-blue-100 text-blue-800'
+                              : a.tipo === 'Inasistencia'
+                              ? 'bg-red-100 text-red-800'
                               : 'bg-gray-100 text-gray-800'
                           }`}>
                             {a.tipo}
