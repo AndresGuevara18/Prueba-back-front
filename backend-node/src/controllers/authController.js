@@ -3,6 +3,7 @@ const authService = require('../services/authService');
 const db = require('../config/database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const usuarioService = require('../services/userServices');
 
 const authController = {
   // Autenticación de usuario (login)
@@ -52,6 +53,51 @@ const authController = {
       res.json({ ...userResult[0], cargo_user });
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener el perfil' });
+    }
+  },
+
+  // Actualizar perfil del usuario autenticado llamando al servicio de usuario
+  updateUser: async (req, res) => {
+    try {
+      const id_usuario = req.user.id_usuario;
+      await usuarioService.updateUser(id_usuario, req.body);
+      res.json({ success: true, message: 'Perfil actualizado correctamente' });
+    } catch (error) {
+      console.error('❌ Error en updateUser (AuthController):', error);
+      let statusCode = 500;
+      let message = 'Error al actualizar el perfil';
+
+      switch (error.message) {
+      case 'USER_NOT_FOUND':
+        statusCode = 404;
+        message = 'El usuario no existe';
+        break;
+      case 'DOCUMENTO_EXISTS':
+        statusCode = 400;
+        message = 'El número de documento ya está registrado';
+        break;
+      case 'EMAIL_EXISTS':
+        statusCode = 400;
+        message = 'El correo electrónico ya está registrado';
+        break;
+      case 'USUARIO_EXISTS':
+        statusCode = 400;
+        message = 'El nombre de usuario ya está en uso';
+        break;
+      case 'CARGO_NOT_FOUND':
+        statusCode = 400;
+        message = 'El cargo especificado no existe';
+        break;
+      case 'SOLO_UNO_POR_CARGO':
+        statusCode = 400;
+        message = 'Solo se permite un usuario para este cargo';
+        break;
+      }
+      res.status(statusCode).json({
+        success: false,
+        message: message,
+        error: error.message,
+      });
     }
   },
 };

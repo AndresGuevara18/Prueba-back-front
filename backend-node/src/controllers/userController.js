@@ -1,3 +1,4 @@
+//src/controllers/userController.js
 const usuarioService = require('../services/userServices'); // Importar el servicio de usuario
 const cargoService = require('../services/cargoServices'); // Importar el servicio de cargos
 //reconocimeinto

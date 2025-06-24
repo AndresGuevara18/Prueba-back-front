@@ -11,7 +11,8 @@ class NovedadService {
                 u.nombre_empleado AS nombre_usuario, -- Modificado para usar solo nombre_empleado
                 'Registro Entrada' AS tipo_novedad,
                 re.fecha_hora AS fecha_hora,
-                NULL AS detalle
+                NULL AS detalle,
+                re.comentarios AS comentario
             FROM registro_entrada re
             JOIN usuario u ON re.id_usuario = u.id_usuario
 
@@ -22,7 +23,8 @@ class NovedadService {
                 u.nombre_empleado AS nombre_usuario, -- Modificado para usar solo nombre_empleado
                 'Entrada Tarde' AS tipo_novedad,
                 net.fecha_hora AS fecha_hora,
-                net.comentarios AS detalle
+                net.comentarios AS detalle,
+                NULL AS comentario
             FROM notificacion_entrada_tarde net
             JOIN usuario u ON net.id_usuario = u.id_usuario
 
@@ -33,7 +35,8 @@ class NovedadService {
                 u.nombre_empleado AS nombre_usuario, -- Modificado para usar solo nombre_empleado
                 'Registro Salida' AS tipo_novedad,
                 rs.fecha_hora AS fecha_hora,
-                NULL AS detalle
+                NULL AS detalle,
+                rs.comentarios AS comentario
             FROM registro_salida rs
             JOIN usuario u ON rs.id_usuario = u.id_usuario
 
@@ -44,7 +47,8 @@ class NovedadService {
                 u.nombre_empleado AS nombre_usuario, -- Modificado para usar solo nombre_empleado
                 'Salida Temprana' AS tipo_novedad,
                 nst.fecha_hora AS fecha_hora,
-                nst.comentarios AS detalle
+                nst.comentarios AS detalle,
+                NULL AS comentario
             FROM notificacion_salida_temprana nst
             JOIN usuario u ON nst.id_usuario = u.id_usuario
 
@@ -55,7 +59,8 @@ class NovedadService {
                 u.nombre_empleado AS nombre_usuario, -- Modificado para usar solo nombre_empleado
                 'Inasistencia' AS tipo_novedad,
                 ia.fecha AS fecha_hora, -- Ajustado para usar 'fecha' de 'no_asistencia'
-                ia.motivo AS detalle -- Ajustado para usar 'motivo' de 'no_asistencia'
+                ia.motivo AS detalle, -- Ajustado para usar 'motivo' de 'no_asistencia'
+                NULL AS comentario
             FROM no_asistencia ia -- Corregido de 'inasistencia' a 'no_asistencia'
             JOIN usuario u ON ia.id_usuario = u.id_usuario
 

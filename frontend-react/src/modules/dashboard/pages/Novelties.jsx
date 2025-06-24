@@ -182,7 +182,9 @@ function Novelties() {
                           minute: '2-digit'
                         })}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{novedad.detalle || '-'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {novedad.comentario || novedad.detalle || '-'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

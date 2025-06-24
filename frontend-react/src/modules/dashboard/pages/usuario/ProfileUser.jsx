@@ -16,23 +16,30 @@ async function getProfileData() {
 
 function ProfileUser() {
   const [userData, setUserData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    department: '',
-    role: ''
+    tipo_documento: '',
+    numero_documento: '',
+    nombre_empleado: '',
+    direccion_empleado: '',
+    telefono_empleado: '',
+    email_empleado: '',
+    usuarioadmin: '',
+    cargo_user: '', // solo visualización
   });
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     async function fetchProfile() {
       try {
         const data = await getProfileData();
         setUserData({
-          name: data.nombre_empleado || data.usuarioadmin || '',
-          email: data.email_empleado || '',
-          phone: data.telefono_empleado || '',
-          department: data.cargo_user || '',
-          role: data.id_cargo === 1 ? 'Administrador' : data.id_cargo === 2 ? 'Supervisor' : 'Empleado',
+          tipo_documento: data.tipo_documento || '',
+          numero_documento: data.numero_documento || '',
+          nombre_empleado: data.nombre_empleado || data.usuarioadmin || '',
+          direccion_empleado: data.direccion_empleado || '',
+          telefono_empleado: data.telefono_empleado || '',
+          email_empleado: data.email_empleado || '',
+          usuarioadmin: data.usuarioadmin || '',
+          cargo_user: data.cargo_user || '',
         });
       } catch (err) {
         Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cargar el perfil' });
@@ -41,16 +48,51 @@ function ProfileUser() {
     fetchProfile();
   }, []);
 
-  const handleSave = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    Swal.fire({
-      icon: 'success',
-      title: '¡Perfil actualizado!',
-      text: 'Los cambios han sido guardados exitosamente',
-      confirmButtonColor: '#3B82F6',
-      timer: 3000,
-      timerProgressBar: true
-    });
+    const token = sessionStorage.getItem('token');
+    try {
+      const payload = { ...userData };
+      if (password) payload.nueva_contrasena = password;
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        // Intentar extraer el mensaje de error específico del backend
+        let errorMsg = 'No se pudo actualizar el perfil';
+        try {
+          const errorData = await response.json();
+          if (errorData && (errorData.message || errorData.error)) {
+            errorMsg = errorData.message || errorData.error;
+          }
+        } catch (jsonErr) {
+          // Si no es JSON, mantener el mensaje genérico
+        }
+        Swal.fire({ icon: 'error', title: 'Error', text: errorMsg });
+        return;
+      }
+      Swal.fire({
+        icon: 'success',
+        title: '¡Perfil actualizado!',
+        text: 'Los cambios han sido guardados exitosamente',
+        confirmButtonColor: '#3B82F6',
+        timer: 3000,
+        timerProgressBar: true
+      });
+      setPassword('');
+    } catch (err) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el perfil' });
+    }
   };
 
   return (
@@ -59,76 +101,73 @@ function ProfileUser() {
         <h1 className="text-2xl font-bold text-gray-800">Mi Perfil</h1>
       </div>
       <div className="rounded-lg bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-8 md:flex-row">
-          <div className="w-full">
-            <form onSubmit={handleSave} className="space-y-6">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Nombre completo
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={userData.name}
-                    onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                </div>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    value={userData.email}
-                    onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                </div>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Teléfono
-                </label>
-                <div className="relative">
-                  <input
-                    type="tel"
-                    value={userData.phone}
-                    onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                </div>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Departamento
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={userData.department}
-                    onChange={(e) => setUserData({ ...userData, department: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <Building className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="rounded-lg bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600"
-                >
-                  Guardar cambios
-                </button>
-              </div>
-            </form>
+        <form onSubmit={handleSave} className="gap-6 grid grid-cols-1 md:grid-cols-2">
+          {/* Nombre completo */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">Nombre completo</label>
+            <input
+              type="text"
+              name="nombre_empleado"
+              value={userData.nombre_empleado}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
-        </div>
+          {/* Dirección */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">Dirección</label>
+            <input
+              type="text"
+              name="direccion_empleado"
+              value={userData.direccion_empleado}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {/* Correo electrónico */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">Correo electrónico</label>
+            <input
+              type="email"
+              name="email_empleado"
+              value={userData.email_empleado}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {/* Usuario */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">Usuario</label>
+            <input
+              type="text"
+              name="usuarioadmin"
+              value={userData.usuarioadmin}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {/* Nueva contraseña */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">Nueva contraseña</label>
+            <input
+              type="password"
+              name="nueva_contrasena"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Dejar en blanco para no cambiar"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="new-password"
+            />
+          </div>
+          <div className="mt-4 flex justify-end md:col-span-2">
+            <button
+              type="submit"
+              className="px-6 py-2 rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600"
+            >
+              Guardar cambios
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
