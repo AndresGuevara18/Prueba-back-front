@@ -333,7 +333,7 @@ def mostrar_camara(embedding_db, id_usuario, comentario_tardia=None):
     update_frame()
     root.mainloop()
     cap.release()
-    cv2.destroy_all_windows()
+    cv2.destroyAllWindows()
 
 def iniciar_camara_tkinter(embedding_db, id_usuario, comentario=None):
     Process(target=mostrar_camara, args=(embedding_db, id_usuario, comentario)).start()  # ¡Aquí va el 5to parámetro!
