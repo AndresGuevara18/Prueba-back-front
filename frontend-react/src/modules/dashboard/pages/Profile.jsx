@@ -1,6 +1,5 @@
 //src/modules/dashboard/pages/Profile.jsx
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, Building } from 'lucide-react';
 import Swal from 'sweetalert2';
 import API_BASE_URL from '../../../config/ConfigURL';
 
@@ -20,11 +19,8 @@ async function getProfileData() {
 
 function Profile() {
   const [userData, setUserData] = useState({
-    tipo_documento: '',
-    numero_documento: '',
     nombre_empleado: '',
     direccion_empleado: '',
-    telefono_empleado: '',
     email_empleado: '',
     usuarioadmin: '',
   });
@@ -35,11 +31,8 @@ function Profile() {
       try {
         const data = await getProfileData();
         setUserData({
-          tipo_documento: data.tipo_documento || '',
-          numero_documento: data.numero_documento || '',
           nombre_empleado: data.nombre_empleado || data.usuarioadmin || '',
           direccion_empleado: data.direccion_empleado || '',
-          telefono_empleado: data.telefono_empleado || '',
           email_empleado: data.email_empleado || '',
           usuarioadmin: data.usuarioadmin || '',
         });
@@ -69,7 +62,20 @@ function Profile() {
         },
         body: JSON.stringify(payload)
       });
-      if (!response.ok) throw new Error('Error al actualizar el perfil');
+      if (!response.ok) {
+        // Intentar extraer el mensaje de error específico del backend
+        let errorMsg = 'No se pudo actualizar el perfil';
+        try {
+          const errorData = await response.json();
+          if (errorData && (errorData.message || errorData.error)) {
+            errorMsg = errorData.message || errorData.error;
+          }
+        } catch (jsonErr) {
+          // Si no es JSON, mantener el mensaje genérico
+        }
+        Swal.fire({ icon: 'error', title: 'Error', text: errorMsg });
+        return;
+      }
       Swal.fire({
         icon: 'success',
         title: '¡Perfil actualizado!',
@@ -91,36 +97,8 @@ function Profile() {
       </div>
       <div className="rounded-lg bg-white p-6 shadow-sm">
         <form onSubmit={handleSave} className="gap-6 grid grid-cols-1 md:grid-cols-2">
-          {/* Tipo de Documento */}
-          <div className="input-group">
-            <label htmlFor="tipo_documento" className="block text-sm font-medium text-gray-700">
-              Tipo de Documento
-            </label>
-            <select
-              id="tipo_documento"
-              name="tipo_documento"
-              className="w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={userData.tipo_documento}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled>Seleccione Tipo de Documento</option>
-              <option value="CC">Cédula de Ciudadanía</option>
-              <option value="TI">Tarjeta de Identidad</option>
-              <option value="CE">Cédula de Extranjería</option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Número de documento</label>
-            <input
-              type="text"
-              name="numero_documento"
-              value={userData.numero_documento}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
+          {/* Nombre completo */}
+          <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-gray-700">Nombre completo</label>
             <input
               type="text"
@@ -130,7 +108,8 @@ function Profile() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
+          {/* Dirección */}
+          <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-gray-700">Dirección</label>
             <input
               type="text"
@@ -140,17 +119,8 @@ function Profile() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Teléfono</label>
-            <input
-              type="tel"
-              name="telefono_empleado"
-              value={userData.telefono_empleado}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
+          {/* Correo electrónico */}
+          <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-gray-700">Correo electrónico</label>
             <input
               type="email"
@@ -160,6 +130,7 @@ function Profile() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          {/* Usuario */}
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-gray-700">Usuario</label>
             <input
@@ -170,6 +141,7 @@ function Profile() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          {/* Nueva contraseña */}
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-gray-700">Nueva contraseña</label>
             <input

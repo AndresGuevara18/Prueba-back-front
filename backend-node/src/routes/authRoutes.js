@@ -85,4 +85,7 @@ router.post('/login', authController.login);
 // Obtener perfil del usuario autenticado
 router.get('/profile', auth, authController.getProfile);
 
+// Actualizar perfil del usuario autenticado
+router.put('/profile', auth, authController.updateUser);
+
 module.exports = router;

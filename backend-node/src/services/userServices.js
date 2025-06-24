@@ -238,12 +238,19 @@ const usuarioService = {
         }
       }
 
+      // Permitir que el frontend o el backend envíen 'nueva_contrasena' o 'contrasenia'
+      let nuevaPassword = '';
+      if (userData.nueva_contrasena && userData.nueva_contrasena.trim() !== '') {
+        nuevaPassword = userData.nueva_contrasena;
+      } else if (userData.contrasenia && userData.contrasenia.trim() !== '') {
+        nuevaPassword = userData.contrasenia;
+      }
+
       // 3. Manejo de la contraseña
       let hashedPassword;
-            
-      if (userData.contrasenia && userData.contrasenia.trim() !== '') {
+      if (nuevaPassword !== '') {
         // Si se proporcionó nueva contraseña: Hashear
-        hashedPassword = await bcrypt.hash(userData.contrasenia, 10);
+        hashedPassword = await bcrypt.hash(nuevaPassword, 10);
       } else {
         // Si NO se proporcionó contraseña: Obtener la actual
         const [rows] = await db.promise().execute(
@@ -268,7 +275,7 @@ const usuarioService = {
                 WHERE id_usuario = ?`;
 
       // 5. Ejecutar la actualización
-      const [result] = await db.promise().execute(query, [
+      const params = [
         userData.tipo_documento,
         userData.numero_documento,
         userData.nombre_empleado,
@@ -280,7 +287,9 @@ const usuarioService = {
         hashedPassword, // Usa la contraseña hasheada (nueva o anterior)
         userData.id_cargo,
         id_usuario,
-      ]);
+      ].map(v => v === undefined ? null : v);
+
+      const [result] = await db.promise().execute(query, params);
 
       return result;
 
