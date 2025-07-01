@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # Backend Node.js service
+  backend:
+    build:
+      context: ./backend-node
+      dockerfile: Dockerfile
+    container_name: colpryts-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - DB_HOST=db
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-colpryts123}
+      - DB_NAME=${DB_NAME:-colpryst_db}
+      - DB_PORT=3306
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - colpryts-network
+    volumes:
+      - ./backend-node:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  # Frontend React service
+  frontend:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    container_name: colpryts-frontend
+    ports:
+      - "5173:80"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:3000/api}
+      - REACT_APP_FACIAL_URL=${REACT_APP_FACIAL_URL:-http://localhost:8000}
+    depends_on:
+      - backend
+      - facial_auth
+    networks:
+      - colpryts-network
+    restart: unless-stopped
+
+  # Facial recognition service
+  facial_auth:
+    build:
+      context: ./facial_auth
+      dockerfile: Dockerfile
+    container_name: colpryts-facial-auth
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-development}
+      - FLASK_APP=main.py
+    networks:
+      - colpryts-network
+    volumes:
+      - ./facial_auth:/app
+      - facial_data:/app/data
+    restart: unless-stopped
+
+  # Nginx reverse proxy (for production)
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: colpryts-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+      - facial_auth
+    networks:
+      - colpryts-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # MySQL database
+  db:
+    image: mysql:8.0
+    container_name: colpryts-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-colpryts123}
+      - MYSQL_DATABASE=${DB_NAME:-colpryst_db}
+      - MYSQL_USER=${DB_USER:-colpryts_user}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-colpryts123}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backend-node/colpryst_DB.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - colpryts-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    driver: local
+  facial_data:
+    driver: local
+
+networks:
+  colpryts-network:
+    driver: bridge
