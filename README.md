@@ -99,6 +99,38 @@ Este proyecto tiene como objetivo crear una solución integral para el **registr
    ```
 ---
 
+## 🐳 Dockerización
+
+Para construir y ejecutar el proyecto completo usando Docker, utiliza los siguientes comandos desde la raíz del proyecto:
+
+**Construir las imágenes y levantar los contenedores en segundo plano:**
+
+```bash
+docker-compose up --build -d
+```
+
+**Verificar el estado de los contenedores:**
+
+```bash
+docker-compose ps
+```
+
+**Ver los logs de un contenedor específico (ej. backend):**
+
+```bash
+docker-compose logs -f backend
+```
+
+**Detener y eliminar los contenedores:**
+
+```bash
+docker-compose down
+```
+
+> ⚠️ **Nota:** Para descargar la dockerización asegúrate de estar en la rama `docker_deploy`.
+
+---
+
 ## ✅ Requisitos Funcionales
 
 Los módulos clave del sistema incluyen:
