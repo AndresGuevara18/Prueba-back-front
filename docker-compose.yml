@@ -15,7 +15,7 @@ services:
       - DB_USER=${DB_USER:-root}
       - DB_PASSWORD=${DB_PASSWORD:-colpryts123}
       - DB_NAME=${DB_NAME:-colpryst_db}
-      - DB_PORT=3306
+      - DB_PORT=${DB_PORT:-3306}
       - JWT_SECRET=${JWT_SECRET:-your-secret-key}
     depends_on:
       db:

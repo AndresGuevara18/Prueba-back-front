@@ -4,7 +4,7 @@ const cargoService = require('../services/cargoServices'); // Importar el servic
 //reconocimeinto
 const axios = require('axios');
 const FormData = require('form-data');
-const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8000';
+const PYTHON_API_URL = process.env.PYTHON_API_URL || process.env.REACT_APP_FACIAL_URL || 'http://facial_auth:8000';
 
 const usuarioController = {
   // Obtener todos los usuarios
@@ -107,9 +107,13 @@ const usuarioController = {
             headers: formData.getHeaders(),
           });
     
-          const respuestaFastAPI = await axios.post('http://localhost:8000/api/verificar-imagen', formData, {
-            headers: formData.getHeaders(),
-          });
+          const respuestaFastAPI = await axios.post(
+            `${PYTHON_API_URL}/api/verificar-imagen`,
+            formData,
+            {
+              headers: formData.getHeaders(),
+            }
+          );
     
           console.log('📥 Respuesta recibida de FastAPI:', {
             status: respuestaFastAPI.status,

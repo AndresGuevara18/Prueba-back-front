@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start": "node app.js"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.7",
